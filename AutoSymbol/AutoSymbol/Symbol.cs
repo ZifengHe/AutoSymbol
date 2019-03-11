@@ -9,6 +9,7 @@ namespace AutoSymbol
     public class Symbol
     {
         public  string Name;
+        public string Alias;
 
         public Dictionary<string, OperatorSymbol> Operators = new Dictionary<string, OperatorSymbol>();
         public Dictionary<string, Symbol> AllocatedMember = new Dictionary<string, Symbol>();

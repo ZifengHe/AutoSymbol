@@ -12,6 +12,16 @@ namespace AutoSymbol
         {
         }    
 
+        public void PopulateTopMembers()
+        {
+            /// 1, 1+1, 1+1+1 etc
+            /// 2,3,4 as alias 
+            /// Step 1. Operate means concatenation
+            /// Step 2. Generate non-existent member
+            /// Step 3. Enable searchable Name-Alias coorelation
+            /// Step 4. Answer the benchmark question
+        }
+
     }
 
     public class NPlus : OperatorSymbol
