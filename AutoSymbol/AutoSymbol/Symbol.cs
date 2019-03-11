@@ -14,13 +14,13 @@ namespace AutoSymbol
         public Dictionary<string, OperatorSymbol> Operators = new Dictionary<string, OperatorSymbol>();
         public Dictionary<string, Symbol> AllocatedMember = new Dictionary<string, Symbol>();
         public Dictionary<string, ER> AllER = new Dictionary<string, ER>();
-        
+
 
         public Symbol(string name)
         {
             this.Name = name;
         }
-       
+
         public virtual Symbol FindMember()
         {
             for(int i=1; i < 100; i++)
@@ -59,7 +59,14 @@ namespace AutoSymbol
         {
         }
 
-        public abstract Symbol Operate(Symbol [] symbols);
+        public abstract Symbol Operate(Symbol [] symbols)
+        {
+            StringBuilder sb = new StringBuilder();
+            for(int i=0 ; i < symbols.Length;i++)
+            {
+
+            }
+        }
     }
 
     public class ER
