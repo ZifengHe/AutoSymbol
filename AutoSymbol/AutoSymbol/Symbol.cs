@@ -9,10 +9,10 @@ namespace AutoSymbol
     public class Symbol
     {
         public  string Name;
-        public string Alias;
+        public string FullName;
 
-        public Dictionary<string, OperatorSymbol> Operators = new Dictionary<string, OperatorSymbol>();
-        public Dictionary<string, Symbol> AllocatedMember = new Dictionary<string, Symbol>();
+        public Dictionary<string, Operator> Operators = new Dictionary<string, Operator>();
+        public Dictionary<string, Symbol> DerivedMember = new Dictionary<string, Symbol>();
         public Dictionary<string, ER> AllER = new Dictionary<string, ER>();
 
 
@@ -26,7 +26,7 @@ namespace AutoSymbol
             for(int i=1; i < 100; i++)
             {
                 string key = "s" + i.ToString();
-                if(!AllocatedMember.ContainsKey(key))
+                if(!DerivedMember.ContainsKey(key))
                 {
                     Symbol sym = InsertMemberByKey(key);
                     return sym;
@@ -37,9 +37,9 @@ namespace AutoSymbol
         }
         public virtual Symbol FindMemberByKey(string key)
         {
-            if (AllocatedMember.ContainsKey(key))
+            if (DerivedMember.ContainsKey(key))
             {
-                return AllocatedMember[key];
+                return DerivedMember[key];
             }
             else
                 return null;
@@ -48,24 +48,26 @@ namespace AutoSymbol
         public virtual Symbol InsertMemberByKey(string key)
         {
             Symbol sym = new Symbol(string.Format("{{0}}[{1}]", key, this.Name));
-            AllocatedMember[key] = sym;
+            DerivedMember[key] = sym;
             return sym;
         }
     }
 
-    public abstract class OperatorSymbol : Symbol
+    public class Operator : Symbol
     {
-        public OperatorSymbol(string name) : base(name)
+        public Symbol ResultSet;
+        public Operator(string name, Symbol sym) : base(name)
         {
+            ResultSet = sym;
         }
 
-        public abstract Symbol Operate(Symbol [] symbols)
+        public OpChain Operate(Symbol [] symbols)
         {
-            StringBuilder sb = new StringBuilder();
-            for(int i=0 ; i < symbols.Length;i++)
-            {
+            OpChain chain = new OpChain();
+            chain.Operator = this;
+            chain.Operands = symbols;
 
-            }
+            return chain;
         }
     }
 
@@ -78,6 +80,26 @@ namespace AutoSymbol
 
     public class OpChain
     {
+        public Operator Operator;
+        public Symbol[] Operands;
 
+        public Symbol CreateSymbol(string shortName)
+        {
+            if(Operator == null || Operands.Length ==0)
+                return null;
+
+            StringBuilder sb = new StringBuilder();
+
+            // TODO: process short name and long name better
+            Symbol sym = Operator.ResultSet.InsertMemberByKey(sb.ToString());
+
+            return sym;
+        }
+
+        private string RecursiveVisitSymbol()
+        {
+            return null;
+        }
+       
     }
 }

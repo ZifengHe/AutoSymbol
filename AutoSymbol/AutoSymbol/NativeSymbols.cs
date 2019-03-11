@@ -10,6 +10,11 @@ namespace AutoSymbol
     {
         public N () : base("N")
         {
+            this.InsertMemberByKey("1");
+            Operator NPlus = new Operator("+", this);
+            this.Operators[NPlus.Name] = NPlus;
+
+            PopulateTopMembers();
         }
 
         public void PopulateTopMembers()
@@ -21,20 +26,11 @@ namespace AutoSymbol
             /// Step 3. Enable searchable Name-Alias coorelation
             /// Step 4. Answer the benchmark question
             /// Test a change
-            
+            for(int i=1; i< 5;i++)
+            {
+                OpChain two = this.Operators["+"].Operate(new Symbol [] { this.FindMemberByKey("1"), this.FindMemberByKey("1")});
+            }
         }
 
     }
-
-    public class NPlus : OperatorSymbol
-    {
-        public NPlus() : base("+")
-        { }
-
-        public override Symbol Operate(Symbol[] symbols)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
 }
