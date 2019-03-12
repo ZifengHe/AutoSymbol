@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 
 namespace AutoSymbol
 {
-    public class N : Symbol
+    public class N : Set
     {
         public N () : base("N")
         {
-            this.InsertMemberByKey("1");
+            Member one = new Member("1", this);
+            this.MemStore.Add(one);
             Operator NPlus = new Operator("+", this);
-            this.Operators[NPlus.Name] = NPlus;
+            this.OpStore[NPlus.ShortName] = NPlus;
 
             PopulateTopMembers();
         }
@@ -26,9 +27,16 @@ namespace AutoSymbol
             /// Step 3. Enable searchable Name-Alias coorelation
             /// Step 4. Answer the benchmark question
             /// Test a change
-            for(int i=1; i< 5;i++)
+            /// 
+
+            Member one = this.MemStore["1"];
+            Member lastOne = one;
+            for(int i=2; i< 10;i++)
             {
-                OpChain two = this.Operators["+"].Operate(new Symbol [] { this.FindMemberByKey("1"), this.FindMemberByKey("1")});
+                OpChain current = this.OpStore["+"].Operate(new Symbol [] { lastOne,one});
+                lastOne = current.CreateMember(i.ToString());
+                this.MemStore.Add(lastOne);              
+
             }
         }
 
