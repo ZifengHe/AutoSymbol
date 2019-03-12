@@ -11,10 +11,18 @@ namespace AutoSymbol
         public  string Name;
         public string FullName;
 
+        public static int RandomCounter = 0;
+
         public Dictionary<string, Operator> Operators = new Dictionary<string, Operator>();
         public Dictionary<string, Symbol> DerivedMember = new Dictionary<string, Symbol>();
         public Dictionary<string, ER> AllER = new Dictionary<string, ER>();
 
+        public Symbol ()
+        {
+            // Temporary name
+            this.Name = "" + RandomCounter.ToString();
+            RandomCounter++;
+        }
 
         public Symbol(string name)
         {
@@ -78,10 +86,14 @@ namespace AutoSymbol
 
     }
 
-    public class OpChain
+    public class OpChain : Symbol
     {
         public Operator Operator;
         public Symbol[] Operands;
+
+        public  OpChain (): base ()
+        {
+        }
 
         public Symbol CreateSymbol(string shortName)
         {
@@ -89,6 +101,7 @@ namespace AutoSymbol
                 return null;
 
             StringBuilder sb = new StringBuilder();
+            VisitOpChain(this, sb);          
 
             // TODO: process short name and long name better
             Symbol sym = Operator.ResultSet.InsertMemberByKey(sb.ToString());
@@ -96,10 +109,23 @@ namespace AutoSymbol
             return sym;
         }
 
-        private string RecursiveVisitSymbol()
+        private void VisitOpChain(OpChain chain, StringBuilder sb)
         {
-            return null;
+            sb.AppendFormat("{0}(", chain.Operator.Name);
+            for(int i=0; i< this.Operands.Length; i++)
+            {
+                if (this.Operands[i] is OpChain)
+                {
+                    VisitOpChain((OpChain)this.Operands[i], sb);
+                }
+                else
+                    sb.AppendFormat("[{0}]", this.Operands[i].Name);
+            }
+
+            sb.Append(")");
         }
+
+        
        
     }
 }
