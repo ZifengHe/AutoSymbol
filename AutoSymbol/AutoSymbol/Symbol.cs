@@ -37,7 +37,6 @@ namespace AutoSymbol
     {
         public static int RandomCounter = 0;
         public  string ShortName;
-        public string FullName;
 
         public Symbol()
         {
@@ -61,6 +60,8 @@ namespace AutoSymbol
     public class Member : Symbol
     {
         public Set TargetSet;
+        public OpChain FromChain;
+        public string LevelTwoName;
         public Member(string shortName, Set targetSet) : base(shortName)
         {
             this.TargetSet = targetSet;
@@ -85,11 +86,11 @@ namespace AutoSymbol
             ResultSet = targetSet;
         }
 
-        public OpChain Operate(Symbol [] symbols)
+        public OpChain Operate(Member [] mems)
         {
             OpChain chain = new OpChain();
             chain.Operator = this;
-            chain.Operands = symbols;
+            chain.Operands = mems;
 
             return chain;
         }
@@ -101,10 +102,10 @@ namespace AutoSymbol
         public OpChain Right;
     }
 
-    public class OpChain : Symbol
+    public class OpChain 
     {
         public Operator Operator;
-        public Symbol[] Operands;
+        public Member [] Operands;
 
         public  OpChain (): base ()
         {
@@ -115,25 +116,36 @@ namespace AutoSymbol
             if (Operator == null || Operands.Length == 0)
                 throw new ApplicationException();
 
-            StringBuilder sb = new StringBuilder();
-            VisitOpChain(this, sb);
-
             Member mem = new Member(shortName, this.Operator.ResultSet);
-            mem.FullName = sb.ToString();
+            mem.FromChain = this;
+            mem.LevelTwoName = ExpandChainByDepth(2);
             return mem;
         }
 
-        private void VisitOpChain(OpChain chain, StringBuilder sb)
+        public string ExpandChainByDepth(int depth)
+        {
+            StringBuilder sb = new StringBuilder();
+            VisitOpChain(this, sb, depth);
+            return sb.ToString();
+        }
+
+        private void VisitOpChain(OpChain chain, StringBuilder sb, int depth)
         {
             sb.AppendFormat("{0}(", chain.Operator.ShortName);
-            for(int i=0; i< this.Operands.Length; i++)
+            for (int i = 0; i < chain.Operands.Length; i++)
             {
-                if (this.Operands[i] is OpChain)
+
+                if (depth <= 0 || chain.Operands[i].FromChain == null)
                 {
-                    VisitOpChain((OpChain)this.Operands[i], sb);
+                    sb.AppendFormat("[{0}]", chain.Operands[i].ShortName);
+
+
                 }
                 else
-                    sb.AppendFormat("[{0}]", this.Operands[i].ShortName);
+                {
+                    VisitOpChain(chain.Operands[i].FromChain, sb, depth - 1);
+
+                }
             }
 
             sb.Append(")");

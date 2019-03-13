@@ -8,7 +8,7 @@ namespace AutoSymbol
 {
     public class N : Set
     {
-        public N () : base("N")
+        public N() : base("N")
         {
             Member one = new Member("1", this);
             this.MemStore.Add(one);
@@ -33,7 +33,7 @@ namespace AutoSymbol
             Member lastOne = one;
             for(int i=2; i< 10;i++)
             {
-                OpChain current = this.OpStore["+"].Operate(new Symbol [] { lastOne,one});
+                OpChain current = this.OpStore["+"].Operate(new Member [] { lastOne,one});
                 lastOne = current.CreateMember(i.ToString());
                 this.MemStore.Add(lastOne);              
 

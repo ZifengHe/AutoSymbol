@@ -10,7 +10,7 @@
         <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
             <ToolBarTray >
                 <ToolBar>
-                    <Button Content="Run"  Click="RunClicked"/>
+                    <Button Content="RunBench"  Click="RunClicked"/>
                     <Button Command="Delete" Content="Delete" />
                     <Button Command="Refresh" Content="Refresh" />
                 </ToolBar>

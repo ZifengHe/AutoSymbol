@@ -43,7 +43,8 @@ namespace AutoSymbol
 
         private void RunClicked(object sender, RoutedEventArgs e)
         {
-           // new Builder().BuildPattern0();
+            // new Builder().BuildPattern0();
+            Benchmark.RunAll();
         }
     }
 }
