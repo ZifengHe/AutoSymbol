@@ -8,11 +8,12 @@ namespace AutoSymbol
 {
     public class N : Set
     {
+        public Operator NPlus;
         public N() : base("N")
         {
-            Member one = new Member("1", this);
+            Member one = new Member("1", this.ShortName);
             this.MemStore.Add(one);
-            Operator NPlus = new Operator("+", this);
+            NPlus = new Operator("+", this);
             this.OpStore[NPlus.ShortName] = NPlus;
 
             HydrateER();
@@ -24,7 +25,13 @@ namespace AutoSymbol
             /// 1. Because of ER, member can have equivalent OpChain
             /// 2. Transforming branch, by comparing the chain signature first
             /// 3. Serialize, Replace, Deserialize as the transformation rule.
-
+            Member a = new Member("a", this.ShortName);
+            Member b = new Member("b", this.ShortName);
+            Member c = new Member("c", this.ShortName);
+            ER er = new ER();
+            er.Left = NPlus.Operate(new Member[] { a, NPlus.Operate2(new Member[] { b, c }) });
+            er.Right = NPlus.Operate(new Member[] { NPlus.Operate2(new Member[] { a, b }), c });
+            
         }
 
         public void PopulateTopMembers()

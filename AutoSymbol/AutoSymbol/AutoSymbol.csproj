@@ -69,6 +69,7 @@
     <Compile Include="Benchmark.cs" />
     <Compile Include="NativeSymbols.cs" />
     <Compile Include="Symbol.cs" />
+    <Compile Include="Util.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
