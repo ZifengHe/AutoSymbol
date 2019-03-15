@@ -31,6 +31,16 @@ namespace AutoSymbol
             Trace.WriteLine(mem.FromChain.ExpandChainByDepth(3));
             Trace.WriteLine(mem.FromChain.ExpandChainByDepth(4));
 
+            Assert(mem.FromChain.ExpandChainByDepth(4), "+(+([1][1])+(+([1][1])[1]))");
+
+        }
+
+        public void Assert(string str1, string str2)
+        {
+            if (str1 != str2)
+                throw new ApplicationException("Assert failed");
+            else
+                Trace.WriteLine("Assert Success");
         }
     }
 }

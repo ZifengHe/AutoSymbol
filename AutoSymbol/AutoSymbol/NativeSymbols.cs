@@ -15,28 +15,27 @@ namespace AutoSymbol
             Operator NPlus = new Operator("+", this);
             this.OpStore[NPlus.ShortName] = NPlus;
 
+            HydrateER();
             PopulateTopMembers();
         }
 
-        public void PopulateTopMembers()
+        public void HydrateER()
         {
-            /// 1, 1+1, 1+1+1 etc
-            /// 2,3,4 as alias
-            /// Step 1. Operate means concatenation
-            /// Step 2. Generate non-existent member
-            /// Step 3. Enable searchable Name-Alias coorelation
-            /// Step 4. Answer the benchmark question
-            /// Test a change
-            /// 
+            /// 1. Because of ER, member can have equivalent OpChain
+            /// 2. Transforming branch, by comparing the chain signature first
+            /// 3. Serialize, Replace, Deserialize as the transformation rule.
 
+        }
+
+        public void PopulateTopMembers()
+        {           
             Member one = this.MemStore["1"];
             Member lastOne = one;
             for(int i=2; i< 10;i++)
             {
                 OpChain current = this.OpStore["+"].Operate(new Member [] { lastOne,one});
                 lastOne = current.CreateMember(i.ToString());
-                this.MemStore.Add(lastOne);              
-
+                this.MemStore.Add(lastOne);            
             }
         }
 

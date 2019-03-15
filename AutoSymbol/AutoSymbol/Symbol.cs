@@ -96,12 +96,7 @@ namespace AutoSymbol
         }
     }
 
-    public class ER : Symbol
-    {
-        public OpChain Left;
-        public OpChain Right;
-    }
-
+   
     public class OpChain 
     {
         public Operator Operator;
@@ -110,6 +105,8 @@ namespace AutoSymbol
         public  OpChain (): base ()
         {
         }
+
+       
 
         public  Member CreateMember(string shortName)
         {
@@ -151,4 +148,67 @@ namespace AutoSymbol
             sb.Append(")");
         }   
     }
+
+    public class ER : Symbol
+    {
+        public OpChain Left;
+        public OpChain Right;
+        public HashSet<string> Names = new HashSet<string>();
+
+        public static bool TransformChain(OpChain src, OpChain dest, OpChain toChange, out OpChain result)
+        {
+            result = null;
+            Dictionary<string, Member> keyMap = new Dictionary<string, Member>();
+
+
+
+            return true;
+        }
+
+        private static string ErrStr(string hint, string s1, string s2)
+        {
+            return string.Format("{0} : {1}!={2}", hint, s1, s2);
+        }
+        public static string VisitPair(OpChain src, OpChain toChange, Dictionary<string , Member> keyMap)
+        {
+            if (src.Operator.ShortName != toChange.Operator.ShortName)
+                return ErrStr("C1", src.Operator.ShortName, toChange.Operator.ShortName);
+
+            if (src.Operator.ResultSet.ShortName != toChange.Operator.ResultSet.ShortName)
+                return ErrStr("C2", src.Operator.ResultSet.ShortName, toChange.Operator.ResultSet.ShortName);
+
+            if (src.Operands.Length != toChange.Operands.Length)
+                return ErrStr("C3", src.Operands.Length.ToString(), toChange.Operands.Length.ToString());
+
+            for (int i=0; i < src.Operands.Length;i++)
+            {
+                if(src.Operands[i].FromChain == null)
+                {
+                    string currentSrcKey = src.Operands[i].ShortName;
+                    if (!keyMap.ContainsKey(currentSrcKey))
+                    {
+                        keyMap[currentSrcKey] = toChange.Operands[i];
+                    }
+                    else
+                    {
+                        if (keyMap[currentSrcKey].ShortName != toChange.Operands[i].ShortName)
+                            ErrStr("C4", keyMap[currentSrcKey].ShortName, toChange.Operands[i].ShortName);
+                    }
+                }
+                else
+                {
+                    if (toChange.Operands[i].FromChain == null)
+                        ErrStr("C5", "toChange.Operands[i].FromChain", "null");
+                }
+            }
+
+            return null;
+        }
+
+       
+
+    }
+
+
+
 }
