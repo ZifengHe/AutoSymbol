@@ -31,7 +31,7 @@ namespace AutoSymbol
             ER er = new ER();
             er.Left = NPlus.Operate(new Member[] { a, NPlus.Operate2(new Member[] { b, c }) });
             er.Right = NPlus.Operate(new Member[] { NPlus.Operate2(new Member[] { a, b }), c });
-            
+            this.ERStore["NPlusAssoc"] = er;            
         }
 
         public void PopulateTopMembers()

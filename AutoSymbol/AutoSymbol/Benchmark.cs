@@ -23,16 +23,14 @@ namespace AutoSymbol
                 n.MemStore["2"],
                 n.MemStore["3"]
             });
-
+            
             Member mem = result.CreateMember("Test");
-            Trace.WriteLine(mem.FromChain.ExpandChainByDepth(0));
-            Trace.WriteLine(mem.FromChain.ExpandChainByDepth(1));
-            Trace.WriteLine(mem.FromChain.ExpandChainByDepth(2));
-            Trace.WriteLine(mem.FromChain.ExpandChainByDepth(3));
-            Trace.WriteLine(mem.FromChain.ExpandChainByDepth(4));
+            Trace.WriteLine(mem.FromChain.PrintByDepth(0));
+            Assert(mem.FromChain.PrintByDepth(4), "+(+([1][1])+(+([1][1])[1]))");
 
-            Assert(mem.FromChain.ExpandChainByDepth(4), "+(+([1][1])+(+([1][1])[1]))");
-
+            List<OpChain> list = n.ERStore["NPlusAssoc"].BuildEquivalentChains(result);
+            foreach (var one in list)
+                Trace.WriteLine(one.PrintByDepth(1));
         }
 
         public void Assert(string str1, string str2)

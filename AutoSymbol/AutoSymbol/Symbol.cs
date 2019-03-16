@@ -123,11 +123,11 @@ namespace AutoSymbol
 
             Member mem = new Member(shortName, this.Operator.ResultSetName);
             mem.FromChain = this;
-            mem.LevelTwoName = ExpandChainByDepth(2);
+            mem.LevelTwoName = PrintByDepth(2);
             return mem;
         }
 
-        public string ExpandChainByDepth(int depth)
+        public string PrintByDepth(int depth)
         {
             StringBuilder sb = new StringBuilder();
             VisitOpChain(this, sb, depth);
@@ -143,13 +143,10 @@ namespace AutoSymbol
                 if (depth <= 0 || chain.Operands[i].FromChain == null)
                 {
                     sb.AppendFormat("[{0}]", chain.Operands[i].ShortName);
-
-
                 }
                 else
                 {
                     VisitOpChain(chain.Operands[i].FromChain, sb, depth - 1);
-
                 }
             }
 
@@ -165,16 +162,44 @@ namespace AutoSymbol
 
         public const string Match = "Match";
 
-        public static bool TransformChain(OpChain src, OpChain toCopy, OpChain toChange, out OpChain result)
+        public List<OpChain> BuildEquivalentChains(OpChain toChange)
         {
-            result = null;
+            List<OpChain> list = new List<OpChain>();
+            OpChain left = VisitAddEquivalentChain(this.Left, this.Right, toChange);
+            OpChain right = VisitAddEquivalentChain(this.Right, this.Left, toChange);
+            if (left != null)
+                list.Add(left);
+            if (right != null)
+                list.Add(right);
+
+            return list;
+        }
+
+        private OpChain VisitAddEquivalentChain(OpChain src, OpChain toCopy, OpChain toChange)
+        {
+            OpChain clone = toChange.Copy<OpChain>();
+            OpChain result =  TransformChain(src, toCopy, clone );
+            if(result == null)
+            {
+                for(int i=0; i <clone.Operands.Length; i++)
+                {
+                    OpChain temp = TransformChain(src, toCopy, clone.Operands[i].FromChain);
+                    if (temp != null)
+                        clone.Operands[i].FromChain = temp;
+                }
+            }
+            return result;
+        }
+
+        public static OpChain  TransformChain(OpChain src, OpChain toCopy, OpChain toChange)
+        {
             Dictionary<string, Member> keyMap = new Dictionary<string, Member>();
 
             if (Match == VisitPair(src, toChange, keyMap))
             {
-                result = toCopy.Copy<OpChain>();
+                return  toCopy.Copy<OpChain>();
             }
-            return true;
+            return null;
         }
 
         private void VisitReplace(OpChain chain, Dictionary<string, Member> keyMap)
