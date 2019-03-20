@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -127,6 +128,20 @@ namespace AutoSymbol
             return mem;
         }
 
+        public string PrintFull()
+        {
+            string final = null;
+            for(int i=0; i< 100;i++)
+            {
+                string current = PrintByDepth(i);
+                if (final == current)
+                    return final;
+                else
+                    final = current;
+            }
+            throw new ApplicationException("too deep");
+        }
+
         public string PrintByDepth(int depth)
         {
             StringBuilder sb = new StringBuilder();
@@ -162,47 +177,57 @@ namespace AutoSymbol
 
         public const string Match = "Match";
 
-        public List<OpChain> BuildEquivalentChains(OpChain toChange)
+        public Dictionary<string, OpChain> BuildEquivalentChains(OpChain toChange)
         {
-            List<OpChain> list = new List<OpChain>();
-            OpChain left = VisitAddEquivalentChain(this.Left, this.Right, toChange);
-            OpChain right = VisitAddEquivalentChain(this.Right, this.Left, toChange);
-            if (left != null)
-                list.Add(left);
-            if (right != null)
-                list.Add(right);
-
-            return list;
+            Dictionary<string, OpChain> dict = new Dictionary<string, OpChain>();
+            RecursiveAddEquivalentChain(this.Left, this.Right, toChange, dict);
+            RecursiveAddEquivalentChain(this.Right, this.Left, toChange, dict);
+            return dict;
         }
 
-        private OpChain VisitAddEquivalentChain(OpChain src, OpChain toCopy, OpChain toChange)
+        private void RecursiveAddEquivalentChain(OpChain src, OpChain toCopy, OpChain toChange, Dictionary<string, OpChain> dict)
         {
+            //Use clone, because transform can happen at branch level
             OpChain clone = toChange.Copy<OpChain>();
-            OpChain result =  TransformChain(src, toCopy, clone );
-            if(result == null)
+            string cloneSig = clone.PrintFull();
+            if (dict.ContainsKey(cloneSig))
+                return;
+            else
             {
-                for(int i=0; i <clone.Operands.Length; i++)
-                {
-                    OpChain temp = TransformChain(src, toCopy, clone.Operands[i].FromChain);
-                    if (temp != null)
-                        clone.Operands[i].FromChain = temp;
-                }
+                dict[cloneSig] = clone;
             }
-            return result;
+
+            for (int i = 0; i < clone.Operands.Length; i++)
+            {
+                OpChain current = clone.Operands[i].FromChain;
+                if (current != null)
+                    RecursiveAddEquivalentChain(src, toCopy, current, dict);
+            }
+
+            OpChain result =  TransformChain(src, toCopy, clone );
+
+            if(result != null)
+            {
+                RecursiveAddEquivalentChain(src, toCopy, result, dict);
+            } 
         }
 
         public static OpChain  TransformChain(OpChain src, OpChain toCopy, OpChain toChange)
         {
             Dictionary<string, Member> keyMap = new Dictionary<string, Member>();
 
-            if (Match == VisitPair(src, toChange, keyMap))
+            if (Match == RecursivePair(src, toChange, keyMap))
             {
-                return  toCopy.Copy<OpChain>();
+                OpChain retChain =  toCopy.Copy<OpChain>();
+
+                //toCopy is now the template, needs to be replaced with all the original member in toChange
+                RecursiveReplace(retChain, keyMap);
+                return retChain;
             }
             return null;
         }
 
-        private void VisitReplace(OpChain chain, Dictionary<string, Member> keyMap)
+        private static void RecursiveReplace(OpChain chain, Dictionary<string, Member> keyMap)
         {
             for (int i = 0; i < chain.Operands.Length; i++)
             {
@@ -212,6 +237,10 @@ namespace AutoSymbol
                         throw new ApplicationException("The name should exist.");
                     chain.Operands[i] = keyMap[chain.Operands[i].ShortName];
                 }
+                else
+                {
+                    RecursiveReplace(chain.Operands[i].FromChain, keyMap);
+                }
             }
         }
 
@@ -219,7 +248,7 @@ namespace AutoSymbol
         {
             return string.Format("{0} : {1}!={2}", hint, s1, s2);
         }
-        public static string VisitPair(OpChain src, OpChain toChange, Dictionary<string, Member> keyMap)
+        public static string RecursivePair(OpChain src, OpChain toChange, Dictionary<string, Member> keyMap)
         {
             if (src.Operator.ShortName != toChange.Operator.ShortName)
                 return ErrStr("C1", src.Operator.ShortName, toChange.Operator.ShortName);
@@ -248,7 +277,7 @@ namespace AutoSymbol
                     if (toChange.Operands[i].FromChain == null)
                         return ErrStr("C5", "toChange.Operands[i].FromChain", "null");
 
-                    string childStatus = VisitPair(src.Operands[i].FromChain, toChange.Operands[i].FromChain, keyMap);
+                    string childStatus = RecursivePair(src.Operands[i].FromChain, toChange.Operands[i].FromChain, keyMap);
                     if (childStatus != Match)
                         return ErrStr("C6", "ChildStatus", "Match");
                 }

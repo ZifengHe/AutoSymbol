@@ -26,11 +26,15 @@ namespace AutoSymbol
             
             Member mem = result.CreateMember("Test");
             Trace.WriteLine(mem.FromChain.PrintByDepth(0));
+            Trace.WriteLine(mem.FromChain.PrintByDepth(1));
+            Trace.WriteLine(mem.FromChain.PrintByDepth(2));
             Assert(mem.FromChain.PrintByDepth(4), "+(+([1][1])+(+([1][1])[1]))");
+            Trace.WriteLine(n.ERStore["NPlusAssoc"].Left.PrintFull());
+            Trace.WriteLine(n.ERStore["NPlusAssoc"].Right.PrintFull());
 
-            List<OpChain> list = n.ERStore["NPlusAssoc"].BuildEquivalentChains(result);
-            foreach (var one in list)
-                Trace.WriteLine(one.PrintByDepth(1));
+            Dictionary<string, OpChain> dict = n.ERStore["NPlusAssoc"].BuildEquivalentChains(result);
+            foreach (var one in dict)
+                Trace.WriteLine(one.Key);
         }
 
         public void Assert(string str1, string str2)
