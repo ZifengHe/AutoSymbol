@@ -18,9 +18,11 @@ using Microsoft.Msagl.WpfGraphControl;
 
 namespace AutoSymbol
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
+    public static class UIData
+    {
+        public static Dictionary<string, OpChain> ItemMap;
+        public static List<string> AllItems;
+    }
     public partial class MainWindow : Window
     {
 
@@ -32,19 +34,57 @@ namespace AutoSymbol
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            GraphViewer graphViewer = new GraphViewer();
-            graphViewer.BindToPanel(ContentPanel);
-            Graph graph = new Graph();
+           
+        }
 
-            graph.AddEdge("A", "B");
-            graph.Attr.LayerDirection = LayerDirection.LR;
-            graphViewer.Graph = graph; // throws exception
+        private void Rebind()
+        {
+            cbList.Items.Clear();
+            foreach (var one in UIData.AllItems)
+                cbList.Items.Add(one);
         }
 
         private void RunClicked(object sender, RoutedEventArgs e)
         {
             // new Builder().BuildPattern0();
             Benchmark.RunAll();
+            Rebind();
+        }
+
+        private void CbList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string sig = (string) cbList.SelectedValue;
+            RenderOneTransform(OneTransform.All[sig]);
+        }
+
+        private void RenderOneTransform(OneTransform one)
+        {
+            GraphViewer graphViewer = new GraphViewer();
+            graphViewer.BindToPanel(ContentPanel);
+            Graph graph = new Graph();
+
+            RecursiveRender(one.Result, graph);
+            graph.Attr.LayerDirection = LayerDirection.LR;
+            graphViewer.Graph = graph; // throws exception
+        }
+
+        private void RecursiveRender(OpChain branch, Graph g)
+        {
+            g.AddNode(branch.Sig);
+
+            for(int i=0; i < branch.Operands.Length; i++)
+            {
+                if(branch.Operands[i].FromChain!= null)
+                {
+                    RecursiveRender(branch.Operands[i].FromChain, g);
+                    g.AddEdge(branch.Sig, branch.Operands[i].FromChain.Sig);
+                }
+                else
+                {
+                    g.AddEdge(branch.Sig, branch.Operands[i].ShortName);
+                }
+            }
+
         }
     }
 }

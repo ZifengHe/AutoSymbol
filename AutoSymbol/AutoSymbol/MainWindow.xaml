@@ -13,6 +13,7 @@
                     <Button Content="RunBench"  Click="RunClicked"/>
                     <Button Command="Delete" Content="Delete" />
                     <Button Command="Refresh" Content="Refresh" />
+                    <ComboBox Width="500" Name="cbList" SelectionChanged="CbList_SelectionChanged" ></ComboBox>
                 </ToolBar>
             </ToolBarTray>
         </StackPanel>

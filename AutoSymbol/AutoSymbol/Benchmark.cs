@@ -33,6 +33,9 @@ namespace AutoSymbol
             Trace.WriteLine(n.ERStore["NPlusAssoc"].Right.PrintFull());
 
             Dictionary<string, OpChain> dict = n.ERStore["NPlusAssoc"].BuildEquivalentChains(result);
+            UIData.ItemMap = dict;
+            UIData.AllItems = OneTransform.All.Keys.ToList();
+
             foreach (var one in dict)
                 Trace.WriteLine(one.Key);
         }

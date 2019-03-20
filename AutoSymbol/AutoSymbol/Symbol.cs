@@ -115,7 +115,13 @@ namespace AutoSymbol
         {
         }
 
-
+        public string Sig
+        {
+            get
+            {
+                return PrintFull();
+            }
+        }
 
         public Member CreateMember(string shortName)
         {
@@ -169,6 +175,15 @@ namespace AutoSymbol
         }
     }
 
+    public class OneTransform
+    {
+        public static Dictionary<string, OneTransform> All = new Dictionary<string, OneTransform>();
+        public OpChain Src;
+        public OpChain ToCopy;
+        public OpChain ToChange;
+        public OpChain Result;
+        public string ResultSig;
+    }
     public class ER : Symbol
     {
         public OpChain Left;
@@ -208,6 +223,16 @@ namespace AutoSymbol
 
             if(result != null)
             {
+                OneTransform one = new OneTransform
+                {
+                    Result = result,
+                    ResultSig = result.PrintFull(),
+                    Src = src,
+                    ToChange = clone,
+                    ToCopy = toCopy
+                };
+                OneTransform.All[one.ResultSig] = one;
+
                 RecursiveAddEquivalentChain(src, toCopy, result, dict);
             } 
         }
