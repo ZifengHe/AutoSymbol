@@ -67,6 +67,15 @@ namespace AutoSymbol
         {
             this.TargetSetName = targetSetName;
         }
+
+        public string Sig
+        {
+            get {
+                if (this.FromChain == null)
+                    return this.ShortName;
+                return this.FromChain.Sig;
+            }
+        }
     }
     public class Set : Symbol
     {
@@ -178,6 +187,7 @@ namespace AutoSymbol
     public class OneTransform
     {
         public static Dictionary<string, OneTransform> All = new Dictionary<string, OneTransform>();
+        public static Dictionary<string, Dictionary<string, Member>> Keymaps = new Dictionary<string, Dictionary<string, Member>>();
         public OpChain Src;
         public OpChain ToCopy;
         public OpChain ToChange;
@@ -232,7 +242,6 @@ namespace AutoSymbol
                     ToCopy = toCopy
                 };
                 OneTransform.All[one.ResultSig] = one;
-
                 RecursiveAddEquivalentChain(src, toCopy, result, dict);
             } 
         }
@@ -247,6 +256,10 @@ namespace AutoSymbol
 
                 //toCopy is now the template, needs to be replaced with all the original member in toChange
                 RecursiveReplace(retChain, keyMap);
+
+                if (retChain != null)
+                    OneTransform.Keymaps[retChain.Sig] = keyMap;
+
                 return retChain;
             }
             return null;

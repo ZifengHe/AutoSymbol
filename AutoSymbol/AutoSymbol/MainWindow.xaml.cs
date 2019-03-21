@@ -61,11 +61,40 @@ namespace AutoSymbol
         {
             GraphViewer graphViewer = new GraphViewer();
             graphViewer.BindToPanel(ContentPanel);
+            graphViewer.ObjectUnderMouseCursorChanged += GraphViewer_ObjectUnderMouseCursorChanged;
             Graph graph = new Graph();
+            
 
             RecursiveRender(one.Result, graph);
+            RecursiveRender(one.Src, graph);
+            RecursiveRender(one.ToCopy, graph);
+            RecursiveRender(one.ToChange, graph);
+
+            graph.AddEdge(one.ToChange.Sig, one.Result.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Green;
+            graph.AddEdge(one.ToChange.Sig, one.Src.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Blue ;
+            graph.AddEdge(one.ToChange.Sig, one.ToCopy.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Brown;
+
             graph.Attr.LayerDirection = LayerDirection.LR;
             graphViewer.Graph = graph; // throws exception
+        }
+
+        private void GraphViewer_ObjectUnderMouseCursorChanged(object sender, ObjectUnderMouseCursorChangedEventArgs e)
+        {
+            MessageTextBlock.Text = "";
+            GraphViewer gv = (GraphViewer)sender;
+            if (gv.ObjectUnderMouseCursor != null)
+            {
+                string selected = gv.ObjectUnderMouseCursor.ToString();
+                Trace.WriteLine(selected);
+                if (OneTransform.Keymaps.ContainsKey(selected))
+                {
+                    Dictionary<string, Member> dict = OneTransform.Keymaps[selected];
+                    StringBuilder sb = new StringBuilder();
+                    foreach (var one in dict)
+                        sb.AppendFormat(" |{0}={1}", one.Key, one.Value.Sig.ToString());
+                    MessageTextBlock.Text = sb.ToString();
+                }                
+            }
         }
 
         private void RecursiveRender(OpChain branch, Graph g)
@@ -84,7 +113,6 @@ namespace AutoSymbol
                     g.AddEdge(branch.Sig, branch.Operands[i].ShortName);
                 }
             }
-
         }
     }
 }

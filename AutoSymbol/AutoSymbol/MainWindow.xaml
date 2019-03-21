@@ -17,7 +17,11 @@
                 </ToolBar>
             </ToolBarTray>
         </StackPanel>
-        <StatusBar Name="statusbar" DockPanel.Dock="Bottom">statusbar</StatusBar>
+        <StatusBar Name="statusbar" DockPanel.Dock="Bottom" >
+            <StatusBarItem>
+                <TextBlock x:Name="MessageTextBlock"></TextBlock>
+            </StatusBarItem>
+        </StatusBar>
         <DockPanel x:Name="ContentPanel"></DockPanel>
     </DockPanel>
 </Window>
