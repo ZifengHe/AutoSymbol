@@ -68,11 +68,17 @@ namespace AutoSymbol
             RecursiveRender(one.Result, graph);
             RecursiveRender(one.Src, graph);
             RecursiveRender(one.ToCopy, graph);
-            RecursiveRender(one.ToChange, graph);
+            RecursiveRender(one.ChangeRoot, graph);
+            RecursiveRender(one.ChangePartTo, graph);
+            RecursiveRender(one.ChangePartFrom, graph);
 
-            graph.AddEdge(one.ToChange.Sig, one.Result.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Green;
-            graph.AddEdge(one.ToChange.Sig, one.Src.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Blue ;
-            graph.AddEdge(one.ToChange.Sig, one.ToCopy.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Brown;
+            graph.AddEdge(one.ChangeRoot.Sig, one.Result.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Green;
+            graph.AddEdge(one.ChangeRoot.Sig, one.Src.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Red ;
+            graph.AddEdge(one.ChangeRoot.Sig, one.ToCopy.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Yellow;
+            graph.AddEdge(one.ChangeRoot.Sig, one.ChangePartTo.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Blue;
+            graph.AddEdge(one.ChangeRoot.Sig, one.ChangePartFrom.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Purple;
+
+
 
             graph.Attr.LayerDirection = LayerDirection.LR;
             graphViewer.Graph = graph; // throws exception
@@ -85,7 +91,6 @@ namespace AutoSymbol
             if (gv.ObjectUnderMouseCursor != null)
             {
                 string selected = gv.ObjectUnderMouseCursor.ToString();
-                Trace.WriteLine(selected);
                 if (OneTransform.Keymaps.ContainsKey(selected))
                 {
                     Dictionary<string, Member> dict = OneTransform.Keymaps[selected];

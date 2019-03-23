@@ -36,14 +36,25 @@ namespace AutoSymbol
             UIData.ItemMap = dict;
             UIData.AllItems = OneTransform.All.Keys.ToList();
 
+            bool found = false;
             foreach (var one in dict)
-                Trace.WriteLine(one.Key);
+                if (one.Key == n.MemStore["5"].Sig)
+                    found = true;
+            Assert(found, "Fail to find 5");
+
         }
 
         public void Assert(string str1, string str2)
         {
             if (str1 != str2)
                 throw new ApplicationException("Assert failed");
+            else
+                Trace.WriteLine("Assert Success");
+        }
+        public void Assert(bool b, string err)
+        {
+            if (!b)
+                throw new ApplicationException(err);
             else
                 Trace.WriteLine("Assert Success");
         }
