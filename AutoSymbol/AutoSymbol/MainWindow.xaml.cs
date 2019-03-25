@@ -32,6 +32,8 @@ namespace AutoSymbol
             Loaded += MainWindow_Loaded;
         }
 
+        private static Dictionary<string, int> EdgeCount = new Dictionary<string, int>();
+
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
            
@@ -59,11 +61,11 @@ namespace AutoSymbol
 
         private void RenderOneTransform(OneTransform one)
         {
+            EdgeCount.Clear();
             GraphViewer graphViewer = new GraphViewer();
             graphViewer.BindToPanel(ContentPanel);
             graphViewer.ObjectUnderMouseCursorChanged += GraphViewer_ObjectUnderMouseCursorChanged;
-            Graph graph = new Graph();
-            
+            Graph graph = new Graph();            
 
             RecursiveRender(one.Result, graph);
             RecursiveRender(one.Src, graph);
@@ -77,8 +79,6 @@ namespace AutoSymbol
             graph.AddEdge(one.ChangeRoot.Sig, one.ToCopy.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Yellow;
             graph.AddEdge(one.ChangeRoot.Sig, one.ChangePartTo.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Blue;
             graph.AddEdge(one.ChangeRoot.Sig, one.ChangePartFrom.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Purple;
-
-
 
             graph.Attr.LayerDirection = LayerDirection.LR;
             graphViewer.Graph = graph; // throws exception
@@ -111,12 +111,24 @@ namespace AutoSymbol
                 if(branch.Operands[i].FromChain!= null)
                 {
                     RecursiveRender(branch.Operands[i].FromChain, g);
-                    g.AddEdge(branch.Sig, branch.Operands[i].FromChain.Sig);
+                    AddEdge(g, branch.Sig, branch.Operands[i].FromChain.Sig);
                 }
                 else
                 {
-                    g.AddEdge(branch.Sig, branch.Operands[i].ShortName);
+                    AddEdge(g, branch.Sig, branch.Operands[i].ShortName);
                 }
+            }
+        }
+
+        private void AddEdge(Graph g, string node1, string node2)
+        {
+            string combined = node1 + "$" + node2;
+            if (EdgeCount.ContainsKey(combined))
+                return;
+            else
+            {
+                g.AddEdge(node1, node2);
+                EdgeCount[combined] = 1;
             }
         }
     }
