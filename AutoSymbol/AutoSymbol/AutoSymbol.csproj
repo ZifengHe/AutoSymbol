@@ -67,8 +67,11 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Benchmark.cs" />
+    <Compile Include="ER.cs" />
     <Compile Include="NativeSymbols.cs" />
+    <Compile Include="OpChain.cs" />
     <Compile Include="Symbol.cs" />
+    <Compile Include="Transform.cs" />
     <Compile Include="Util.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

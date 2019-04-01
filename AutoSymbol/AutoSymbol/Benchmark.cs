@@ -5,15 +5,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace AutoSymbol
 {
+    using OpDict = Dictionary<string, OpChain>;
     public class Benchmark
     {
+        public static void RunOne()
+        {
+            Benchmark b = new Benchmark();
+            b.ProveTwoPlusXPlusThree();
+        }
         public static void RunAll()
         {
             Benchmark b = new Benchmark();
-            b.ProveTwoPlusThree();
-            b.ProveAPlusBSquare();
+            b.ProveTwoPlusThree();           
         }
 
         public void ProveComplementSetTheorem()
@@ -39,6 +45,14 @@ namespace AutoSymbol
         {
             /// 1. N.SigToShortName for OpChain
             /// 2. Visit all subChain that contains ShortName and 
+            /// 
+            N n = new N();
+            Member x = new Member("x", n.ShortName);
+            n.MemStore.Add(x);
+            OpChain start = n.NPlus.CreateOpChain(n.MemStore["2"], n.NPlus.Operate(x, n.MemStore["3"]));
+            OpDict dict = ER.BuildERChainsForLevel(start, n.ERStore.Values, maxLevel: 5);
+            UIData.ItemMap = dict;
+            UIData.AllItems = OneTransform.AllResult.Keys.ToList();
         }
         public void ProveTwoPlusThree()
         {
@@ -56,9 +70,9 @@ namespace AutoSymbol
             Trace.WriteLine(n.ERStore["NPlusAssoc"].Left.PrintFull());
             Trace.WriteLine(n.ERStore["NPlusAssoc"].Right.PrintFull());
 
-            Dictionary<string, OpChain> dict = n.ERStore["NPlusAssoc"].BuildCompleteERChains(result);
+            OpDict dict = n.ERStore["NPlusAssoc"].BuildCompleteERChains(result);
             UIData.ItemMap = dict;
-            UIData.AllItems = OneTransform.All.Keys.ToList();
+            UIData.AllItems = OneTransform.AllResult.Keys.ToList();
 
             bool found = false;
             foreach (var one in dict)

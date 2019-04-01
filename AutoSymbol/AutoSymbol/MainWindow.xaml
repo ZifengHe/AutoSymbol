@@ -10,12 +10,17 @@
         <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
             <ToolBarTray >
                 <ToolBar>
-                    <Button Content="RunBench"  Click="RunClicked"/>
-                    <Button Command="Delete" Content="Delete" />
+                    <Button Content="RunOne"  Click="RunOneClicked"/>
+                    <Button Content="RunAll" Click="RunAllClicked"/>
                     <Button Command="Refresh" Content="Refresh" />
                     <ComboBox Width="500" Name="cbList" SelectionChanged="CbList_SelectionChanged" ></ComboBox>
+                    <ComboBox Width="100" Name="cbOptions"  SelectedIndex="0">
+                        <ComboBoxItem>Transform</ComboBoxItem>
+                        <ComboBoxItem>Proof</ComboBoxItem>
+                    </ComboBox>
                 </ToolBar>
             </ToolBarTray>
+           
         </StackPanel>
         <StatusBar Name="statusbar" DockPanel.Dock="Bottom" >
             <StatusBarItem>

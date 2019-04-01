@@ -18,9 +18,10 @@ using Microsoft.Msagl.WpfGraphControl;
 
 namespace AutoSymbol
 {
+    using OpDict = Dictionary<string, OpChain>;
     public static class UIData
     {
-        public static Dictionary<string, OpChain> ItemMap;
+        public static OpDict ItemMap;
         public static List<string> AllItems;
     }
     public partial class MainWindow : Window
@@ -46,42 +47,65 @@ namespace AutoSymbol
                 cbList.Items.Add(one);
         }
 
-        private void RunClicked(object sender, RoutedEventArgs e)
+        private void RunAllClicked(object sender, RoutedEventArgs e)
         {
             // new Builder().BuildPattern0();
             Benchmark.RunAll();
+            Rebind();
+            MessageBox.Show("All Benchmark passed");
+        }
+
+        private void RunOneClicked(object sender, RoutedEventArgs e)
+        {
+            Benchmark.RunOne();
             Rebind();
         }
 
         private void CbList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string sig = (string) cbList.SelectedValue;
-            RenderOneTransform(OneTransform.All[sig]);
-        }
 
-        private void RenderOneTransform(OneTransform one)
-        {
             EdgeCount.Clear();
             GraphViewer graphViewer = new GraphViewer();
             graphViewer.BindToPanel(ContentPanel);
             graphViewer.ObjectUnderMouseCursorChanged += GraphViewer_ObjectUnderMouseCursorChanged;
-            Graph graph = new Graph();            
+            Graph graph = new Graph();
 
-            RecursiveRender(one.Result, graph);
-            RecursiveRender(one.Src, graph);
-            RecursiveRender(one.ToCopy, graph);
-            RecursiveRender(one.ChangeRoot, graph);
-            RecursiveRender(one.ChangePartTo, graph);
-            RecursiveRender(one.ChangePartFrom, graph);
+            switch ((string)(cbOptions.SelectedValue))
+            {
+                case "Transform":
+                    RenderOneTransform(OneTransform.AllResult[sig], graph);
+                    break;
+                case "Proof":
+                    RenderOneProof();
+                    break;
+                default:
+                    break;
+            }
 
-            graph.AddEdge(one.ChangeRoot.Sig, one.Result.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Green;
-            graph.AddEdge(one.ChangeRoot.Sig, one.Src.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Red ;
-            graph.AddEdge(one.ChangeRoot.Sig, one.ToCopy.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Yellow;
-            graph.AddEdge(one.ChangeRoot.Sig, one.ChangePartTo.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Blue;
-            graph.AddEdge(one.ChangeRoot.Sig, one.ChangePartFrom.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Purple;
-
-            graph.Attr.LayerDirection = LayerDirection.LR;
             graphViewer.Graph = graph; // throws exception
+        }
+
+        private void RenderOneProof()
+        {
+            /// 
+        }
+        private void RenderOneTransform(OneTransform one, Graph graph)
+        {                
+            RecursiveRender(one.Result, graph);
+            RecursiveRender(one.TemplateSrc, graph);
+            RecursiveRender(one.TemplateTarget, graph);
+            RecursiveRender(one.Original, graph);
+            RecursiveRender(one.BranchInResult, graph);
+            RecursiveRender(one.BranchInOrigin, graph);
+
+            graph.AddEdge(one.Original.Sig, one.Result.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Green;
+            graph.AddEdge(one.Original.Sig, one.TemplateSrc.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Red ;
+            graph.AddEdge(one.Original.Sig, one.TemplateTarget.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Yellow;
+            graph.AddEdge(one.Original.Sig, one.BranchInResult.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Blue;
+            graph.AddEdge(one.Original.Sig, one.BranchInOrigin.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Purple;
+
+            graph.Attr.LayerDirection = LayerDirection.LR;            
         }
 
         private void GraphViewer_ObjectUnderMouseCursorChanged(object sender, ObjectUnderMouseCursorChangedEventArgs e)
@@ -131,5 +155,9 @@ namespace AutoSymbol
                 EdgeCount[combined] = 1;
             }
         }
+
+       
+
+       
     }
 }
