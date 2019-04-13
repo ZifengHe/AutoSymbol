@@ -25,6 +25,7 @@ namespace FrameByFrame
     /// </summary>
     public partial class MainWindow : Window
     {
+        Color SelectedColor;
         DataTable dt = new DataTable();
         public MainWindow()
         {
@@ -164,6 +165,20 @@ namespace FrameByFrame
             return dlg;
         }
 
+        private void CanvasMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var mouseWasDownOn = e.Source as FrameworkElement;
+            if (mouseWasDownOn is Line)
+            {
+                Line line = (Line)mouseWasDownOn;
+                line.Stroke = new SolidColorBrush(SelectedColor);
+            }
+        }
+
+        private void ClrPcker_Background_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
+        {
+            SelectedColor = ClrPcker_Background.SelectedColor.Value;
+        }
     }
 
     public static class Helper { 

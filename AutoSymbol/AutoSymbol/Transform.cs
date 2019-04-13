@@ -28,17 +28,34 @@ namespace AutoSymbol
         /// </summary>
         /// 
 
-        public OneTransform(bool isRoot, string sig)
+        public OneTransform(bool IsGenZero, string sig)
         {
-            if (isRoot)
+            if (IsGenZero)
             {
                 this.Gen = 0;
                 AllResult[sig] = this;
             }
-        }      
-        
-        public static OneTransform CreateNew(string original, string result)
+        }
+
+        public static void InitTransformGen0(OpChain start)
         {
+            OneTransform.AllResult.Clear();
+            OneTransform one = new OneTransform(true, start.Sig);
+
+            foreach (var s in Set.AllSets)
+            {
+                foreach (var pair in s.Value.KnownOps)
+                {
+                    OneTransform current = new OneTransform(true, pair.Key);
+                    current.Result = pair.Value;
+                    current.ResultSig = pair.Key;
+                }
+            }
+        }
+
+        public static OneTransform CreateNew(string original, string result)
+        {           
+
             if(AllResult.ContainsKey(original)== false || AllResult.ContainsKey(result) == true)
                 return null;
 

@@ -14,6 +14,8 @@ namespace AutoSymbol
 
         public const string Match = "Match";
 
+       
+
         public static StrToOp BuildERChainsForLevel(
             OpChain toChange,
             List<ER> multiER, 
@@ -69,9 +71,13 @@ namespace AutoSymbol
             {
                 dict[after.Sig] = after;
                 OneTransform one = OneTransform.CreateNew(chain.Sig, after.Sig);
-                one.Original = chain;
-                one.Result = after;
-                one.TransformType = TransformType.Shorten;
+
+                if (one != null)
+                {
+                    one.Original = chain;
+                    one.Result = after;
+                    one.TransformType = TransformType.Shorten;
+                }
             }
         }
 
@@ -158,17 +164,22 @@ namespace AutoSymbol
 
                 toChange = toResotre;
                 one = OneTransform.CreateNew(root.Sig, newRootResult.Sig);
-                one.ResultSig = newRootResult.Sig;
-                one.Original = root;
-                one.Result = newRootResult;
 
-                one.TransformType = TransformType.ERReplce;
-                one.BranchInOrigin = toChange;
-                
-                one.TemplateSrc = src;
-                one.TemplateTarget = toCopy;
-                one.BranchInResult = nodeResult;                
-                return newRootResult;
+                if (one != null)
+                {
+                    one.ResultSig = newRootResult.Sig;
+                    one.Original = root;
+                    one.Result = newRootResult;
+
+                    one.TransformType = TransformType.ERReplce;
+                    one.BranchInOrigin = toChange;
+
+                    one.TemplateSrc = src;
+                    one.TemplateTarget = toCopy;
+                    one.BranchInResult = nodeResult;
+                    return newRootResult;
+                }
+                return null;
             }
             else
                 return null;

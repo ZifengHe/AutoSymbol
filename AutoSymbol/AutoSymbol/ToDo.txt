@@ -1,4 +1,8 @@
-﻿
+﻿4/13/2019
+1. Initialization of basic transforms
+2. Signature needs to include Set
+3. Initial transform for N
+
 4/10/2019
 1. Allow UI to jump from node to node
 2. Introduce the concept of generation

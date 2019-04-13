@@ -1,3 +1,6 @@
-﻿4/10/2019
+﻿4/13/2019
+1. Universal ColorPicker
+
+4/10/2019
 1. Proper data structure to cache CSV data
 2. Fix the data binding issue and data retrieval issue

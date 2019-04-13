@@ -80,6 +80,7 @@ namespace AutoSymbol
                 foreach (var item in dict)
                 {
                     SigToShortName[item.Key] = i.ToString();
+                    KnownOps[item.Key] = item.Value;
                 }
             }
         }

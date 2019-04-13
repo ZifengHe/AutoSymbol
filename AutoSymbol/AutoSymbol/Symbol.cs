@@ -94,6 +94,7 @@ namespace AutoSymbol
         public SymStore<Member> ShortMemStore = new SymStore<Member>();
         public SymStore<ER> ERStore = new SymStore<ER>();
         public Dictionary<string, string> SigToShortName = new Dictionary<string, string>();
+        public StrToOp KnownOps = new StrToOp();
         public static Dictionary<string, Set> AllSets = new Dictionary<string, Set>();
 
 

@@ -48,7 +48,10 @@ namespace AutoSymbol
             Member x = new Member("x", n.ShortName);
             n.MemStore.Add(x);
             OpChain start = n.NPlus.CreateOpChain(n.MemStore["2"], n.NPlus.Operate(x, n.MemStore["3"]));
-            StrToOp dict = ER.BuildERChainsForLevel(start, n.ERStore.Values, maxLevel: 5, 20);
+
+            OneTransform.InitTransformGen0(start);
+            StrToOp dict = ER.BuildERChainsForLevel(start, n.ERStore.Values, 5, 20);
+
             UIData.AllItems = OneTransform.AllResult.Keys.ToList();
 
             bool found = false;

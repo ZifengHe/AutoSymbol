@@ -1,0 +1,54 @@
+﻿<Window x:Class="MyDailyReview.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MyDailyReview"
+        mc:Ignorable="d"
+        Title="MainWindow"  Closing="wndClosing" Width="650" WindowStartupLocation="Manual" 
+    Left="0" Top="0">
+    <Grid Margin="0,0,0,-140" >
+        <StackPanel Margin="10" HorizontalAlignment="Left">
+            <Label FontWeight="Bold" FontSize="35" Name="lblName" FontFamily="Kaiti">Questions Here</Label>
+            <CheckBox Checked="Pass_Checked" Name="cbPass" >
+                <CheckBox.LayoutTransform>
+                    <ScaleTransform ScaleX="3" ScaleY="3" />
+                </CheckBox.LayoutTransform>
+                Pass
+            </CheckBox>
+            <CheckBox  Click="FailClicked" Name="cbFail">
+                <CheckBox.LayoutTransform>
+                    <ScaleTransform ScaleX="3" ScaleY="3" />
+                </CheckBox.LayoutTransform>
+                Fail
+            </CheckBox>
+            <CheckBox  Click="SkipClicked" Name="cbSkip">
+                <CheckBox.LayoutTransform>
+                    <ScaleTransform ScaleX="3" ScaleY="3" />
+                </CheckBox.LayoutTransform>
+                Skip
+            </CheckBox>
+            <Button FontSize="20" Click="DoneClicked" Margin="20" Visibility="Hidden">Done For Today!</Button>
+            <Button FontSize="20" Click="StartClicked" Margin=" 20" Visibility="Hidden">Start</Button>
+            <StackPanel  Orientation="Horizontal" Margin="0,0,0,10">
+                <Label FontSize="15">Question :</Label>
+                <TextBox FontSize="15" Name="txtQuestion" FontFamily="Kaiti" Width="500"></TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                <Label FontSize="15">Answer :</Label>
+                <TextBox FontSize="15" FontFamily="Kaiti" Name="txtAnswer" Width="500" Margin="10,0,0,0"></TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal"  Margin="0,0,0,10">
+                <Label>Category :</Label>
+                <ComboBox Name="cbCategory" Width="300" Margin="12,0,0,0"></ComboBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Button FontSize="20" Click="AddNewClicked" Margin=" 20">Add</Button>
+                <Button FontSize="20" Click="UpdateClicked" Margin=" 20">Update</Button>
+                <Button FontSize="20" Click="ClearClicked" Margin=" 20">Clear</Button>
+                <Button FontSize="20" Click="RestartClicked" Margin=" 20">Restart</Button>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -95,6 +95,11 @@ namespace AutoSymbol
 
         public string PrintFull()
         {
+            return string.Format("{0}[{1}]", this.Operator.ResultSetName, RecursivePrint());
+        }
+
+        private string RecursivePrint()
+        {
             string final = null;
             for (int i = 0; i < 100; i++)
             {
