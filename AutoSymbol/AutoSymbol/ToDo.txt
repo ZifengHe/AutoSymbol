@@ -1,0 +1,16 @@
+﻿
+4/10/2019
+1. Allow UI to jump from node to node
+2. Introduce the concept of generation
+
+4/9/2019
+1. Complete one benchmark
+
+
+4/8/2019
+1. Implement at limit per generation idea
+
+4/4/2019
+1. Every shorten needs a Transform, which can solve the exception
+
+

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace AutoSymbol
 {
+    public class OpDict<T> : Dictionary<OpChain, T>
+    { }
     public class Operator : Symbol
     {
         public string ResultSetName;
@@ -42,6 +44,26 @@ namespace AutoSymbol
         {
         }
 
+        public OpChain MakeCopy()
+        {
+            OpChain ret = new OpChain();
+            ret.Operator = this.Operator;
+            ret.Operands = new Member[this.Operands.Length];
+
+            for(int i=0; i < this.Operands.Length; i++)
+            {
+                if (this.Operands[i] != null)
+                {
+                    ret.Operands[i] = new Member(this.Operands[i].ShortName,this.Operands[i].TargetSetName);
+                    //ret.Operands[i].LevelTwoName = this.Operands[i].LevelTwoName;
+                    if (this.Operands[i].FromChain != null)
+                        ret.Operands[i].FromChain = this.Operands[i].FromChain.MakeCopy();
+                }
+            }
+
+            return ret;
+        }
+
         public string Sig
         {
             get
@@ -67,7 +89,7 @@ namespace AutoSymbol
 
             Member mem = new Member(shortName, this.Operator.ResultSetName);
             mem.FromChain = this;
-            mem.LevelTwoName = PrintByDepth(2);
+            //mem.LevelTwoName = PrintByDepth(2);
             return mem;
         }
 

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AutoSymbol
 {
-    using OpDict = Dictionary<string, OpChain>;
+   // using StrToOp = Dictionary<string, OpChain>;
     public class Benchmark
     {
         public static void RunOne()
@@ -19,7 +19,8 @@ namespace AutoSymbol
         public static void RunAll()
         {
             Benchmark b = new Benchmark();
-            b.ProveTwoPlusThree();           
+            b.ProveTwoPlusThree();
+            b.ProveTwoPlusXPlusThree();
         }
 
         public void ProveComplementSetTheorem()
@@ -42,17 +43,19 @@ namespace AutoSymbol
         }
 
         public void ProveTwoPlusXPlusThree()
-        {
-            /// 1. N.SigToShortName for OpChain
-            /// 2. Visit all subChain that contains ShortName and 
-            /// 
+        {            
             N n = new N();
             Member x = new Member("x", n.ShortName);
             n.MemStore.Add(x);
             OpChain start = n.NPlus.CreateOpChain(n.MemStore["2"], n.NPlus.Operate(x, n.MemStore["3"]));
-            OpDict dict = ER.BuildERChainsForLevel(start, n.ERStore.Values, maxLevel: 5);
-            UIData.ItemMap = dict;
+            StrToOp dict = ER.BuildERChainsForLevel(start, n.ERStore.Values, maxLevel: 5, 20);
             UIData.AllItems = OneTransform.AllResult.Keys.ToList();
+
+            bool found = false;
+            foreach (var one in dict)
+                if (one.Key == "+([5][x])")
+                    found = true;
+            Assert(found, "Fail to find 5");
         }
         public void ProveTwoPlusThree()
         {
@@ -70,8 +73,8 @@ namespace AutoSymbol
             Trace.WriteLine(n.ERStore["NPlusAssoc"].Left.PrintFull());
             Trace.WriteLine(n.ERStore["NPlusAssoc"].Right.PrintFull());
 
-            OpDict dict = n.ERStore["NPlusAssoc"].BuildCompleteERChains(result);
-            UIData.ItemMap = dict;
+            StrToOp dict = n.ERStore["NPlusAssoc"].BuildCompleteERChains(result);
+           // UIData.ItemMap = dict;
             UIData.AllItems = OneTransform.AllResult.Keys.ToList();
 
             bool found = false;

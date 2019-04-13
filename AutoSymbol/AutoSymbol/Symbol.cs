@@ -71,7 +71,7 @@ namespace AutoSymbol
     {
         public string TargetSetName;
         public OpChain FromChain;
-        public string LevelTwoName;
+        //public string LevelTwoName;
         public Member(string shortName, string targetSetName) : base(shortName)
         {
             this.TargetSetName = targetSetName;

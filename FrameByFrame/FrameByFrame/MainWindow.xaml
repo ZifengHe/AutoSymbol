@@ -1,37 +1,34 @@
-﻿<Window x:Class="AutoSymbol.MainWindow"
+﻿<Window x:Class="FrameByFrame.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:AutoSymbol"
+        xmlns:local="clr-namespace:FrameByFrame"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <DockPanel LastChildFill="True">
         <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
             <ToolBarTray >
                 <ToolBar>
-                    <Button Content="RunOne"  Click="RunOneClicked"/>
-                    <Button Content="RunAll" Click="RunAllClicked"/>
-                    <Button Content="↑" Click="FirstClicked" />
-                    <Button Content="←" Click="BackwardClicked" />
-                    <Button Content="≡" Click="ShowListClicked" />                    
-                    <Button Content="→" Click="ForwardClicked" />
-                    <Button Content="↓" Click="LastClicked" />
-                    <TextBox x:Name="Sequence" Width="35"/>
-                    <ComboBox Width="500" Name="cbList" SelectionChanged="CbList_SelectionChanged" ></ComboBox>
-                    <ComboBox Width="100" Name="cbOptions"  SelectedIndex="0">
+                    <Button Content="Start" Click="StartClicked"/>
+                    <Button Content="Bg" Click="BackGroundClicked" />
+                    <Button Content="CSV" Click="CSVClicked" />
+                    <ComboBox Width="500" Name="cbList"></ComboBox>
+                    <ComboBox Width="100" Name="cbOptions" >
                         <ComboBoxItem>Transform</ComboBoxItem>
                         <ComboBoxItem>Proof</ComboBoxItem>
                     </ComboBox>
                 </ToolBar>
             </ToolBarTray>
-           
+
         </StackPanel>
         <StatusBar Name="statusbar" DockPanel.Dock="Bottom" >
             <StatusBarItem>
                 <TextBlock x:Name="MessageTextBlock"></TextBlock>
             </StatusBarItem>
         </StatusBar>
-        <DockPanel x:Name="ContentPanel"></DockPanel>
+        <Canvas x:Name="ContentPanel" Width="1200" Height="900">        
+        </Canvas>
+        <DataGrid Name="gridData" ItemsSource="{Binding}"></DataGrid>
     </DockPanel>
 </Window>

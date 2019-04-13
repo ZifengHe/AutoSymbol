@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace AutoSymbol
 {
-    using OpDict = Dictionary<string, OpChain>;
+    public class StrToOp : Dictionary<string, OpChain>
+    { }
 
     public enum TransformType
     {
@@ -20,10 +21,36 @@ namespace AutoSymbol
         public static Dictionary<string, OneTransform> AllResult = new Dictionary<string, OneTransform>();
         public static Dictionary<string, Dictionary<string, Member>> Keymaps = new Dictionary<string, Dictionary<string, Member>>();
 
+
         /// <summary>
         ///  Step 1 Use OpChain as key, not sig anymore.
         ///  Step 2 add a dictionary for all the shorten operations
         /// </summary>
+        /// 
+
+        public OneTransform(bool isRoot, string sig)
+        {
+            if (isRoot)
+            {
+                this.Gen = 0;
+                AllResult[sig] = this;
+            }
+        }      
+        
+        public static OneTransform CreateNew(string original, string result)
+        {
+            if(AllResult.ContainsKey(original)== false || AllResult.ContainsKey(result) == true)
+                return null;
+
+            OneTransform ret = new OneTransform(false, result);
+            ret.Gen = AllResult[original].Gen + 1;
+            AllResult[result] = ret;
+
+            return ret;
+        }
+
+        public int Gen = -1;
+
         public OpChain TemplateSrc;
         public OpChain TemplateTarget;
         public OpChain Original;

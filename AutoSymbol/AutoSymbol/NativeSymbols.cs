@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace AutoSymbol
 {
-    using OpDict = Dictionary<string, OpChain>;
     public class N : Set
     {
         public Operator NPlus;
@@ -77,7 +76,7 @@ namespace AutoSymbol
                 shortOne.FromChain = null;
                 this.ShortMemStore.Add(shortOne);
 
-                OpDict dict = this.ERStore["NPlusAssoc"].BuildCompleteERChains(lastOne.FromChain);
+                StrToOp dict = this.ERStore["NPlusAssoc"].BuildCompleteERChains(lastOne.FromChain);
                 foreach (var item in dict)
                 {
                     SigToShortName[item.Key] = i.ToString();

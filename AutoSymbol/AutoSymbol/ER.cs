@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace AutoSymbol
 {
-    using OpDict = Dictionary<string, OpChain>;
     public class ER : Symbol
     {
         public OpChain Left;
@@ -15,16 +14,20 @@ namespace AutoSymbol
 
         public const string Match = "Match";
 
-        public static OpDict BuildERChainsForLevel(OpChain toChange, List<ER> multiER, int maxLevel)
+        public static StrToOp BuildERChainsForLevel(
+            OpChain toChange,
+            List<ER> multiER, 
+            int maxLevel,
+            int maxSizePerGen)
         {
-            OpDict[] dict = new OpDict[maxLevel + 1];
-            OpDict total = new OpDict();
-            dict[0] = new OpDict();
+            StrToOp[] dict = new StrToOp[maxLevel + 1];
+            StrToOp total = new StrToOp();
+            dict[0] = new StrToOp();
             dict[0][toChange.Sig] = toChange;
             total[toChange.Sig] = toChange;
             for (int i = 0; i < maxLevel; i++)
             {
-                dict[i + 1] = new OpDict();
+                dict[i + 1] = new StrToOp();
                 foreach (var item in dict[i])
                 {
                     foreach (var er in multiER)
@@ -36,6 +39,14 @@ namespace AutoSymbol
                     {
                         ShortenOneChain(dict[i + 1][str], dict[i + 1]);
                     }
+
+                    StrToOp limited = new StrToOp();
+
+                    foreach(var one in dict[i + 1].OrderBy(x => x.Key.Length).Take(maxSizePerGen))
+                    {
+                        limited[one.Key] = one.Value;
+                    }
+                    dict[i + 1] = limited;
                 }
 
                 foreach (var item in dict[i + 1])
@@ -47,23 +58,26 @@ namespace AutoSymbol
             return total;
         }
 
-        public static void ShortenOneChain(OpChain chain, OpDict dict)
+        public static void ShortenOneChain(OpChain chain, StrToOp dict)
         {
-            string sigBefore = chain.Sig;
-            RecursiveShorten(chain);
-            string sigAfter = chain.Sig;
+           // OneTransform one = new OneTransform();
+            //OpChain after = chain.Copy<OpChain>();      
+            OpChain after = chain.MakeCopy();
+            RecursiveShorten(after);
 
-            if (sigAfter != sigBefore)
+            if(chain.Sig != after.Sig)
             {
-                dict.Remove(sigBefore);
-                dict[sigAfter] = chain;
-                OneTransform.AllResult[sigAfter] = OneTransform.AllResult[sigBefore];
-                OneTransform.AllResult.Remove(sigBefore);
+                dict[after.Sig] = after;
+                OneTransform one = OneTransform.CreateNew(chain.Sig, after.Sig);
+                one.Original = chain;
+                one.Result = after;
+                one.TransformType = TransformType.Shorten;
             }
         }
 
         private static void RecursiveShorten(OpChain chain)
-        {
+        {          
+
             for (int i = 0; i < chain.Operands.Length; i++)
             {
                 Member current = chain.Operands[i];
@@ -81,22 +95,22 @@ namespace AutoSymbol
                 }
             }
         }
-        public void BuildERChainAtAllBranchOnce(OpDict dict, OpChain toChange)
+        public void BuildERChainAtAllBranchOnce(StrToOp dict, OpChain toChange)
         {
             RecursiveAddEquivalentChain(false, this.Left, this.Right, toChange, ref toChange, dict);
             RecursiveAddEquivalentChain(false, this.Right, this.Left, toChange, ref toChange, dict);
         }
 
-        public OpDict BuildCompleteERChains(OpChain toChange)
+        public StrToOp BuildCompleteERChains(OpChain toChange)
         {
-            OpDict dict = new OpDict();
+            StrToOp dict = new StrToOp();
             dict[toChange.Sig] = toChange;
             RecursiveAddEquivalentChain(true, this.Left, this.Right, toChange, ref toChange, dict);
             RecursiveAddEquivalentChain(true, this.Right, this.Left, toChange, ref toChange, dict);
             return dict;
         }
 
-        private void RecursiveAddEquivalentChain(bool continueWithResult, OpChain src, OpChain toCopy, OpChain root, ref OpChain toChange, OpDict dict)
+        private void RecursiveAddEquivalentChain(bool continueWithResult, OpChain src, OpChain toCopy, OpChain root, ref OpChain toChange, StrToOp dict)
         {
             for (int i = 0; i < toChange.Operands.Length; i++)
                 if (toChange.Operands[i].FromChain != null)
@@ -123,38 +137,39 @@ namespace AutoSymbol
 
         public static OpChain TransformOneNodeInChain(OpChain src, OpChain toCopy, OpChain root, ref OpChain toChange)
         {
-            OpChain result = TransformOneRoot(src, toCopy, toChange);
-            OneTransform one = new OneTransform();
+            OpChain nodeResult = TransformOneRoot(src, toCopy, toChange);
+         //   OneTransform one = new OneTransform();
 
-            if (result != null)
+            if (nodeResult != null)
             {
-                one.TransformType = TransformType.ERReplce;
-                one.BranchInOrigin = toChange;
                 OpChain toResotre = toChange;
-                toChange = result;
-                one.TemplateSrc = src;
-                one.TemplateTarget = toCopy;
-                one.BranchInResult = result;
-
-
+                toChange = nodeResult;
+                OneTransform one;
+                OpChain newRootResult;
                 if (toResotre != root)
                 {
-                    one.Result = root.Copy<OpChain>();      // This one is patched with result
-                    one.ResultSig = root.PrintFull();
+                     newRootResult= root.Copy<OpChain>();
+                   
                 }
                 else
                 {
-                    one.Result = result;
-                    one.ResultSig = one.Result.Sig;
+                    newRootResult = nodeResult;
                 }
-                // Now fix the root to its original branch
+
                 toChange = toResotre;
+                one = OneTransform.CreateNew(root.Sig, newRootResult.Sig);
+                one.ResultSig = newRootResult.Sig;
                 one.Original = root;
+                one.Result = newRootResult;
 
-                OneTransform.AllResult[one.ResultSig] = one;
-                return one.Result;
+                one.TransformType = TransformType.ERReplce;
+                one.BranchInOrigin = toChange;
+                
+                one.TemplateSrc = src;
+                one.TemplateTarget = toCopy;
+                one.BranchInResult = nodeResult;                
+                return newRootResult;
             }
-
             else
                 return null;
         }
