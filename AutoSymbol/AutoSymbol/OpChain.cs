@@ -11,11 +11,17 @@ namespace AutoSymbol
     public class Operator : Symbol
     {
         public string ResultSetName;
+        public string FirstInputSetName;
+        public string SecondInputSetName;
         public Operator(string name, Set targetSet) : base(name)
         {
             ResultSetName = targetSet.ShortName;
+            FirstInputSetName = ResultSetName;
+            SecondInputSetName = ResultSetName;
         }
 
+        public Operator(string name, Set targetSet, Set firstInput, Set secondInput) : base(name)
+        { }
         public Member Operate(params Member[] mems)
         {
             OpChain chain = new OpChain();
