@@ -35,6 +35,11 @@ namespace MyDailyReview
         int current = 0;
         public MainWindow()
         {
+            if (File.Exists(fileName) == false)
+            {
+                fileName = @"C:\Users\zifeng\OneDrive\DailyReview\ContentOne.txt";
+                backupFile = @"C:\Users\zifeng\OneDrive\DailyReview\ContentOneBackup.txt";
+            }
             InitializeComponent();
             StartClicked(null, null);
         }
