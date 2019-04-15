@@ -85,6 +85,19 @@ namespace FrameByFrame
             }
 
 
+            Image cnImg = new Image
+            {
+                Width = 60,
+                Height = 30,
+                Name = "cn",
+                Source = new BitmapImage(new Uri(@"file://C:\Users\zifengh\source\repos\ZifengHe\AutoSymbol\FrameByFrame\Flags\cn.png")),
+            };
+
+            ContentPanel.Children.Add(cnImg);
+            Canvas.SetTop(cnImg, 300);
+            Canvas.SetLeft(cnImg, 500);
+
+
 
             Transform transform = ContentPanel.LayoutTransform;
             ContentPanel.LayoutTransform = null;
