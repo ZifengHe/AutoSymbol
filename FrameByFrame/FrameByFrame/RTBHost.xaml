@@ -1,0 +1,25 @@
+﻿<Window x:Class="FrameByFrame.RTBHost"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FrameByFrame"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        mc:Ignorable="d"
+        Title="RTBHost" Height="450" Width="800">
+    <StackPanel Name="gridHost" Orientation="Vertical" HorizontalAlignment="Left">
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Margin="5">Title </TextBlock>
+            <TextBox Name="txtTitle" Width="300" Margin="10"></TextBox>
+        </StackPanel>
+        <!--<Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="6*"/>
+        </Grid.ColumnDefinitions>-->
+        <xctk:RichTextBox Name="rtbItem" Width="456" Height="50" >
+            <xctk:RichTextBoxFormatBarManager.FormatBar>
+                <xctk:RichTextBoxFormatBar />
+            </xctk:RichTextBoxFormatBarManager.FormatBar>
+        </xctk:RichTextBox>
+    </StackPanel>
+</Window>

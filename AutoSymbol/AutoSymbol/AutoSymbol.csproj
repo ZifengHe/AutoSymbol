@@ -69,11 +69,15 @@
     <Compile Include="Benchmark.cs" />
     <Compile Include="Draft.cs" />
     <Compile Include="ER.cs" />
+    <Compile Include="Hunch.cs" />
+    <Compile Include="ManualScenario.cs" />
     <Compile Include="NativeSymbols.cs" />
     <Compile Include="OpChain.cs" />
+    <Compile Include="Optimizer.cs" />
     <Compile Include="Symbol.cs" />
     <Compile Include="Transform.cs" />
     <Compile Include="Util.cs" />
+    <Compile Include="WndManualBuild.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -116,6 +120,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="ToDo.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Algorithm.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -28,7 +28,7 @@ namespace AutoSymbol
             chain.Operator = this;
             chain.Operands = mems;
 
-            return chain.CreateMember("NotSet");
+            return chain.CreateMember("NotSet", true);
         }
         public OpChain CreateOpChain(params Member[] mems)
         {
@@ -40,11 +40,11 @@ namespace AutoSymbol
         }
     }
 
-
     public class OpChain
     {
         public Operator Operator;
         public Member[] Operands;
+        private string sig = null;
 
         public OpChain() : base()
         {
@@ -60,22 +60,82 @@ namespace AutoSymbol
             {
                 if (this.Operands[i] != null)
                 {
-                    ret.Operands[i] = new Member(this.Operands[i].ShortName,this.Operands[i].TargetSetName);
+                    ret.Operands[i] = new Member(this.Operands[i].ShortName,
+                        this.Operands[i].TargetSetName,
+                        this.Operands[i].IsVariable);
                     //ret.Operands[i].LevelTwoName = this.Operands[i].LevelTwoName;
                     if (this.Operands[i].FromChain != null)
                         ret.Operands[i].FromChain = this.Operands[i].FromChain.MakeCopy();
                 }
             }
 
+            ret.sig = null;
             return ret;
+        }
+
+        public static void InvalidateAllSignature(OpChain chain)
+        {
+            chain.sig = null;
+
+            foreach(var one in chain.Operands)
+            {
+                if (one.FromChain != null)
+                    InvalidateAllSignature(one.FromChain);
+            }
         }
 
         public string Sig
         {
             get
             {
-                return PrintFull();
+              //  d.BreakOnCondition(sig != null && sig != NormalSig);
+
+                if (sig == null)
+                    sig = NormalSig;
+
+                return sig;
+                //return PrintFull();
+                //return NormalSig;
             }
+        }
+
+        public string NormalSig
+        {
+            get
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("{0}[", this.Operator.ResultSetName);
+                RecursiveLeftChildFirstPrint(this,sb);
+                sb.Append("]");
+                return sb.ToString();
+            }
+        }
+
+        public void RecursiveLeftChildFirstPrint(OpChain chain, StringBuilder sb)
+        {
+            sb.Append("(");
+            for (int i = 0; i < chain.Operands.Length; i++)
+            {
+                if (chain.Operands[i].FromChain == null)
+                {
+                    sb.Append(chain.Operands[i].ShortName);
+                }
+                else
+                {
+                    RecursiveLeftChildFirstPrint(chain.Operands[i].FromChain, sb);
+                }
+                if (i != chain.Operands.Length -1)
+                    sb.Append(chain.Operator.ShortName);
+            }
+            sb.Append(")");
+        }
+
+        public void RecursiveCalculateBeautyIndex(OpChain chain, BeautyDef def)
+        {
+            /// Pure number is a plus
+            /// Left is low is a plus
+            /// Total Length is a plus
+            /// Operator weight at different level
         }
 
         public List<OpChain> GetAllChildren()
@@ -88,18 +148,18 @@ namespace AutoSymbol
             return list;
         }
 
-        public Member CreateMember(string shortName)
+        public Member CreateMember(string shortName, bool isVar)
         {
             if (Operator == null || Operands.Length == 0)
                 throw new ApplicationException();
 
-            Member mem = new Member(shortName, this.Operator.ResultSetName);
+            Member mem = new Member(shortName, this.Operator.ResultSetName, isVar);
             mem.FromChain = this;
             //mem.LevelTwoName = PrintByDepth(2);
             return mem;
         }
 
-        public string PrintFull()
+        private string PrintFull()
         {
             return string.Format("{0}[{1}]", this.Operator.ResultSetName, RecursivePrint());
         }

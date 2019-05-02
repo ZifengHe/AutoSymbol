@@ -4,12 +4,37 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
+using System.Diagnostics;
 
 
 
 namespace System
 {
+    using AutoSymbol;
     using System.ArrayExtensions;
+
+    public static class d
+    {
+        public static void BreakOnCondition(bool b)
+        {
+            if (b)
+                Debugger.Break();
+        }
+        public static void BreakOnSequence(int num)
+        {
+            if (OneTransform.GlobalSequenceNum >= num)
+                Debugger.Break();
+        }
+        public static void Info(string msg)
+        {
+            Trace.WriteLine(msg);
+        }
+
+        public static void Info(string format, params string[] args)
+        {
+            Trace.WriteLine(string.Format(format, args));
+        }
+    }
 
     public static class ObjectExtensions
     {

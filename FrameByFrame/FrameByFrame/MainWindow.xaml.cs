@@ -17,51 +17,206 @@ using Microsoft.Win32;
 using Microsoft.VisualBasic.FileIO;
 using System.Data;
 using System.Windows.Controls.Primitives;
+using Xceed.Wpf.Toolkit;
+using RichTextBox = Xceed.Wpf.Toolkit.RichTextBox;
+using Path = System.IO.Path;
+using System.Xml.Serialization;
+using System.Windows.Markup;
 
 namespace FrameByFrame
 {
+    
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        Color SelectedColor;
-        DataTable dt = new DataTable();
+
+        private static Random Rand = new Random();
+        private string RootFolder;
+        private Dictionary<string, CountryCodeMapping> CountryDict = new Dictionary<string, CountryCodeMapping>();
+        private Dictionary<RichTextBox, string> rtcMapping = new Dictionary<RichTextBox, string>();
+        ProjData MyProj = new ProjData();
+        string CurrentProj;
         public MainWindow()
         {
             InitializeComponent();
-        }
-
-        void SaveToBmp(FrameworkElement visual, string fileName)
+            FindRootFolder();
+            LoadCountryCode();
+            CurrentProj = Path.Combine(RootFolder, @"FrameByFrame\Proj\Current.xml");   
+            ProjData.TempFile = Path.Combine(RootFolder, @"FrameByFrame\Proj\temp.csv");
+        }  
+        
+        void FindRootFolder()
         {
-            var encoder = new BmpBitmapEncoder();
-            SaveUsingEncoder(visual, fileName, encoder);
+            if (Directory.Exists(@"C:\Users\zifengh\Source\Repos\ZifengHe\AutoSymbol"))
+                RootFolder = @"C:\Users\zifengh\Source\Repos\ZifengHe\AutoSymbol";
         }
-
-        void SaveToPng(FrameworkElement visual, string fileName)
+       
+        private void ProcessOneFrame(int index)
         {
-            var encoder = new PngBitmapEncoder();
-            SaveUsingEncoder(visual, fileName, encoder);
-        }
+            char[] sep = new char[] { ' ' };
+            //string timeStr = Header[index].Split(sep)[0];
 
-        // and so on for other encoders (if you want)
-
-
-        void SaveUsingEncoder(FrameworkElement visual, string fileName, BitmapEncoder encoder)
+        }      
+     
+        private void CSVClicked(object sender, RoutedEventArgs e)
         {
-            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)visual.ActualWidth, (int)visual.ActualHeight, 96, 96, PixelFormats.Pbgra32);
-            bitmap.Render(visual);
-            BitmapFrame frame = BitmapFrame.Create(bitmap);
-            encoder.Frames.Add(frame);
+            OpenFileDialog dlg = OpenFile("*.csv", "CSV Files (*.csv)|*.csv");
 
-            using (var stream = File.Create(fileName))
+            MyProj.CSVContent = File.ReadAllText(dlg.FileName);
+            MyProj.ProcessCSVFile();      
+
+            cbConfig.Items.Clear();
+            foreach(var one in MyProj.Rows)
             {
-                encoder.Save(stream);
+                cbConfig.Items.Add(one.Id());
             }
         }
 
+        private void RowLineColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
+        {
+            MyProj.GetRow((string)cbConfig.SelectedValue).LineColor = RowLineColor.SelectedColor.Value;
+            RefreshView();
+        }
+
+        private void RowTextColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
+        {
+            MyProj.GetRow((string)cbConfig.SelectedValue).TextColor = RowTextColor.SelectedColor.Value;
+            RefreshView();
+        }
+        
+
+      //  Dictionary<string, UIElement> Created = new Dictionary<string, UIElement>();
+        private void AddRtbClicked(object sender, RoutedEventArgs e)
+        {
+            RTBHost host = new RTBHost();
+            host.ShowDialog();
+
+            RichTextConfig rtc = new RichTextConfig();
+            rtc.Title = host.txtTitle.Text;
+            MyProj.RichTexts.Add(rtc);            
+                     
+            cbEdit.Items.Add(rtc.GetKey());
+            host.gridHost.Children.Remove(host.rtbItem);            
+            MainCanvas.Children.Add(host.rtbItem);
+            rtcMapping[host.rtbItem]=rtc.Title;
+
+            // SyncData();
+            //RefreshCanvas();
+        }
+
+     
+
+        //private void SyncClicked(object sender, RoutedEventArgs e)
+        //{
+        //    CavasToData();
+        //    DataToCanvas();
+        //}
+
+       
+        private void RowChanged(object sender, SelectionChangedEventArgs e)
+        {            
+        }
+
+
+        private void DeleteItemClicked(object sender, RoutedEventArgs e)
+        {
+            if (cbEdit.SelectedValue != null)
+            {
+                RichTextBox toDelete = null;
+                foreach (FrameworkElement fe in MainCanvas.Children)
+                {
+                    if (fe is RichTextBox)
+                    {
+                        if (rtcMapping[(RichTextBox)fe] == (string)cbEdit.SelectedValue)
+                        {
+                            toDelete = (RichTextBox)fe;
+                            cbEdit.Items.Remove(rtcMapping[toDelete]);
+                        }
+                    }
+                }
+                if (toDelete != null)
+                {
+                    MainCanvas.Children.Remove(toDelete);
+                    rtcMapping.Remove(toDelete);
+                }
+            }
+
+        }
+
+        private void EditItemClicked(object sender, RoutedEventArgs e)
+        {
+            if (cbEdit.SelectedValue != null)
+            {
+                RichTextBox toEdit = null;
+                foreach (FrameworkElement fe in MainCanvas.Children)
+                {
+                    if (fe is RichTextBox)
+                    {
+                        if (rtcMapping[(RichTextBox)fe] == (string)cbEdit.SelectedValue)
+                        {
+                            toEdit = (RichTextBox)fe;
+                            RichTextConfig rtc = MyProj.GetRTC((string)cbEdit.SelectedValue);
+
+                            RTBHost host = new RTBHost();
+                            host.txtTitle.Text = rtc.Title;
+                            MainCanvas.Children.Remove(toEdit);
+                            host.rtbItem = toEdit;
+                            host.ShowDialog();
+                            host.gridHost.Children.Remove(host.rtbItem);
+                            MainCanvas.Children.Add(host.rtbItem);
+                            rtcMapping[host.rtbItem] = rtc.Title;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void EditItemChanged(object sender, SelectionChangedEventArgs e)
+        {
+            
+        }
+       
+
+        private void RefreshClicked(object sender, RoutedEventArgs e)
+        {
+            //DataToCanvas();
+            //RefreshView();
+        }
+
+        
+
+        private void FirstFrameClicked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        
+
+        private void ConfigureFirstFrame()
+        {
+            /// Methodology
+            /// Step 1. Show 1st Frame
+            /// Step 2. Click text to configure,  link Config->CountryCode
+            /// Step 3. Redrasw 1s Frame
+            /// Step 4. CountryCode will be invisible in all frame mode
+
+        }
         private void StartClicked(object sender, RoutedEventArgs e)
         {
+            if (MyProj.Header == null || MyProj.Header.Length < 4)
+            {
+                System.Windows.MessageBox.Show("Forgot to load CSV?");
+                return;
+            }
+
+            for (int i = 4; i < MyProj.Header.Length; i++)
+            {
+                ProcessOneFrame(i);
+            }
+
+
             string cs = "abcdefghigjdfsdfsfds";
             for (int i = 1; i < 8; i++)
             {
@@ -71,7 +226,7 @@ namespace FrameByFrame
                 tb.Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 0, 255));
                 Canvas.SetRight(tb, 600);
                 Canvas.SetTop(tb, 100 + i * 20);
-                ContentPanel.Children.Add(tb);
+                MainCanvas.Children.Add(tb);
 
                 Line line = new Line();
                 line.Stroke = Brushes.AliceBlue;
@@ -81,30 +236,29 @@ namespace FrameByFrame
                 line.Y1 = 100 + i * 20;
                 line.Y2 = 100 + i * 20;
 
-                ContentPanel.Children.Add(line);
+                MainCanvas.Children.Add(line);
             }
-
 
             Image cnImg = new Image
             {
                 Width = 60,
-                Height = 30,
+                Height = 45,
                 Name = "cn",
                 Source = new BitmapImage(new Uri(@"file://C:\Users\zifengh\source\repos\ZifengHe\AutoSymbol\FrameByFrame\Flags\cn.png")),
             };
 
-            ContentPanel.Children.Add(cnImg);
+            MainCanvas.Children.Add(cnImg);
             Canvas.SetTop(cnImg, 300);
             Canvas.SetLeft(cnImg, 500);
 
 
 
-            Transform transform = ContentPanel.LayoutTransform;
-            ContentPanel.LayoutTransform = null;
-            Size size = new Size(ContentPanel.Width, ContentPanel.Height);
-            ContentPanel.Measure(size);
-            ContentPanel.Arrange(new Rect(size));
-            SaveToPng(ContentPanel, @"c:\temp\1.png");
+            Transform transform = MainCanvas.LayoutTransform;
+            MainCanvas.LayoutTransform = null;
+            Size size = new Size(MainCanvas.Width, MainCanvas.Height);
+            MainCanvas.Measure(size);
+            MainCanvas.Arrange(new Rect(size));
+            Helper.SaveToPng(MainCanvas, @"c:\temp\1.png");
         }
 
         private void BackGroundClicked(object sender, RoutedEventArgs e)
@@ -115,16 +269,13 @@ namespace FrameByFrame
 
             ImageBrush myBrush = new ImageBrush();
             myBrush.ImageSource = new BitmapImage(new Uri(@"file://" + dlg.FileName));
-            ContentPanel.Background = myBrush;
+            MainCanvas.Background = myBrush;
         }
 
-
-        private void CSVClicked(object sender, RoutedEventArgs e)
+        private void LoadCountryCode()
         {
-            OpenFileDialog dlg = OpenFile("*.csv", "CSV Files (*.csv)|*.csv");
-            dt.Clear();
-
-            using (TextFieldParser parser = new TextFieldParser(dlg.FileName))
+            string fileName = RootFolder + @"\FrameByFrame\Master\CountryCode.csv";
+            using (TextFieldParser parser = new TextFieldParser(fileName))
             {
                 parser.TextFieldType = FieldType.Delimited;
                 parser.SetDelimiters(",");
@@ -133,38 +284,19 @@ namespace FrameByFrame
 
                 while (!parser.EndOfData)
                 {
-                    //Processing row
                     string[] fields = parser.ReadFields();
-                    //for (int i = 0; i < fields.Length; i++)
-                    //    fields[i] = ":" + fields[i];
-
-                    // get the column headers
                     if (firstLine)
                     {
-                        foreach (var val in fields)
-                        {
-                            dt.Columns.Add(val);
-                        }
-
                         firstLine = false;
-
                         continue;
                     }
-
-
-                    // get the row data
-                    dt.Rows.Add(fields);
+                    CountryCodeMapping m = new CountryCodeMapping();
+                    m.Name = fields[0];
+                    m.ShortCode = fields[1];
+                    m.LongCode = fields[2];
+                    CountryDict[m.LongCode] = m;
                 }
             }
-
-            gridData.ItemsSource = dt.DefaultView;
-            //gridData.DataContext = dt;
-            ContentPanel.Visibility = Visibility.Collapsed;
-
-            for (int i = 0; i < dt.Rows.Count; i++)
-                for (int j = 0; j < dt.Rows[i].ItemArray.Count(); j++)
-                    gridData.GetCell(i, j).Content = (string)dt.Rows[i].ItemArray[j];
-
         }
 
         private OpenFileDialog OpenFile(string ext, string filter)
@@ -174,86 +306,64 @@ namespace FrameByFrame
             dlg.Filter = filter;
             Nullable<bool> result = dlg.ShowDialog();
             if (result != true)
-                throw new ApplicationException("Fail to open file");
+                return null;
             return dlg;
         }
 
-        private void CanvasMouseDown(object sender, MouseButtonEventArgs e)
+        private SaveFileDialog SaveXmlFile()
         {
-            var mouseWasDownOn = e.Source as FrameworkElement;
-            if (mouseWasDownOn is Line)
-            {
-                Line line = (Line)mouseWasDownOn;
-                line.Stroke = new SolidColorBrush(SelectedColor);
-            }
+            SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+            dlg.FileName = "Name"; // Default file name
+            dlg.DefaultExt = ".xml"; // Default file extension
+            dlg.Filter = "Xml documents (.xml)|*.xml"; // Filter files by extension
+
+            // Show save file dialog box
+            dlg.ShowDialog();
+            return dlg;
         }
 
-        private void ClrPcker_Background_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
+        private void RowNumberChanged(object sender, SelectionChangedEventArgs e)
         {
-            SelectedColor = ClrPcker_Background.SelectedColor.Value;
+            ComboBoxItem item = (ComboBoxItem)cbRowNumber.SelectedItem;
+            MyProj.GetRow((string)cbConfig.SelectedValue).RowNumber = int.Parse((string)(item.Content));
+            RefreshView();
         }
-    }
 
-    public static class Helper { 
-        public static T GetVisualChild<T>(Visual parent) where T : Visual
+
+        public void CavasToData()
         {
-            T child = default(T);
-            int numVisuals = VisualTreeHelper.GetChildrenCount(parent);
-            for (int i = 0; i < numVisuals; i++)
+            foreach (FrameworkElement fe in MainCanvas.Children)
             {
-                Visual v = (Visual)VisualTreeHelper.GetChild(parent, i);
-                child = v as T;
-                if (child == null)
+                if (fe is RichTextBox)
                 {
-                    child = GetVisualChild<T>(v);
+                    RichTextBox item = (RichTextBox)fe;
+                    //RichTextConfig one = RichTextConfig.RTCDict[item.Text];
+                    RichTextConfig one = MyProj.GetRTC(rtcMapping[item]);
+
+                    //one.Width = item.Width;
+                    //one.Height = item.Height;
+                    // one.RenderTransform = item.RenderTransform;
+                    //one.RenderTransformOrigin = item.RenderTransformOrigin;
+                    one.xamlStr = XamlWriter.Save(item);
                 }
-                if (child != null)
-                {
-                    break;
-                }
-            }
-            return child;
+            }            
         }
 
-        public static DataGridRow GetSelectedRow(this DataGrid grid)
+
+        private void SaveProjectClicked(object sender, RoutedEventArgs e)
         {
-            return (DataGridRow)grid.ItemContainerGenerator.ContainerFromItem(grid.SelectedItem);
-        }
-        public static DataGridRow GetRow(this DataGrid grid, int index)
-        {
-            DataGridRow row = (DataGridRow)grid.ItemContainerGenerator.ContainerFromIndex(index);
-            if (row == null)
-            {
-                // May be virtualized, bring into view and try again.
-                grid.UpdateLayout();
-                grid.ScrollIntoView(grid.Items[index]);
-                row = (DataGridRow)grid.ItemContainerGenerator.ContainerFromIndex(index);
-            }
-            return row;
+            CavasToData();
+            SaveFileDialog dlg = SaveXmlFile();
+            CurrentProj = dlg.FileName;
+            ObjectManager.ToXmlFile<ProjData>(CurrentProj, MyProj);
         }
 
-        public static DataGridCell GetCell(this DataGrid grid, DataGridRow row, int column)
+        private void LoadProjClicked(object sender, RoutedEventArgs e)
         {
-            if (row != null)
-            {
-                DataGridCellsPresenter presenter = GetVisualChild<DataGridCellsPresenter>(row);
-
-                if (presenter == null)
-                {
-                    grid.ScrollIntoView(row, grid.Columns[column]);
-                    presenter = GetVisualChild<DataGridCellsPresenter>(row);
-                }
-
-                DataGridCell cell = (DataGridCell)presenter.ItemContainerGenerator.ContainerFromIndex(column);
-                return cell;
-            }
-            return null;
-        }
-
-        public static DataGridCell GetCell(this DataGrid grid, int row, int column)
-        {
-            DataGridRow rowContainer = grid.GetRow(row);
-            return grid.GetCell(rowContainer, column);
+            OpenFileDialog dlg = OpenFile("*.xml", "XML Files (*.xml)|*.xml");
+            
+            MyProj = ObjectManager.FromXml<ProjData>(dlg.FileName);
+            RefreshView();           
         }
     }
 }

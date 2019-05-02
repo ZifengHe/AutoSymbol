@@ -10,11 +10,16 @@ namespace AutoSymbol
     {
         public OpChain Left;
         public OpChain Right;
-        public HashSet<string> Names = new HashSet<string>();
+        public string Name;
 
         public const string Match = "Match";
 
-       
+        private static HashSet<string> TriedBefore = new HashSet<string>();
+
+        public override string ToString()
+        {
+            return string.Format("{0}={1}", Left.Sig, Right.Sig);
+        }
 
         public static StrToOp BuildERChainsForLevel(
             OpChain toChange,
@@ -22,6 +27,8 @@ namespace AutoSymbol
             int maxLevel,
             int maxSizePerGen)
         {
+            TriedBefore.Clear();
+
             StrToOp[] dict = new StrToOp[maxLevel + 1];
             StrToOp total = new StrToOp();
             dict[0] = new StrToOp();
@@ -33,23 +40,22 @@ namespace AutoSymbol
                 foreach (var item in dict[i])
                 {
                     foreach (var er in multiER)
-                    {
+                    {                      
                         er.BuildERChainAtAllBranchOnce(dict[i + 1], item.Value);
                     }
                     List<string> keys = dict[i + 1].Keys.ToList();
                     foreach (var str in keys)
                     {
                         ShortenOneChain(dict[i + 1][str], dict[i + 1]);
-                    }
-
-                    StrToOp limited = new StrToOp();
-
-                    foreach(var one in dict[i + 1].OrderBy(x => x.Key.Length).Take(maxSizePerGen))
-                    {
-                        limited[one.Key] = one.Value;
-                    }
-                    dict[i + 1] = limited;
+                    }                   
                 }
+
+                StrToOp limited = new StrToOp();
+                foreach (var one in dict[i + 1].OrderBy(x => x.Key.Length).Take(maxSizePerGen))
+                {
+                    limited[one.Key] = one.Value;
+                }
+                dict[i + 1] = limited;
 
                 foreach (var item in dict[i + 1])
                 {
@@ -66,11 +72,12 @@ namespace AutoSymbol
             //OpChain after = chain.Copy<OpChain>();      
             OpChain after = chain.MakeCopy();
             RecursiveShorten(after);
+            OpChain.InvalidateAllSignature(after);
 
             if(chain.Sig != after.Sig)
             {
                 dict[after.Sig] = after;
-                OneTransform one = OneTransform.CreateNew(chain.Sig, after.Sig);
+                OneTransform one = OneTransform.CreateNew(chain.Sig, after.Sig, "Shorten");
 
                 if (one != null)
                 {
@@ -83,7 +90,6 @@ namespace AutoSymbol
 
         private static void RecursiveShorten(OpChain chain)
         {          
-
             for (int i = 0; i < chain.Operands.Length; i++)
             {
                 Member current = chain.Operands[i];
@@ -109,26 +115,40 @@ namespace AutoSymbol
 
         public StrToOp BuildCompleteERChains(OpChain toChange)
         {
+            TriedBefore.Clear();
             StrToOp dict = new StrToOp();
             dict[toChange.Sig] = toChange;
-            RecursiveAddEquivalentChain(true, this.Left, this.Right, toChange, ref toChange, dict);
-            RecursiveAddEquivalentChain(true, this.Right, this.Left, toChange, ref toChange, dict);
+            OpChain toChangeClone = toChange.MakeCopy();
+            RecursiveAddEquivalentChain(true, this.Left, this.Right, toChangeClone, ref toChangeClone, dict);
+            RecursiveAddEquivalentChain(true, this.Right, this.Left, toChangeClone, ref toChangeClone, dict);
             return dict;
         }
 
         private void RecursiveAddEquivalentChain(bool continueWithResult, OpChain src, OpChain toCopy, OpChain root, ref OpChain toChange, StrToOp dict)
         {
+            //string combination = string.Format("{0}-{1}-{2}-{3}-{4}",
+            //    continueWithResult,
+            //    src.Sig,
+            //    toCopy.Sig,
+            //    root.Sig,
+            //    toChange.Sig);
+
+            //if (TriedBefore.Contains(combination))
+            //    return;
+
+            //TriedBefore.Add(combination);
+
             for (int i = 0; i < toChange.Operands.Length; i++)
                 if (toChange.Operands[i].FromChain != null)
                 {
                     RecursiveAddEquivalentChain(continueWithResult, src, toCopy, root, ref toChange.Operands[i].FromChain, dict);
                 }
 
-            OpChain result = TransformOneNodeInChain(src, toCopy, root, ref toChange);
+            OpChain result = TransformOneNodeInChain(src, toCopy, root, this.Name, ref toChange);
 
             if (result != null)
             {
-                string sig = result.PrintFull();
+                string sig = result.Sig;
                 if (dict.ContainsKey(sig))
                     return;
                 else
@@ -141,29 +161,31 @@ namespace AutoSymbol
             }
         }
 
-        public static OpChain TransformOneNodeInChain(OpChain src, OpChain toCopy, OpChain root, ref OpChain toChange)
+        public static OpChain TransformOneNodeInChain(OpChain erSrc, OpChain erTarget, OpChain root, string reason, ref OpChain toChange)
         {
-            OpChain nodeResult = TransformOneRoot(src, toCopy, toChange);
+            OpChain resultNode = TransformOneRoot(erSrc, erTarget, toChange);
          //   OneTransform one = new OneTransform();
 
-            if (nodeResult != null)
+            if (resultNode != null)
             {
                 OpChain toResotre = toChange;
-                toChange = nodeResult;
+                toChange = resultNode;
                 OneTransform one;
                 OpChain newRootResult;
                 if (toResotre != root)
                 {
-                     newRootResult= root.Copy<OpChain>();
-                   
+                    //newRootResult= root.Copy<OpChain>();
+                    newRootResult = root.MakeCopy();                   
                 }
                 else
                 {
-                    newRootResult = nodeResult;
+                    newRootResult = resultNode;
                 }
 
                 toChange = toResotre;
-                one = OneTransform.CreateNew(root.Sig, newRootResult.Sig);
+                string rootSig = root.Sig;
+                string newRootResultSig = newRootResult.Sig;
+                one = OneTransform.CreateNew(rootSig, newRootResultSig, reason);
 
                 if (one != null)
                 {
@@ -171,26 +193,30 @@ namespace AutoSymbol
                     one.Original = root;
                     one.Result = newRootResult;
 
-                    one.TransformType = TransformType.ERReplce;
+                    one.TransformType = TransformType.ERReplace;
                     one.BranchInOrigin = toChange;
 
-                    one.TemplateSrc = src;
-                    one.TemplateTarget = toCopy;
-                    one.BranchInResult = nodeResult;
+                    one.TemplateSrc = erSrc;
+                    one.TemplateTarget = erTarget;
+                    one.BranchInResult = resultNode;
                     return newRootResult;
                 }
-                return null;
+                else
+                {
+                    return null;
+                }
             }
             else
                 return null;
         }
-        public static OpChain TransformOneRoot(OpChain src, OpChain toCopy, OpChain toChange)
+        public static OpChain TransformOneRoot(OpChain erSrc, OpChain erTarget, OpChain toChange)
         {
             Dictionary<string, Member> keyMap = new Dictionary<string, Member>();
 
-            if (Match == RecursivePair(src, toChange, keyMap))
+            if (Match == RecursiveDiscoverPair(erSrc, toChange, keyMap))
             {
-                OpChain retChain = toCopy.Copy<OpChain>();
+                // OpChain retChain = erTarget.Copy<OpChain>();
+                OpChain retChain = erTarget.MakeCopy();
 
                 //toCopy is now the template, needs to be replaced with all the original member in toChange
                 RecursiveReplace(retChain, keyMap);
@@ -205,13 +231,14 @@ namespace AutoSymbol
 
         private static void RecursiveReplace(OpChain chain, Dictionary<string, Member> keyMap)
         {
+            //chain.InvalidateSignature();
+
             for (int i = 0; i < chain.Operands.Length; i++)
             {
                 if (chain.Operands[i].FromChain == null)
                 {
-                    if (!keyMap.ContainsKey(chain.Operands[i].ShortName))
-                        throw new ApplicationException("The name should exist.");
-                    chain.Operands[i] = keyMap[chain.Operands[i].ShortName];
+                    if (keyMap.ContainsKey(chain.Operands[i].ShortName))
+                       chain.Operands[i] = keyMap[chain.Operands[i].ShortName];
                 }
                 else
                 {
@@ -224,36 +251,50 @@ namespace AutoSymbol
         {
             return string.Format("{0} : {1}!={2}", hint, s1, s2);
         }
-        public static string RecursivePair(OpChain src, OpChain toChange, Dictionary<string, Member> keyMap)
+        public static string RecursiveDiscoverPair(OpChain erSrc, OpChain toChange, Dictionary<string, Member> keyMap)
         {
-            if (src.Operator.ShortName != toChange.Operator.ShortName)
-                return ErrStr("C1", src.Operator.ShortName, toChange.Operator.ShortName);
+            if (erSrc.Operator.ShortName != toChange.Operator.ShortName)
+                return ErrStr("C1", erSrc.Operator.ShortName, toChange.Operator.ShortName);
 
-            if (src.Operator.ResultSetName != toChange.Operator.ResultSetName)
-                return ErrStr("C2", src.Operator.ResultSetName, toChange.Operator.ResultSetName);
+            if (erSrc.Operator.ResultSetName != toChange.Operator.ResultSetName)
+                return ErrStr("C2", erSrc.Operator.ResultSetName, toChange.Operator.ResultSetName);
 
-            if (src.Operands.Length != toChange.Operands.Length)
-                return ErrStr("C3", src.Operands.Length.ToString(), toChange.Operands.Length.ToString());
+            if (erSrc.Operands.Length != toChange.Operands.Length)
+                return ErrStr("C3", erSrc.Operands.Length.ToString(), toChange.Operands.Length.ToString());
 
-            for (int i = 0; i < src.Operands.Length; i++)
+            for (int i = 0; i < erSrc.Operands.Length; i++)
             {
-                if (src.Operands[i].FromChain == null)
+                if (erSrc.Operands[i].FromChain == null)
                 {
-                    string currentSrcKey = src.Operands[i].ShortName;
-                    if (!keyMap.ContainsKey(currentSrcKey))
+                    if (erSrc.Operands[i].IsVariable == true)
                     {
-                        keyMap[currentSrcKey] = toChange.Operands[i];
-                    }
+                        string currentSrcKey = erSrc.Operands[i].ShortName;
+                        if (!keyMap.ContainsKey(currentSrcKey))
+                        {
+                            keyMap[currentSrcKey] = toChange.Operands[i];
+                        }
+                        else
+                        {
+                            // If already matches a chain, then this chain must match the one in dictionary exactly
+                            if(keyMap[currentSrcKey].Sig != toChange.Operands[i].Sig)
+                                return ErrStr("C4", keyMap[currentSrcKey].ShortName, toChange.Operands[i].ShortName);
+                        }
 
-                    if (keyMap[currentSrcKey].ShortName != toChange.Operands[i].ShortName)
-                        return ErrStr("C4", keyMap[currentSrcKey].ShortName, toChange.Operands[i].ShortName);
+                        //if (keyMap[currentSrcKey].ShortName != toChange.Operands[i].ShortName)
+                        //    return ErrStr("C4", keyMap[currentSrcKey].ShortName, toChange.Operands[i].ShortName);
+                    }
+                    else
+                    {
+                        if (erSrc.Operands[i].ShortName != toChange.Operands[i].ShortName)
+                            return ErrStr("C7", "non-variable should match exactly","null");
+                    }
                 }
                 else
                 {
                     if (toChange.Operands[i].FromChain == null)
                         return ErrStr("C5", "toChange.Operands[i].FromChain", "null");
 
-                    string childStatus = RecursivePair(src.Operands[i].FromChain, toChange.Operands[i].FromChain, keyMap);
+                    string childStatus = RecursiveDiscoverPair(erSrc.Operands[i].FromChain, toChange.Operands[i].FromChain, keyMap);
                     if (childStatus != Match)
                         return ErrStr("C6", "ChildStatus", "Match");
                 }

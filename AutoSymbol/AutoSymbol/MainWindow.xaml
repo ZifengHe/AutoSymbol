@@ -8,30 +8,38 @@
         Title="MainWindow" Height="450" Width="800">
     <DockPanel LastChildFill="True">
         <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
-            <ToolBarTray >
-                <ToolBar>
-                    <Button Content="RunOne"  Click="RunOneClicked"/>
-                    <Button Content="RunAll" Click="RunAllClicked"/>
-                    <Button Content="↑" Click="FirstClicked" />
-                    <Button Content="←" Click="BackwardClicked" />
-                    <Button Content="≡" Click="ShowListClicked" />                    
-                    <Button Content="→" Click="ForwardClicked" />
-                    <Button Content="↓" Click="LastClicked" />
-                    <TextBox x:Name="Sequence" Width="35"/>
-                    <ComboBox Width="500" Name="cbList" SelectionChanged="CbList_SelectionChanged" ></ComboBox>
-                    <ComboBox Width="100" Name="cbOptions"  SelectedIndex="0">
-                        <ComboBoxItem>Transform</ComboBoxItem>
-                        <ComboBoxItem>Proof</ComboBoxItem>
-                    </ComboBox>
+            <ToolBarTray HorizontalAlignment="Stretch" >
+                <ToolBar HorizontalAlignment="Stretch">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                            <Button Content="RunOne"  Click="RunOneClicked"/>
+                            <Button Content="RunAll" Click="RunAllClicked"/>
+                            <ComboBox Width="50" Name="cbList" SelectionChanged="CbList_SelectionChanged" ></ComboBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                            <Button Content="Try"  Click="TryManualBuildClicked"/>
+                            <ComboBox Width="50" Name="cbScenario" SelectionChanged="ScenarioChanged" ></ComboBox>
+                            <ComboBox Width="50" Name="cbFilterER" SelectionChanged="FilterERChanged"  ></ComboBox>
+                            <Button Content="Optimize" Click="OptimizeClicked"/>
+                        </StackPanel>
+                    </StackPanel>
                 </ToolBar>
             </ToolBarTray>
-           
+
         </StackPanel>
         <StatusBar Name="statusbar" DockPanel.Dock="Bottom" >
             <StatusBarItem>
                 <TextBlock x:Name="MessageTextBlock"></TextBlock>
             </StatusBarItem>
         </StatusBar>
-        <DockPanel x:Name="ContentPanel"></DockPanel>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="600"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <DockPanel x:Name="LeftPanel" ></DockPanel>
+            <GridSplitter Width="5" HorizontalAlignment="Right" VerticalAlignment="Stretch" ResizeBehavior="CurrentAndNext"/>
+            <DockPanel x:Name="RightPanel" Grid.Column="1" ></DockPanel>
+        </Grid>
     </DockPanel>
 </Window>

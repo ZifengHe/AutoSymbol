@@ -9,10 +9,32 @@ namespace AutoSymbol
     public class StrToOp : Dictionary<string, OpChain>
     { }
 
+    public class ManualTransform
+    {
+        public TransformType MyType;
+        public Set TargetSet;
+        public ER ER;
+        public ERDirection Direction;
+
+        public string Key
+        {
+            get
+            {
+                if (MyType == TransformType.Shorten)
+                    return string.Format("{0} {1}", TargetSet.ShortName, MyType.ToString());
+                else
+                    return string.Format("{0} {1} {2} {3}", 
+                        TargetSet.ShortName, 
+                        MyType.ToString(),
+                        ER.ToString(),
+                        Direction.ToString());
+            }
+        }
+    }
     public enum TransformType
     {
         Invalid,
-        ERReplce,
+        ERReplace,
         Shorten
     }
     public class OneTransform
@@ -20,53 +42,10 @@ namespace AutoSymbol
         public TransformType TransformType;
         public static Dictionary<string, OneTransform> AllResult = new Dictionary<string, OneTransform>();
         public static Dictionary<string, Dictionary<string, Member>> Keymaps = new Dictionary<string, Dictionary<string, Member>>();
-
-
-        /// <summary>
-        ///  Step 1 Use OpChain as key, not sig anymore.
-        ///  Step 2 add a dictionary for all the shorten operations
-        /// </summary>
-        /// 
-
-        public OneTransform(bool IsGenZero, string sig)
-        {
-            if (IsGenZero)
-            {
-                this.Gen = 0;
-                AllResult[sig] = this;
-            }
-        }
-
-        public static void InitTransformGen0(OpChain start)
-        {
-            OneTransform.AllResult.Clear();
-            OneTransform one = new OneTransform(true, start.Sig);
-
-            foreach (var s in Set.AllSets)
-            {
-                foreach (var pair in s.Value.KnownOps)
-                {
-                    OneTransform current = new OneTransform(true, pair.Key);
-                    current.Result = pair.Value;
-                    current.ResultSig = pair.Key;
-                }
-            }
-        }
-
-        public static OneTransform CreateNew(string original, string result)
-        {           
-
-            if(AllResult.ContainsKey(original)== false || AllResult.ContainsKey(result) == true)
-                return null;
-
-            OneTransform ret = new OneTransform(false, result);
-            ret.Gen = AllResult[original].Gen + 1;
-            AllResult[result] = ret;
-
-            return ret;
-        }
+        public  static int GlobalSequenceNum = 0;
 
         public int Gen = -1;
+        public int SequenceNumber = 0;
 
         public OpChain TemplateSrc;
         public OpChain TemplateTarget;
@@ -75,21 +54,81 @@ namespace AutoSymbol
         public OpChain BranchInResult;
         public OpChain BranchInOrigin;
         public string ResultSig;
-    }
+        public string Reason;
 
-    public class OneProof
-    {
-        public static Dictionary<string, OneTransform> All = new Dictionary<string, OneTransform>();
-        public List<OneTransform> Transforms = new List<OneTransform>();
-
-        public OneProof Append(OneTransform one)
+        public static OneTransform AddTransformWithNoSource(string sig)
         {
-            OneProof ret = new OneProof();
-            for (int i = 0; i < Transforms.Count; i++)
-                ret.Transforms.Add(Transforms[i]);
-            ret.Transforms.Add(one);
+            return new OneTransform(true, sig);
+        }
+
+        public static void Reset()
+        {
+            AllResult.Clear();
+            Keymaps.Clear();
+            GlobalSequenceNum = 0;
+        }
+
+        public OneTransform(bool IsNoSource, string sig)
+        {
+            lock(AllResult)
+            {
+                GlobalSequenceNum++;
+                this.SequenceNumber = GlobalSequenceNum;
+            }
+
+            if (IsNoSource)
+            {
+                this.Gen = 0;
+
+                if (AllResult.ContainsKey(sig))
+                    throw new ApplicationException("Duplicate GenZero signature");
+                AllResult[sig] = this;
+            }
+        }      
+
+        public static OneTransform CreateNew(string original, string result, string reason)
+        {
+          //  d.BreakOnSequence(137);
+                
+            if(AllResult.ContainsKey(original)== false) 
+                return null;
+
+            if(AllResult.ContainsKey(result) == true)
+            {
+                if (AllResult[result].Original == null)
+                    return null;
+
+                /// Below logic avoids circular reference so that we can always find the root
+                string existingOriginal = AllResult[result].Original.Sig;
+                if (existingOriginal.Length <= original.Length 
+                    || AllResult[original].SequenceNumber >= AllResult[result].SequenceNumber)
+                    return null;
+            }
+
+            OneTransform ret = new OneTransform(false, result);
+            ret.Reason = reason;
+            ret.Gen = AllResult[original].Gen + 1;
+            AllResult[result] = ret;
+
             return ret;
         }
+
+        
     }
+
+    //public class OneProof
+    //{
+    //    public static Dictionary<string, OneTransform> All = new Dictionary<string, OneTransform>();
+    //    public List<OneTransform> Transforms = new List<OneTransform>();
+
+    //    public OneProof Append(OneTransform one)
+    //    {
+    //        OneProof ret = new OneProof();
+    //        for (int i = 0; i < Transforms.Count; i++)
+    //            ret.Transforms.Add(Transforms[i]);
+    //        ret.Transforms.Add(one);
+    //        return ret;
+    //    }
+    //}
 
 }
