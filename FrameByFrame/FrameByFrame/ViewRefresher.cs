@@ -20,8 +20,9 @@ namespace FrameByFrame
 
             int totalRows = MyProj.Rows.Count(x => x.RowNumber != -1);
             int rowHeight = (MyProj.AxBottom - MyProj.AxTop) / totalRows - MyProj.RowMargin;
+            int axToAx = MyProj.AxLeft - MyProj.AxRight;
 
-            Dictionary<string, int> longestByGroup = MyProj.CalcLongestByGroup(CurrentHeaderIndex);
+            Dictionary<string, double> longestByGroup = MyProj.CalcLongestByGroup(CurrentHeaderIndex);
 
             foreach (var row in MyProj.Rows.Where(x=>x.RowNumber!=-1))
             {
@@ -44,10 +45,15 @@ namespace FrameByFrame
                 Line line = new Line();
                 line.Stroke = new SolidColorBrush(row.LineColor);
                 line.StrokeThickness = rowHeight/3*2;
-                line.X1 = MyProj.CanvasWidth - MyProj.AxLeft;
-                line.X2 = 600;
+                line.X1 = MyProj.CanvasWidth - MyProj.AxLeft;                
                 line.Y1 = rowTop;
                 line.Y2 = line.Y1;
+
+                double rawData = 0;
+                double.TryParse(row.Data[MyProj.Header[CurrentHeaderIndex]], out rawData);
+
+                line.X2 = MyProj.CanvasWidth - MyProj.AxLeft +
+                    (int)(axToAx * rawData / longestByGroup[row.SeriesCode]);
                 MainCanvas.Children.Add(line);
             }
 

@@ -51,9 +51,18 @@ namespace FrameByFrame
         
         public List<RichTextConfig> RichTexts = new List<RichTextConfig>();
 
-        public Dictionary<string, int> CalcLongestByGroup(int index)
+        public Dictionary<string, double> CalcLongestByGroup(int index)
         {
-            Dictionary<string, int> ret = new Dictionary<string, int>();
+            Dictionary<string, double> ret = new Dictionary<string, double>();
+            foreach(var one in Rows)
+            {
+                if (ret.ContainsKey(one.SeriesCode) == false)
+                    ret[one.SeriesCode] = 1;
+                double val = 0;
+                double.TryParse(one.Data[Header[index]], out val);
+                if (val > ret[one.SeriesCode])
+                   ret[one.SeriesCode] = val;
+            }
             return ret;
         }
 
@@ -89,12 +98,23 @@ namespace FrameByFrame
                         one.RowNumber = currentRowNum;
                         currentRowNum++;
 
+                        bool bFoundExisting = false;
+                        foreach(var e in Rows)
+                        {
+                            if(e.SeriesCode == one.SeriesCode && e.CountryCode == one.CountryCode)
+                            {
+                                one = e;
+                                bFoundExisting = true;
+                            }
+                        }
+
                         for (int i = 4; i < Header.Length; i++)
                         {
                             one.Data[Header[i]] = fields[i];
                         }
 
-                        this.Rows.Add(one);
+                        if(bFoundExisting == false)
+                            this.Rows.Add(one);
                     }
                 }
             }

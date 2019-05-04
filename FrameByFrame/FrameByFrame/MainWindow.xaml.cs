@@ -333,6 +333,7 @@ namespace FrameByFrame
             Microsoft.Win32.OpenFileDialog dlg = OpenFile("*.xml", "XML Files (*.xml)|*.xml");
             
             MyProj = ObjectManager.FromXml<ProjData>(dlg.FileName);
+            MyProj.ProcessCSVFile();
 
             cbConfig.Items.Clear();
             foreach (var one in MyProj.Rows)
