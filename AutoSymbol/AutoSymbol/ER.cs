@@ -39,6 +39,10 @@ namespace AutoSymbol
                 dict[i + 1] = new StrToOp();
                 foreach (var item in dict[i])
                 {
+                    d.StartTreeMessage("Start logging",
+                        item.Key == d.TrackingSig,
+                        item.Value);
+
                     foreach (var er in multiER)
                     {                      
                         er.BuildERChainAtAllBranchOnce(dict[i + 1], item.Value);
@@ -125,19 +129,7 @@ namespace AutoSymbol
         }
 
         private void RecursiveAddEquivalentChain(bool continueWithResult, OpChain src, OpChain toCopy, OpChain root, ref OpChain toChange, StrToOp dict)
-        {
-            //string combination = string.Format("{0}-{1}-{2}-{3}-{4}",
-            //    continueWithResult,
-            //    src.Sig,
-            //    toCopy.Sig,
-            //    root.Sig,
-            //    toChange.Sig);
-
-            //if (TriedBefore.Contains(combination))
-            //    return;
-
-            //TriedBefore.Add(combination);
-
+        {            
             for (int i = 0; i < toChange.Operands.Length; i++)
                 if (toChange.Operands[i].FromChain != null)
                 {

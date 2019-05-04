@@ -67,6 +67,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Benchmark.cs" />
+    <Compile Include="DebugLog.xaml.cs">
+      <DependentUpon>DebugLog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Draft.cs" />
     <Compile Include="ER.cs" />
     <Compile Include="Hunch.cs" />
@@ -78,6 +81,10 @@
     <Compile Include="Transform.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="WndManualBuild.cs" />
+    <Page Include="DebugLog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

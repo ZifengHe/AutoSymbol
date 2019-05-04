@@ -13,35 +13,41 @@ namespace FrameByFrame
 {
     public partial class MainWindow : Window
     {
-        const int AxTop = 200;
-        const int AxBottom = 800;
-        const int RowMargin = 5;
-        const int AxLeft = 200;
+        public int CurrentHeaderIndex = 5;
         private void RefreshView()
         {
             MainCanvas.Children.Clear();
 
             int totalRows = MyProj.Rows.Count(x => x.RowNumber != -1);
-            int rowHeight = (AxBottom - AxTop) / totalRows - RowMargin;
+            int rowHeight = (MyProj.AxBottom - MyProj.AxTop) / totalRows - MyProj.RowMargin;
+
+            Dictionary<string, int> longestByGroup = MyProj.CalcLongestByGroup(CurrentHeaderIndex);
 
             foreach (var row in MyProj.Rows.Where(x=>x.RowNumber!=-1))
             {
-                int rowTop = AxTop + rowHeight * row.RowNumber;
+                int rowTop = MyProj.AxTop + rowHeight * row.RowNumber;
                 TextBlock tb = new TextBlock();
+                tb.FontSize = rowHeight/2;
+                if(MyProj.FontFamily!= null)
+                {
+                    tb.FontFamily = new FontFamily(MyProj.FontFamily);
+                    tb.FontWeight = MyProj.FontWeight;
+                    tb.FontStyle = MyProj.FontStyle;
+                }
                 tb.Text = row.CountryName;
                 tb.Foreground = new SolidColorBrush(row.TextColor);
                 tb.Height = rowHeight;
-                Canvas.SetRight(tb, AxLeft);
-                Canvas.SetTop(tb, rowTop);
+                Canvas.SetRight(tb, MyProj.AxLeft+5);
+                Canvas.SetTop(tb, rowTop - tb.FontSize );
                 MainCanvas.Children.Add(tb);
 
                 Line line = new Line();
                 line.Stroke = new SolidColorBrush(row.LineColor);
-                line.StrokeThickness = rowHeight;
-                line.X1 = AxLeft;
-                line.X1 = 600;
+                line.StrokeThickness = rowHeight/3*2;
+                line.X1 = MyProj.CanvasWidth - MyProj.AxLeft;
+                line.X2 = 600;
                 line.Y1 = rowTop;
-                line.Y2 = rowTop + rowHeight;
+                line.Y2 = line.Y1;
                 MainCanvas.Children.Add(line);
             }
 

@@ -40,6 +40,7 @@
                             </ComboBox>
                             <xctk:ColorPicker Name="RowTextColor" SelectedColorChanged="RowTextColorChanged"  Margin="2"></xctk:ColorPicker>
                             <xctk:ColorPicker Name="RowLineColor" SelectedColorChanged="RowLineColorChanged" Margin="2"></xctk:ColorPicker>
+                            <Button Content="Font" Click="FontClicked"  Margin="2"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Button Content="Add" Click="AddRtbClicked"  Margin="2" />
@@ -66,6 +67,6 @@
                 </xctk:RichTextBoxFormatBarManager.FormatBar>
             </xctk:RichTextBox>-->
         </local:DragCanvas>
-        <DataGrid Name="gridData" ItemsSource="{Binding}"></DataGrid>
+        <!--<DataGrid Name="gridData" ItemsSource="{Binding}"></DataGrid>-->
     </DockPanel>
 </Window>

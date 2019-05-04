@@ -1,4 +1,12 @@
-﻿
+﻿5/4/2019
+1. Fix line height
+2. Global text font support
+3. Render proper line length
+
+5/2/2019
+1. Fix the combox after loading project
+2. Proper linee text alignment
+
 5/1/2019
 1. Make line and text config work for multiple lines
 

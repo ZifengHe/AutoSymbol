@@ -1,0 +1,22 @@
+﻿<Window x:Class="AutoSymbol.DebugLog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AutoSymbol"
+        mc:Ignorable="d"
+        Title="DebugLog" Height="450" Width="800">
+    <StackPanel Orientation="Vertical" DockPanel.Dock="Top" Margin="2">
+        <ToolBarTray HorizontalAlignment="Stretch" Margin="2">            
+            <ToolBar HorizontalAlignment="Stretch" Margin="2">
+                <Button Content="PrevId"  Click="PreviousIdClicked" Margin="2"/>
+                <Button Content="NextId"  Click="NextIdClicked" Margin="2"/>
+                <Button Content="Refresh"  Click="RefreshClicked" Margin="2"/>               
+            </ToolBar>
+        </ToolBarTray>
+        <StackPanel Orientation="Horizontal" Margin="2">         
+            <ListView Margin="2" Name="lvKeys" SelectionChanged="KeySelected"></ListView>
+            <ListView Margin="2" Name="lvValues" SelectionChanged="MessageSelected"></ListView>
+        </StackPanel>
+    </StackPanel>
+</Window>

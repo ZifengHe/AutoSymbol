@@ -1,4 +1,12 @@
-﻿
+﻿5/3/2019
+1. Define the log message review experience
+2. Log window, 
+3. Need CurrentId in a TextBlock
+
+5/2/2019
+1. Need algorithm for MessageTree
+2. Conclusion StackTrace + id
+
 5/1/2019
 1. How to debug the ER and result mismatch
 2. Conclusion : add debugging mode, visualize attempt and denial justification

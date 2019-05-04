@@ -22,6 +22,7 @@ using RichTextBox = Xceed.Wpf.Toolkit.RichTextBox;
 using Path = System.IO.Path;
 using System.Xml.Serialization;
 using System.Windows.Markup;
+using System.Windows.Forms;
 
 namespace FrameByFrame
 {
@@ -62,7 +63,7 @@ namespace FrameByFrame
      
         private void CSVClicked(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog dlg = OpenFile("*.csv", "CSV Files (*.csv)|*.csv");
+            Microsoft.Win32.OpenFileDialog dlg = OpenFile("*.csv", "CSV Files (*.csv)|*.csv");
 
             MyProj.CSVContent = File.ReadAllText(dlg.FileName);
             MyProj.ProcessCSVFile();      
@@ -205,39 +206,8 @@ namespace FrameByFrame
         }
         private void StartClicked(object sender, RoutedEventArgs e)
         {
-            if (MyProj.Header == null || MyProj.Header.Length < 4)
-            {
-                System.Windows.MessageBox.Show("Forgot to load CSV?");
-                return;
-            }
+            
 
-            for (int i = 4; i < MyProj.Header.Length; i++)
-            {
-                ProcessOneFrame(i);
-            }
-
-
-            string cs = "abcdefghigjdfsdfsfds";
-            for (int i = 1; i < 8; i++)
-            {
-                string text = cs.Substring(0, i * 2);
-                TextBlock tb = new TextBlock();
-                tb.Text = text;
-                tb.Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 0, 255));
-                Canvas.SetRight(tb, 600);
-                Canvas.SetTop(tb, 100 + i * 20);
-                MainCanvas.Children.Add(tb);
-
-                Line line = new Line();
-                line.Stroke = Brushes.AliceBlue;
-                line.StrokeThickness = 10;
-                line.X1 = 200;
-                line.X2 = 250 + i * 30;
-                line.Y1 = 100 + i * 20;
-                line.Y2 = 100 + i * 20;
-
-                MainCanvas.Children.Add(line);
-            }
 
             Image cnImg = new Image
             {
@@ -253,17 +223,17 @@ namespace FrameByFrame
 
 
 
-            Transform transform = MainCanvas.LayoutTransform;
-            MainCanvas.LayoutTransform = null;
-            Size size = new Size(MainCanvas.Width, MainCanvas.Height);
-            MainCanvas.Measure(size);
-            MainCanvas.Arrange(new Rect(size));
-            Helper.SaveToPng(MainCanvas, @"c:\temp\1.png");
+            //Transform transform = MainCanvas.LayoutTransform;
+            //MainCanvas.LayoutTransform = null;
+            //Size size = new Size(MainCanvas.Width, MainCanvas.Height);
+            //MainCanvas.Measure(size);
+            //MainCanvas.Arrange(new Rect(size));
+            //Helper.SaveToPng(MainCanvas, @"c:\temp\1.png");
         }
 
         private void BackGroundClicked(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog dlg = OpenFile(
+            Microsoft.Win32.OpenFileDialog dlg = OpenFile(
                 "*.png",
                 "JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif");
 
@@ -299,9 +269,9 @@ namespace FrameByFrame
             }
         }
 
-        private OpenFileDialog OpenFile(string ext, string filter)
+        private Microsoft.Win32.OpenFileDialog OpenFile(string ext, string filter)
         {
-            OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
             dlg.DefaultExt = ext;
             dlg.Filter = filter;
             Nullable<bool> result = dlg.ShowDialog();
@@ -310,9 +280,9 @@ namespace FrameByFrame
             return dlg;
         }
 
-        private SaveFileDialog SaveXmlFile()
+        private Microsoft.Win32.SaveFileDialog SaveXmlFile()
         {
-            SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
             dlg.FileName = "Name"; // Default file name
             dlg.DefaultExt = ".xml"; // Default file extension
             dlg.Filter = "Xml documents (.xml)|*.xml"; // Filter files by extension
@@ -353,17 +323,46 @@ namespace FrameByFrame
         private void SaveProjectClicked(object sender, RoutedEventArgs e)
         {
             CavasToData();
-            SaveFileDialog dlg = SaveXmlFile();
+            Microsoft.Win32.SaveFileDialog dlg = SaveXmlFile();
             CurrentProj = dlg.FileName;
             ObjectManager.ToXmlFile<ProjData>(CurrentProj, MyProj);
         }
 
         private void LoadProjClicked(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog dlg = OpenFile("*.xml", "XML Files (*.xml)|*.xml");
+            Microsoft.Win32.OpenFileDialog dlg = OpenFile("*.xml", "XML Files (*.xml)|*.xml");
             
             MyProj = ObjectManager.FromXml<ProjData>(dlg.FileName);
+
+            cbConfig.Items.Clear();
+            foreach (var one in MyProj.Rows)
+            {
+                cbConfig.Items.Add(one.Id());
+            }
             RefreshView();           
+        }
+
+        private void FontClicked(object sender, RoutedEventArgs e)
+        {
+            FontDialog fd = new FontDialog();
+            var result = fd.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                MyProj.FontFamily = fd.Font.Name;
+                //MyProj.FontSize = fd.Font.Size * 96.0 / 72.0;
+                MyProj.FontWeight = fd.Font.Bold ? FontWeights.Bold : FontWeights.Regular;
+                MyProj.FontStyle = fd.Font.Italic ? FontStyles.Italic : FontStyles.Normal;
+
+                //tbFonttest.FontFamily = new FontFamily(fd.Font.Name);
+                //tbFonttest.FontSize = fd.Font.Size * 96.0 / 72.0;
+                //tbFonttest.FontWeight = fd.Font.Bold ? FontWeights.Bold : FontWeights.Regular;
+                //tbFonttest.FontStyle = fd.Font.Italic ? FontStyles.Italic : FontStyles.Normal;
+
+                //TextDecorationCollection tdc = new TextDecorationCollection();
+                //if (fd.Font.Underline) tdc.Add(TextDecorations.Underline);
+                //if (fd.Font.Strikeout) tdc.Add(TextDecorations.Strikethrough);
+                //tbFonttest.TextDecorations = tdc;
+            }
         }
     }
 }

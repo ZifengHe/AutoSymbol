@@ -16,6 +16,19 @@ namespace FrameByFrame
     {
         public static string TempFile;
 
+        public int CanvasHeight = 900;
+        public int CanvasWidth = 1200;
+        public int AxTop = 100;
+        public int AxBottom = 500;
+        public int RowMargin = 5;
+        public  int AxLeft = 1100;
+        public int AxRight = 300;
+
+        public string FontFamily;
+        public FontWeight FontWeight;
+        public FontStyle FontStyle;
+
+
         [XmlIgnore]
         public string CSVContent
         {
@@ -31,13 +44,18 @@ namespace FrameByFrame
 
         public string CSVContent64;
 
-        [XmlIgnore]
+       // [XmlIgnore]
         public string [] Header;
 
         public List<OneRow> Rows = new List<OneRow>();
         
         public List<RichTextConfig> RichTexts = new List<RichTextConfig>();
-        
+
+        public Dictionary<string, int> CalcLongestByGroup(int index)
+        {
+            Dictionary<string, int> ret = new Dictionary<string, int>();
+            return ret;
+        }
 
         public void ProcessCSVFile()
         {

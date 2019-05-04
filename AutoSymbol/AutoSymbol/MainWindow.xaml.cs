@@ -278,6 +278,15 @@ namespace AutoSymbol
             ViewFromStartToLast();
         }
 
-        
+        private void TrackingSigChanged(object sender, TextChangedEventArgs e)
+        {
+            d.TrackingSig = txtTrackingSig.Text;
+        }
+
+        private void DebugClicked(object sender, RoutedEventArgs e)
+        {
+            DebugLog dl = new DebugLog();
+            dl.Show();
+        }
     }
 }

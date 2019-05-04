@@ -12,9 +12,12 @@ namespace System
 {
     using AutoSymbol;
     using System.ArrayExtensions;
+    using System.Runtime.CompilerServices;
 
     public static class d
     {
+        public static SortedDictionary<string, SortedDictionary<int, TreeMessageNode>> MsgDict = new SortedDictionary<string, SortedDictionary<int, TreeMessageNode>>();
+        public static string TrackingSig = "NA";
         public static void BreakOnCondition(bool b)
         {
             if (b)
@@ -33,6 +36,84 @@ namespace System
         public static void Info(string format, params string[] args)
         {
             Trace.WriteLine(string.Format(format, args));
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void LogTreeMessage(string msg, params object [] objs)
+        {
+            if (TreeMessageNode.Enabled)
+            {
+                string key = BuildStackNameKeys();
+                TreeMessageNode tmd = new TreeMessageNode();
+                tmd.Message = msg;
+                if (objs != null && objs.Length >= 1)
+                    tmd.ObjOne = objs[0];
+                if (objs != null && objs.Length >= 2)
+                    tmd.ObjTwo = objs[1];
+                if (MsgDict.ContainsKey(key))
+                    MsgDict[key] = new SortedDictionary<int, TreeMessageNode>();
+                MsgDict[key][tmd.Id] = tmd;
+            }
+        }
+
+        public static void StopTreeMessage()
+        {
+            TreeMessageNode.Enabled = false;
+            TreeMessageNode.LastId = 0;
+            MsgDict.Clear();
+        }       
+
+        public static void StartTreeMessage(string msg, bool b, params object[] objs)
+        {
+            if (b)
+            {
+                TreeMessageNode.Enabled = true;
+                TreeMessageNode.StartFrameIndex = new StackTrace().GetFrames().Length;
+                LogTreeMessage(msg, objs);
+            }
+            else
+            {
+                TreeMessageNode.Enabled = false;
+            }
+        }
+
+        private static string BuildStackNameKeys()
+        {
+            var st = new StackTrace();
+            StackFrame[] sfs = st.GetFrames();
+            StringBuilder sb = new StringBuilder();
+            for (int i = TreeMessageNode.StartFrameIndex; i >= 1; i--)
+            {
+                sb.AppendFormat("{0}|", sfs[i].GetMethod().Name);
+            }
+            return sb.ToString();
+        }
+    }
+
+    public class TreeMessageNode
+    {        
+        public static bool Enabled = false;
+        public static int LastId = 0;
+        public static int StartFrameIndex =0;
+        public object ObjOne;
+        public object ObjTwo;
+        public string Message;
+        public int Id;
+
+        public List<TreeMessageNode> Children = new List<TreeMessageNode>();
+        public TreeMessageNode Parent;   
+        
+        public TreeMessageNode()
+        {
+            Id = LastId;
+            Id++;
+        }
+
+        public string ToMsg()
+        {
+            return string.Format("{0} {1}",
+                Id,
+                Message);
         }
     }
 

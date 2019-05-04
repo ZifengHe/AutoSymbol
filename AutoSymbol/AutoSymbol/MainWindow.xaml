@@ -7,20 +7,23 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <DockPanel LastChildFill="True">
-        <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
-            <ToolBarTray HorizontalAlignment="Stretch" >
-                <ToolBar HorizontalAlignment="Stretch">
-                    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                            <Button Content="RunOne"  Click="RunOneClicked"/>
-                            <Button Content="RunAll" Click="RunAllClicked"/>
-                            <ComboBox Width="50" Name="cbList" SelectionChanged="CbList_SelectionChanged" ></ComboBox>
+        <StackPanel Orientation="Vertical" DockPanel.Dock="Top" Margin="2">
+            <ToolBarTray HorizontalAlignment="Stretch" Margin="2">
+                <ToolBar HorizontalAlignment="Stretch" Margin="2">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="2">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="2">
+                            <Button Content="RunOne"  Click="RunOneClicked" Margin="2"/>
+                            <Button Content="RunAll" Click="RunAllClicked" Margin="2"/>
+                            <ComboBox Width="50" Name="cbList" SelectionChanged="CbList_SelectionChanged" Margin="2"></ComboBox>
+                            <TextBlock Margin="2">Sig=</TextBlock>
+                            <TextBox Name="txtTrackingSig" Width="50" TextChanged="TrackingSigChanged" Margin="2"></TextBox>
+                            <Button Content="Debug" Click="DebugClicked" Margin="2"/>
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                            <Button Content="Try"  Click="TryManualBuildClicked"/>
-                            <ComboBox Width="50" Name="cbScenario" SelectionChanged="ScenarioChanged" ></ComboBox>
-                            <ComboBox Width="50" Name="cbFilterER" SelectionChanged="FilterERChanged"  ></ComboBox>
-                            <Button Content="Optimize" Click="OptimizeClicked"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="2">
+                            <Button Content="Try"  Click="TryManualBuildClicked" Margin="2"/>
+                            <ComboBox Width="50" Name="cbScenario" SelectionChanged="ScenarioChanged" Margin="2"></ComboBox>
+                            <ComboBox Width="50" Name="cbFilterER" SelectionChanged="FilterERChanged"  Margin="2"></ComboBox>
+                            <Button Content="Optimize" Click="OptimizeClicked" Margin="2"/>
                         </StackPanel>
                     </StackPanel>
                 </ToolBar>
