@@ -7,13 +7,15 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 namespace FrameByFrame
 {
     public partial class MainWindow : Window
     {
-        public int CurrentHeaderIndex = 5;
+        public string ImgRoot = @"file://C:\Users\zifengh\source\repos\ZifengHe\AutoSymbol\FrameByFrame\Flags\";
+    public int CurrentHeaderIndex = 5;
         private void RefreshView()
         {
             MainCanvas.Children.Clear();
@@ -43,6 +45,7 @@ namespace FrameByFrame
                 MainCanvas.Children.Add(tb);
 
                 Line line = new Line();
+                //line.Stroke = new RadialGradientBrush( Color.FromRgb(245,245,245), row.LineColor);
                 line.Stroke = new SolidColorBrush(row.LineColor);
                 line.StrokeThickness = rowHeight/3*2;
                 line.X1 = MyProj.CanvasWidth - MyProj.AxLeft;                
@@ -55,6 +58,22 @@ namespace FrameByFrame
                 line.X2 = MyProj.CanvasWidth - MyProj.AxLeft +
                     (int)(axToAx * rawData / longestByGroup[row.SeriesCode]);
                 MainCanvas.Children.Add(line);
+
+                if(rawData>0.1)
+                {
+                    string imgPath = ImgRoot + CountryDict[row.CountryCode].ShortCode + ".png";
+                    Image cnImg = new Image
+                    {
+                        Width = 60,
+                        Height = rowHeight,
+                        Name = CountryDict[row.CountryCode].ShortCode,
+                        Source = new BitmapImage(new Uri(imgPath)),
+                    };
+
+                    MainCanvas.Children.Add(cnImg);
+                    Canvas.SetTop(cnImg, rowTop);
+                    Canvas.SetRight(cnImg, MyProj.AxLeft- (line.X2 - line.X1)/2);
+                }
             }
 
             cbEdit.Items.Clear();

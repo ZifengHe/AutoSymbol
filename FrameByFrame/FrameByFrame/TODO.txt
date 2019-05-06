@@ -1,4 +1,7 @@
-﻿5/4/2019
+﻿5/5/2019
+1. Add flag in the middle
+
+5/4/2019
 1. Fix line height
 2. Global text font support
 3. Render proper line length

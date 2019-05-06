@@ -350,19 +350,8 @@ namespace FrameByFrame
             if (result == System.Windows.Forms.DialogResult.OK)
             {
                 MyProj.FontFamily = fd.Font.Name;
-                //MyProj.FontSize = fd.Font.Size * 96.0 / 72.0;
                 MyProj.FontWeight = fd.Font.Bold ? FontWeights.Bold : FontWeights.Regular;
                 MyProj.FontStyle = fd.Font.Italic ? FontStyles.Italic : FontStyles.Normal;
-
-                //tbFonttest.FontFamily = new FontFamily(fd.Font.Name);
-                //tbFonttest.FontSize = fd.Font.Size * 96.0 / 72.0;
-                //tbFonttest.FontWeight = fd.Font.Bold ? FontWeights.Bold : FontWeights.Regular;
-                //tbFonttest.FontStyle = fd.Font.Italic ? FontStyles.Italic : FontStyles.Normal;
-
-                //TextDecorationCollection tdc = new TextDecorationCollection();
-                //if (fd.Font.Underline) tdc.Add(TextDecorations.Underline);
-                //if (fd.Font.Strikeout) tdc.Add(TextDecorations.Strikethrough);
-                //tbFonttest.TextDecorations = tdc;
             }
         }
     }
