@@ -1,0 +1,88 @@
+﻿5/10/2019
+1. Improve interpolation frame to become smoothly 3 minutes
+2. Default color
+
+5/9/2019
+1. Switch to memorystream
+
+5/8/2019
+1. Interpolation
+
+5/7/2019
+1. Dotted line
+2. Research video
+
+5/6/2019
+1. Multiple image logic
+
+5/5/2019
+1. Add flag in the middle
+
+5/4/2019
+1. Fix line height
+2. Global text font support
+3. Render proper line length
+
+5/2/2019
+1. Fix the combox after loading project
+2. Proper linee text alignment
+
+5/1/2019
+1. Make line and text config work for multiple lines
+
+4/30/2019
+1. Save Load Project, no sync button
+
+4/29/2019
+1. Selected color can apply to specific row
+2. Draw on the canvas and serialize project
+
+4/26/2019
+1. Fix the RTB locking issue
+
+4/25/2019
+1. Reorganize code, so that easy to find
+
+4/24/2019
+1. Use Base64 to help serializaiton
+
+4/23/2019
+1. Roundtrip serialization
+
+4/22/2019
+1. Add and delete RichTextBox to be serialized properly
+
+4/21/2019
+1. Store Project file
+2. Restore RichTextBox dynamically
+
+4/20/2019
+1. Ability to delete richtextbox
+2. Preview 1st Frame
+
+4/19/2019
+1. Print 1st group of images
+2. Need to assign text and line color to RowConfig
+
+4/18/2019
+1. CountryCodeMapping
+
+4/17/2019
+1. Data Structure to hold data
+2. Different refresh mode
+3. Concept of grouping,sorting within group
+4. Decisions: always 3 mode, Horizontal, Vetical or Individual
+5. Decision: Either one or 2 groups
+6. Decision: Move row visual
+7. Decision: Side visual (country) max 2 groups
+8. Decision: Click country flag to bind color etc
+
+4/16/2019
+1. Improve drag&drop&resize for RichTextBox
+
+4/13/2019
+1. Universal ColorPicker
+
+4/10/2019
+1. Proper data structure to cache CSV data
+2. Fix the data binding issue and data retrieval issue

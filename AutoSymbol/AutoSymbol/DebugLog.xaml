@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AutoSymbol"
         mc:Ignorable="d"
-        Title="DebugLog" Height="450" Width="800">
+        Title="DebugLog" Height="900" Width="1080">
     <StackPanel Orientation="Vertical" DockPanel.Dock="Top" Margin="2">
         <ToolBarTray HorizontalAlignment="Stretch" Margin="2">            
             <ToolBar HorizontalAlignment="Stretch" Margin="2">
@@ -14,9 +14,21 @@
                 <Button Content="Refresh"  Click="RefreshClicked" Margin="2"/>               
             </ToolBar>
         </ToolBarTray>
-        <StackPanel Orientation="Horizontal" Margin="2">         
-            <ListView Margin="2" Name="lvKeys" SelectionChanged="KeySelected"></ListView>
-            <ListView Margin="2" Name="lvValues" SelectionChanged="MessageSelected"></ListView>
+        <TextBlock Name="tbStack"></TextBlock>
+        <TextBlock Name="tbMessage"></TextBlock>
+        <StackPanel Orientation="Horizontal" Margin="2">
+           
+            <ListBox Margin="2" Name="lvKeys" SelectionChanged="KeySelected" Width="500"></ListBox>
+            <ListBox Margin="2" Name="lvValues" SelectionChanged="MessageSelected" Width="500"></ListBox>
         </StackPanel>
+        <Grid Height="500">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="600"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <DockPanel x:Name="DLeftPanel" ></DockPanel>
+            <GridSplitter Width="5" HorizontalAlignment="Right" VerticalAlignment="Stretch" ResizeBehavior="CurrentAndNext"/>
+            <DockPanel x:Name="DRightPanel" Grid.Column="1" ></DockPanel>
+        </Grid>
     </StackPanel>
 </Window>

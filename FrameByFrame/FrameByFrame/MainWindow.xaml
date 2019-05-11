@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FrameByFrame"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800" Background="White" UseLayoutRounding="True">
     <DockPanel LastChildFill="True">
         <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
             <ToolBarTray >
@@ -19,6 +19,7 @@
                             <Button Content="FirstFrame" Click="FirstFrameClicked"  Margin="2"/>                           
                             <!--<Button Content="Sync" Click="SyncClicked"/>-->
                             <Button Content="Start" Click="StartClicked"  Margin="2"/>
+                            <Button Content="Video" Click="RecordVideoClicked"  Margin="2"/>
                             <Button Content="Bg" Click="BackGroundClicked"  Margin="2" />
                             <Button Content="CSV" Click="CSVClicked"  Margin="2"/>
                             <ComboBox Width="50" Name="cbConfig"  SelectionChanged="RowChanged"  Margin="2">
@@ -66,6 +67,15 @@
                     <xctk:RichTextBoxFormatBar />
                 </xctk:RichTextBoxFormatBarManager.FormatBar>
             </xctk:RichTextBox>-->
+            <Canvas.Background>
+                <LinearGradientBrush EndPoint="0.5,1"
+                             StartPoint="0.5,0">
+                    <GradientStop Color="White"
+                        Offset="0" />
+                    <GradientStop Color="Gray"
+                        Offset="1" />
+                </LinearGradientBrush>
+            </Canvas.Background>
         </local:DragCanvas>
         <!--<DataGrid Name="gridData" ItemsSource="{Binding}"></DataGrid>-->
     </DockPanel>

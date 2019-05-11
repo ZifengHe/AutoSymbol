@@ -18,6 +18,7 @@ namespace System
     {
         public static SortedDictionary<string, SortedDictionary<int, TreeMessageNode>> MsgDict = new SortedDictionary<string, SortedDictionary<int, TreeMessageNode>>();
         public static string TrackingSig = "NA";
+        public static ER TrackingER;
         public static void BreakOnCondition(bool b)
         {
             if (b)
@@ -46,11 +47,8 @@ namespace System
                 string key = BuildStackNameKeys();
                 TreeMessageNode tmd = new TreeMessageNode();
                 tmd.Message = msg;
-                if (objs != null && objs.Length >= 1)
-                    tmd.ObjOne = objs[0];
-                if (objs != null && objs.Length >= 2)
-                    tmd.ObjTwo = objs[1];
-                if (MsgDict.ContainsKey(key))
+                tmd.Objs = objs;
+                if (MsgDict.ContainsKey(key) == false)
                     MsgDict[key] = new SortedDictionary<int, TreeMessageNode>();
                 MsgDict[key][tmd.Id] = tmd;
             }
@@ -68,7 +66,8 @@ namespace System
             if (b)
             {
                 TreeMessageNode.Enabled = true;
-                TreeMessageNode.StartFrameIndex = new StackTrace().GetFrames().Length;
+                TreeMessageNode.StartFrameIndex = new StackTrace()
+                    .GetFrames().Where(x => x.GetMethod().ReflectedType.FullName.Contains("AutoSymbol")).Count();
                 LogTreeMessage(msg, objs);
             }
             else
@@ -80,9 +79,9 @@ namespace System
         private static string BuildStackNameKeys()
         {
             var st = new StackTrace();
-            StackFrame[] sfs = st.GetFrames();
+            StackFrame[] sfs = st.GetFrames().Where(x=>x.GetMethod().ReflectedType.FullName.Contains("AutoSymbol")).ToArray();
             StringBuilder sb = new StringBuilder();
-            for (int i = TreeMessageNode.StartFrameIndex; i >= 1; i--)
+            for (int i = sfs.Length - TreeMessageNode.StartFrameIndex; i>=0; i--)
             {
                 sb.AppendFormat("{0}|", sfs[i].GetMethod().Name);
             }
@@ -95,8 +94,7 @@ namespace System
         public static bool Enabled = false;
         public static int LastId = 0;
         public static int StartFrameIndex =0;
-        public object ObjOne;
-        public object ObjTwo;
+        public object [] Objs;
         public string Message;
         public int Id;
 
@@ -106,14 +104,42 @@ namespace System
         public TreeMessageNode()
         {
             Id = LastId;
-            Id++;
+            LastId++;
         }
 
-        public string ToMsg()
+        public string ToDisplayMessage()
         {
             return string.Format("{0} {1}",
                 Id,
                 Message);
+        }
+
+        public object ObjOne
+        {
+            get
+            {
+                if(Objs!= null)
+                {
+                    if (Objs.Length >= 1)
+                        return Objs[0];
+                }
+
+                return null;
+            }
+        }
+
+        public object ObjTwo
+        {
+            get
+            {
+                if (Objs != null)
+                {
+                    if (Objs.Length >= 2)
+                        return Objs[1];
+                }
+
+                return null;
+            }
         }
     }
 

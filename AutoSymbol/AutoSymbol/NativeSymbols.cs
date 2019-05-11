@@ -22,7 +22,7 @@ namespace AutoSymbol
             this.OpStore[NMul.ShortName] = NMul;
 
             HydrateER();
-            PopulateTopMembers();
+            PopulateSeedMember();
         }
 
         public void HydrateER()
@@ -68,7 +68,7 @@ namespace AutoSymbol
             this.ERStore["NOnePlusOne"] = er;
         }
 
-        public void PopulateTopMembers()
+        public void PopulateSeedMember()
         {            
             Member lastOne = One;
             for (int i = 2; i < 7; i++)

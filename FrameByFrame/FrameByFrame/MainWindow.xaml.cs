@@ -23,10 +23,16 @@ using Path = System.IO.Path;
 using System.Xml.Serialization;
 using System.Windows.Markup;
 using System.Windows.Forms;
+//using AForge.Video.FFMPEG;
+using Accord;
+using Accord.Video;
+using System.Drawing;
+using System.Diagnostics;
+using Accord.Video.FFMPEG;
 
 namespace FrameByFrame
 {
-    
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -44,51 +50,51 @@ namespace FrameByFrame
             InitializeComponent();
             FindRootFolder();
             LoadCountryCode();
-            CurrentProj = Path.Combine(RootFolder, @"FrameByFrame\Proj\Current.xml");   
+            CurrentProj = Path.Combine(RootFolder, @"FrameByFrame\Proj\Current.xml");
             ProjData.TempFile = Path.Combine(RootFolder, @"FrameByFrame\Proj\temp.csv");
-        }  
-        
+        }
+
         void FindRootFolder()
         {
             if (Directory.Exists(@"C:\Users\zifengh\Source\Repos\ZifengHe\AutoSymbol"))
                 RootFolder = @"C:\Users\zifengh\Source\Repos\ZifengHe\AutoSymbol";
         }
-       
+
         private void ProcessOneFrame(int index)
         {
             char[] sep = new char[] { ' ' };
             //string timeStr = Header[index].Split(sep)[0];
 
-        }      
-     
+        }
+
         private void CSVClicked(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog dlg = OpenFile("*.csv", "CSV Files (*.csv)|*.csv");
 
             MyProj.CSVContent = File.ReadAllText(dlg.FileName);
-            MyProj.ProcessCSVFile();      
+            MyProj.ProcessCSVFile();
 
             cbConfig.Items.Clear();
-            foreach(var one in MyProj.Rows)
+            foreach (var one in MyProj.Rows)
             {
                 cbConfig.Items.Add(one.Id());
             }
         }
 
-        private void RowLineColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
+        private void RowLineColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
         {
             MyProj.GetRow((string)cbConfig.SelectedValue).LineColor = RowLineColor.SelectedColor.Value;
             RefreshView();
         }
 
-        private void RowTextColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
+        private void RowTextColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
         {
             MyProj.GetRow((string)cbConfig.SelectedValue).TextColor = RowTextColor.SelectedColor.Value;
             RefreshView();
         }
-        
 
-      //  Dictionary<string, UIElement> Created = new Dictionary<string, UIElement>();
+
+        //  Dictionary<string, UIElement> Created = new Dictionary<string, UIElement>();
         private void AddRtbClicked(object sender, RoutedEventArgs e)
         {
             RTBHost host = new RTBHost();
@@ -96,18 +102,18 @@ namespace FrameByFrame
 
             RichTextConfig rtc = new RichTextConfig();
             rtc.Title = host.txtTitle.Text;
-            MyProj.RichTexts.Add(rtc);            
-                     
+            MyProj.RichTexts.Add(rtc);
+
             cbEdit.Items.Add(rtc.GetKey());
-            host.gridHost.Children.Remove(host.rtbItem);            
+            host.gridHost.Children.Remove(host.rtbItem);
             MainCanvas.Children.Add(host.rtbItem);
-            rtcMapping[host.rtbItem]=rtc.Title;
+            rtcMapping[host.rtbItem] = rtc.Title;
 
             // SyncData();
             //RefreshCanvas();
         }
 
-     
+
 
         //private void SyncClicked(object sender, RoutedEventArgs e)
         //{
@@ -115,9 +121,9 @@ namespace FrameByFrame
         //    DataToCanvas();
         //}
 
-       
+
         private void RowChanged(object sender, SelectionChangedEventArgs e)
-        {            
+        {
         }
 
 
@@ -176,9 +182,9 @@ namespace FrameByFrame
 
         private void EditItemChanged(object sender, SelectionChangedEventArgs e)
         {
-            
+
         }
-       
+
 
         private void RefreshClicked(object sender, RoutedEventArgs e)
         {
@@ -186,14 +192,14 @@ namespace FrameByFrame
             //RefreshView();
         }
 
-        
+
 
         private void FirstFrameClicked(object sender, RoutedEventArgs e)
         {
 
         }
 
-        
+
 
         private void ConfigureFirstFrame()
         {
@@ -206,29 +212,21 @@ namespace FrameByFrame
         }
         private void StartClicked(object sender, RoutedEventArgs e)
         {
-            
+            foreach (string file in Directory.GetFiles(@"c:\temp\zzzzz\"))
+                File.Delete(file);
 
-
-            Image cnImg = new Image
+            for (int i = 5; i <= MyProj.Header.Length - 1; i++)
             {
-                Width = 60,
-                Height = 45,
-                Name = "cn",
-                Source = new BitmapImage(new Uri(@"file://C:\Users\zifengh\source\repos\ZifengHe\AutoSymbol\FrameByFrame\Flags\cn.png")),
-            };
+                CurrentHeaderIndex = i;
+                RefreshView();
+                Transform transform = MainCanvas.LayoutTransform;
+                MainCanvas.LayoutTransform = null;
+                System.Windows.Size size = new System.Windows.Size(MainCanvas.Width, MainCanvas.Height);
+                MainCanvas.Measure(size);
+                MainCanvas.Arrange(new Rect(size));
+                Helper.SaveToPng(MainCanvas, @"c:\temp\zzzzz\" + i.ToString() + ".png");
 
-            MainCanvas.Children.Add(cnImg);
-            Canvas.SetTop(cnImg, 300);
-            Canvas.SetLeft(cnImg, 500);
-
-
-
-            //Transform transform = MainCanvas.LayoutTransform;
-            //MainCanvas.LayoutTransform = null;
-            //Size size = new Size(MainCanvas.Width, MainCanvas.Height);
-            //MainCanvas.Measure(size);
-            //MainCanvas.Arrange(new Rect(size));
-            //Helper.SaveToPng(MainCanvas, @"c:\temp\1.png");
+            }
         }
 
         private void BackGroundClicked(object sender, RoutedEventArgs e)
@@ -316,7 +314,7 @@ namespace FrameByFrame
                     //one.RenderTransformOrigin = item.RenderTransformOrigin;
                     one.xamlStr = XamlWriter.Save(item);
                 }
-            }            
+            }
         }
 
 
@@ -331,7 +329,7 @@ namespace FrameByFrame
         private void LoadProjClicked(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog dlg = OpenFile("*.xml", "XML Files (*.xml)|*.xml");
-            
+
             MyProj = ObjectManager.FromXml<ProjData>(dlg.FileName);
             MyProj.ProcessCSVFile();
 
@@ -340,7 +338,7 @@ namespace FrameByFrame
             {
                 cbConfig.Items.Add(one.Id());
             }
-            RefreshView();           
+            RefreshView();
         }
 
         private void FontClicked(object sender, RoutedEventArgs e)
@@ -353,6 +351,55 @@ namespace FrameByFrame
                 MyProj.FontWeight = fd.Font.Bold ? FontWeights.Bold : FontWeights.Regular;
                 MyProj.FontStyle = fd.Font.Italic ? FontStyles.Italic : FontStyles.Normal;
             }
+        }
+
+        private void RecordVideoClicked(object sender, RoutedEventArgs e)
+        {
+            int width = (int)MainCanvas.Width;
+            int height = (int)MainCanvas.Height;
+
+
+            VideoFileWriter writer = new VideoFileWriter();
+            writer.Open(@"c:\temp\Ztest.avi", width, height, 15, VideoCodec.H264);
+
+            int totalFrame = 15 * 20;
+            MaxInterpolation = totalFrame / MyProj.Header.Length;
+
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            for (int i = 5; i <= MyProj.Header.Length - 1; i++)
+            {
+                Trace.TraceInformation("{0} of {1}", i, MyProj.Header.Length);
+
+                for (int j = 0; j < MaxInterpolation; j++)
+                {
+
+                    CurrentHeaderIndex = i;
+                    CurrentInterpolationIndex = j;
+                    RefreshView();
+                    Transform transform = MainCanvas.LayoutTransform;
+                    MainCanvas.LayoutTransform = null;
+                    System.Windows.Size size = new System.Windows.Size(MainCanvas.ActualWidth, MainCanvas.ActualHeight);
+                    MainCanvas.Measure(size);
+                    MainCanvas.Arrange(new Rect(size));
+                    //Helper.SaveToBmp(MainCanvas, @"c:\temp\zzzzz\" + i.ToString()+"-" + j.ToString() + ".bmp");
+                    //Bitmap b = new Bitmap(@"c:\temp\zzzzz\" + i.ToString() + "-" + j.ToString() + ".bmp");
+                    Bitmap b = new Bitmap(Helper.CreateBmpStream(MainCanvas));
+
+
+                    //RenderTargetBitmap rtb = new RenderTargetBitmap((int)MainCanvas.RenderSize.Width,
+                    //    (int)MainCanvas.RenderSize.Height, 96d, 96d, System.Windows.Media.PixelFormats.Default);
+                    //rtb.Render(MainCanvas);
+                    //rtb.
+
+                    writer.WriteVideoFrame(b);
+                }
+            }
+
+            writer.Close();
+
+            System.Windows.MessageBox.Show("Complete in " + sw.Elapsed.TotalSeconds + " Seconds");
         }
     }
 }

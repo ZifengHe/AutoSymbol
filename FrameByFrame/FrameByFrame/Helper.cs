@@ -99,9 +99,32 @@ namespace FrameByFrame
             SaveUsingEncoder(visual, fileName, encoder);
         }
 
+        public static Stream CreateBmpStream(FrameworkElement visual)
+        {
+            MemoryStream ms = new MemoryStream();
+            var encoder = new BmpBitmapEncoder();
+            PresentationSource source = PresentationSource.FromVisual(visual);
+
+            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)visual.ActualWidth, (int)visual.ActualHeight,
+                96 * source.CompositionTarget.TransformToDevice.M11,
+                96 * source.CompositionTarget.TransformToDevice.M22,
+                PixelFormats.Pbgra32);
+            bitmap.Render(visual);
+            BitmapFrame frame = BitmapFrame.Create(bitmap);
+            encoder.Frames.Add(frame);
+            encoder.Save(ms);
+            return ms;
+        }
+
         public static void SaveUsingEncoder(FrameworkElement visual, string fileName, BitmapEncoder encoder)
         {
-            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)visual.ActualWidth, (int)visual.ActualHeight, 96, 96, PixelFormats.Pbgra32);
+            PresentationSource source = PresentationSource.FromVisual(visual);
+
+            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)visual.ActualWidth, (int)visual.ActualHeight,
+                96 * source.CompositionTarget.TransformToDevice.M11,
+                96 * source.CompositionTarget.TransformToDevice.M22,
+                PixelFormats.Pbgra32);
+
             bitmap.Render(visual);
             BitmapFrame frame = BitmapFrame.Create(bitmap);
             encoder.Frames.Add(frame);

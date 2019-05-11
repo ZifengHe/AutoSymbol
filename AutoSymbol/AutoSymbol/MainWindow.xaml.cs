@@ -78,31 +78,34 @@ namespace AutoSymbol
 
         private void CbList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            MyMode = RunningMode.Benchmark;
-            string sig = (string)cbList.SelectedValue;
-            TransList.Clear();
-            TransList.Insert(0, sig);
-            string current = sig;
-
-            while (OneTransform.AllResult.ContainsKey(current))
+            if (cbList.SelectedValue != null)
             {
-                OneTransform one = OneTransform.AllResult[current];
-                if (one.Original != null)
+                MyMode = RunningMode.Benchmark;
+                string sig = (string)cbList.SelectedValue;
+                TransList.Clear();
+                TransList.Insert(0, sig);
+                string current = sig;
+
+                while (OneTransform.AllResult.ContainsKey(current))
                 {
-                    string newSig = one.Original.Sig;
-                    if (OneTransform.AllResult.ContainsKey(newSig))
+                    OneTransform one = OneTransform.AllResult[current];
+                    if (one.Original != null)
                     {
-                        TransList.Insert(0, newSig);
+                        string newSig = one.Original.Sig;
+                        if (OneTransform.AllResult.ContainsKey(newSig))
+                        {
+                            TransList.Insert(0, newSig);
+                        }
+                        current = newSig;
                     }
-                    current = newSig;
+                    else
+                    {
+                        break;
+                    }
                 }
-                else
-                {
-                    break;
-                }
+                //ViewOneOpChain(sig);
+                ViewFromStartToLast();
             }
-            //ViewOneOpChain(sig);
-            ViewFromStartToLast();
         }
 
         private void ViewFromStartToLast()
@@ -286,7 +289,20 @@ namespace AutoSymbol
         private void DebugClicked(object sender, RoutedEventArgs e)
         {
             DebugLog dl = new DebugLog();
-            dl.Show();
+            dl.ShowDialog();
+        }
+             
+
+        private void TrackingERChanged(object sender, SelectionChangedEventArgs e)
+        {
+            foreach (var one in Set.AllSets)
+            {
+                foreach (var er in one.Value.ERStore)
+                {
+                    if (er.Value.ToString() == (string)cbER.SelectedValue)
+                        d.TrackingER = er.Value;
+                }
+            }
         }
     }
 }

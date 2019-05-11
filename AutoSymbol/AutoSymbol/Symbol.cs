@@ -106,17 +106,20 @@ namespace AutoSymbol
         {
             base.Add(mem.ShortName, mem);
 
-            if(mem.FromChain == null)
-                OneTransform.AddTransformWithNoSource(mem.Sig);
-            else
+            if (OneTransform.AllResult.ContainsKey(mem.Sig) == false)
             {
-                OneTransform small = OneTransform.AddTransformWithNoSource(mem.shortSig);
-                small.Result = mem.FromChain;
-                small.ResultSig = mem.shortSig;
+                if (mem.FromChain == null)
+                    OneTransform.AddTransformWithNoSource(mem.Sig);
+                else
+                {
+                    OneTransform small = OneTransform.AddTransformWithNoSource(mem.shortSig);
+                    small.Result = mem.FromChain;
+                    small.ResultSig = mem.shortSig;
 
-                OneTransform big = OneTransform.AddTransformWithNoSource(mem.Sig);
-                big.Result = mem.FromChain;
-                big.ResultSig = mem.Sig;
+                    OneTransform big = OneTransform.AddTransformWithNoSource(mem.Sig);
+                    big.Result = mem.FromChain;
+                    big.ResultSig = mem.Sig;
+                }
             }
         }
     }

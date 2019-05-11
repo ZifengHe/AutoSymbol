@@ -23,7 +23,7 @@ namespace AutoSymbol
 
         public static StrToOp BuildERChainsForLevel(
             OpChain toChange,
-            List<ER> multiER, 
+            List<ER> multiER,
             int maxLevel,
             int maxSizePerGen)
         {
@@ -39,19 +39,22 @@ namespace AutoSymbol
                 dict[i + 1] = new StrToOp();
                 foreach (var item in dict[i])
                 {
-                    d.StartTreeMessage("Start logging",
-                        item.Key == d.TrackingSig,
-                        item.Value);
-
                     foreach (var er in multiER)
-                    {                      
+                    {
+                        bool condition = item.Key == d.TrackingSig
+                            && ((er.Left.Sig == d.TrackingER.Left.Sig && er.Right.Sig == d.TrackingER.Right.Sig)
+                            ||d.TrackingER==null);
+                        d.StartTreeMessage("Before BuildERChainAtAllBranchOnce",
+                            condition,
+                            er,
+                            item.Value);
                         er.BuildERChainAtAllBranchOnce(dict[i + 1], item.Value);
                     }
                     List<string> keys = dict[i + 1].Keys.ToList();
                     foreach (var str in keys)
                     {
                         ShortenOneChain(dict[i + 1][str], dict[i + 1]);
-                    }                   
+                    }
                 }
 
                 StrToOp limited = new StrToOp();
@@ -72,13 +75,13 @@ namespace AutoSymbol
 
         public static void ShortenOneChain(OpChain chain, StrToOp dict)
         {
-           // OneTransform one = new OneTransform();
+            // OneTransform one = new OneTransform();
             //OpChain after = chain.Copy<OpChain>();      
             OpChain after = chain.MakeCopy();
             RecursiveShorten(after);
             OpChain.InvalidateAllSignature(after);
 
-            if(chain.Sig != after.Sig)
+            if (chain.Sig != after.Sig)
             {
                 dict[after.Sig] = after;
                 OneTransform one = OneTransform.CreateNew(chain.Sig, after.Sig, "Shorten");
@@ -93,7 +96,7 @@ namespace AutoSymbol
         }
 
         private static void RecursiveShorten(OpChain chain)
-        {          
+        {
             for (int i = 0; i < chain.Operands.Length; i++)
             {
                 Member current = chain.Operands[i];
@@ -129,10 +132,11 @@ namespace AutoSymbol
         }
 
         private void RecursiveAddEquivalentChain(bool continueWithResult, OpChain src, OpChain toCopy, OpChain root, ref OpChain toChange, StrToOp dict)
-        {            
+        {
             for (int i = 0; i < toChange.Operands.Length; i++)
                 if (toChange.Operands[i].FromChain != null)
                 {
+                    d.LogTreeMessage("Try child chain");
                     RecursiveAddEquivalentChain(continueWithResult, src, toCopy, root, ref toChange.Operands[i].FromChain, dict);
                 }
 
@@ -148,7 +152,10 @@ namespace AutoSymbol
                     dict[sig] = result;
 
                     if (continueWithResult)
+                    {
+                        d.LogTreeMessage("Start recursive on result", result.Sig);
                         RecursiveAddEquivalentChain(continueWithResult, src, toCopy, result, ref result, dict);
+                    }
                 }
             }
         }
@@ -156,7 +163,7 @@ namespace AutoSymbol
         public static OpChain TransformOneNodeInChain(OpChain erSrc, OpChain erTarget, OpChain root, string reason, ref OpChain toChange)
         {
             OpChain resultNode = TransformOneRoot(erSrc, erTarget, toChange);
-         //   OneTransform one = new OneTransform();
+            //   OneTransform one = new OneTransform();
 
             if (resultNode != null)
             {
@@ -167,7 +174,7 @@ namespace AutoSymbol
                 if (toResotre != root)
                 {
                     //newRootResult= root.Copy<OpChain>();
-                    newRootResult = root.MakeCopy();                   
+                    newRootResult = root.MakeCopy();
                 }
                 else
                 {
@@ -205,6 +212,7 @@ namespace AutoSymbol
         {
             Dictionary<string, Member> keyMap = new Dictionary<string, Member>();
 
+            d.LogTreeMessage("Pairing and replace one branch", erSrc, toChange);
             if (Match == RecursiveDiscoverPair(erSrc, toChange, keyMap))
             {
                 // OpChain retChain = erTarget.Copy<OpChain>();
@@ -230,7 +238,7 @@ namespace AutoSymbol
                 if (chain.Operands[i].FromChain == null)
                 {
                     if (keyMap.ContainsKey(chain.Operands[i].ShortName))
-                       chain.Operands[i] = keyMap[chain.Operands[i].ShortName];
+                        chain.Operands[i] = keyMap[chain.Operands[i].ShortName];
                 }
                 else
                 {
@@ -268,7 +276,7 @@ namespace AutoSymbol
                         else
                         {
                             // If already matches a chain, then this chain must match the one in dictionary exactly
-                            if(keyMap[currentSrcKey].Sig != toChange.Operands[i].Sig)
+                            if (keyMap[currentSrcKey].Sig != toChange.Operands[i].Sig)
                                 return ErrStr("C4", keyMap[currentSrcKey].ShortName, toChange.Operands[i].ShortName);
                         }
 
@@ -278,7 +286,7 @@ namespace AutoSymbol
                     else
                     {
                         if (erSrc.Operands[i].ShortName != toChange.Operands[i].ShortName)
-                            return ErrStr("C7", "non-variable should match exactly","null");
+                            return ErrStr("C7", "non-variable should match exactly", "null");
                     }
                 }
                 else

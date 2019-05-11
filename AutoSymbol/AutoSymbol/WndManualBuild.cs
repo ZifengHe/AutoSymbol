@@ -29,6 +29,15 @@ namespace AutoSymbol
             }
 
             OneTransform.Reset();
+
+            cbER.Items.Clear();
+            foreach (var one in Set.AllSets)
+            {
+                foreach (var er in one.Value.ERStore)
+                {
+                    cbER.Items.Add(er.Value.ToString());
+                }
+            }
         }
 
         private void ProceedOneLevel(OpChain toChange)
