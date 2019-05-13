@@ -41,6 +41,7 @@
                             </ComboBox>
                             <xctk:ColorPicker Name="RowTextColor" SelectedColorChanged="RowTextColorChanged"  Margin="2"></xctk:ColorPicker>
                             <xctk:ColorPicker Name="RowLineColor" SelectedColorChanged="RowLineColorChanged" Margin="2"></xctk:ColorPicker>
+                            <Button Content="AutoColor" Click="AutoColorClicked"  Margin="2"/>
                             <Button Content="Font" Click="FontClicked"  Margin="2"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">

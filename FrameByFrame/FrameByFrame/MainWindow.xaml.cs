@@ -58,6 +58,10 @@ namespace FrameByFrame
         {
             if (Directory.Exists(@"C:\Users\zifengh\Source\Repos\ZifengHe\AutoSymbol"))
                 RootFolder = @"C:\Users\zifengh\Source\Repos\ZifengHe\AutoSymbol";
+            if (Directory.Exists(@"C:\Users\Zifeng\source\repos\ZifengHe\AutoSymbol"))
+                RootFolder = @"C:\Users\Zifeng\source\repos\ZifengHe\AutoSymbol";
+            if (Directory.Exists(@"C:\Users\Zifeng\source\repos\ZifengHe\AutoSymbol\FrameByFrame\Flags"))
+                ImgRoot = @"file://C:\Users\Zifeng\source\repos\ZifengHe\AutoSymbol\FrameByFrame\Flags\";
         }
 
         private void ProcessOneFrame(int index)
@@ -83,14 +87,40 @@ namespace FrameByFrame
 
         private void RowLineColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
         {
-            MyProj.GetRow((string)cbConfig.SelectedValue).LineColor = RowLineColor.SelectedColor.Value;
-            RefreshView();
+            OneRow row = MyProj.GetRow((string)cbConfig.SelectedValue);
+            row.LineColor = RowLineColor.SelectedColor.Value;
+            System.Windows.Clipboard.SetText(string.Format("All[\"{0}\"] = Color.FromRgb({1},{2},{3});", CountryDict[row.CountryCode].ShortCode,
+                row.LineColor.R,
+                row.LineColor.G,
+                row.LineColor.B)); RefreshView();
         }
 
         private void RowTextColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
         {
-            MyProj.GetRow((string)cbConfig.SelectedValue).TextColor = RowTextColor.SelectedColor.Value;
+            OneRow row = MyProj.GetRow((string)cbConfig.SelectedValue);
+            row.TextColor = RowTextColor.SelectedColor.Value;
+            System.Windows.Clipboard.SetText(string.Format("All[\"{0}\"] = Color.FromRgb({1},{2},{3});", CountryDict[row.CountryCode].ShortCode,
+                row.TextColor.R,
+                row.TextColor.G,
+                row.TextColor.B));
             RefreshView();
+        }
+
+
+        private void AutoColorClicked(object sender, RoutedEventArgs e)
+        {
+            foreach(var row in MyProj.Rows)
+            {
+                string shortCode = CountryDict[row.CountryCode].ShortCode;
+                
+                if(ColorByCountry.All.ContainsKey(shortCode))
+                {
+                    row.TextColor = ColorByCountry.All[shortCode];
+                    row.LineColor = ColorByCountry.All[shortCode];
+                }
+            }
+            RefreshView();
+
         }
 
 
@@ -401,5 +431,6 @@ namespace FrameByFrame
 
             System.Windows.MessageBox.Show("Complete in " + sw.Elapsed.TotalSeconds + " Seconds");
         }
+
     }
 }
