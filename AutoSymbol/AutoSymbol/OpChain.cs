@@ -13,17 +13,18 @@ namespace AutoSymbol
         public string ResultSetName;
         public string FirstInputSetName;
         public string SecondInputSetName;
-        public Operator(string name, Set targetSet) : base(name)
+        public bool IsSingleOperand = false;
+        public Operator(string name, Set targetSet, bool bSingleOperand) : base(name)
         {
             ResultSetName = targetSet.ShortName;
             FirstInputSetName = ResultSetName;
             SecondInputSetName = ResultSetName;
+            IsSingleOperand = bSingleOperand;
         }
-
-        public Operator(string name, Set targetSet, Set firstInput, Set secondInput) : base(name)
-        { }
+       
         public Member Operate(params Member[] mems)
         {
+            d.BreakOnCondition(IsSingleOperand != (mems.Length == 1));
             OpChain chain = new OpChain();
             chain.Operator = this;
             chain.Operands = mems;

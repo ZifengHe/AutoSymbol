@@ -1,4 +1,17 @@
-﻿5/10/2019
+﻿5/17/2019
+1. Generate OpChainConstruct at the set level
+
+5/16/2019
+1. Design OpChainConstruct
+
+5/14/2019
+1. Operator for single Operand
+2. Algorithm in generating complex one for Construction
+
+5/13/2019
+1. Group Id unique proof design
+
+5/10/2019
 1. Draft Group ER
 
 5/9/2019

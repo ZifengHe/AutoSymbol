@@ -388,13 +388,11 @@ namespace FrameByFrame
             int width = (int)MainCanvas.Width;
             int height = (int)MainCanvas.Height;
 
-
             VideoFileWriter writer = new VideoFileWriter();
             writer.Open(@"c:\temp\Ztest.avi", width, height, 15, VideoCodec.H264);
 
             int totalFrame = 15 * 20;
             MaxInterpolation = totalFrame / MyProj.Header.Length;
-
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -404,7 +402,6 @@ namespace FrameByFrame
 
                 for (int j = 0; j < MaxInterpolation; j++)
                 {
-
                     CurrentHeaderIndex = i;
                     CurrentInterpolationIndex = j;
                     RefreshView();
@@ -413,16 +410,7 @@ namespace FrameByFrame
                     System.Windows.Size size = new System.Windows.Size(MainCanvas.ActualWidth, MainCanvas.ActualHeight);
                     MainCanvas.Measure(size);
                     MainCanvas.Arrange(new Rect(size));
-                    //Helper.SaveToBmp(MainCanvas, @"c:\temp\zzzzz\" + i.ToString()+"-" + j.ToString() + ".bmp");
-                    //Bitmap b = new Bitmap(@"c:\temp\zzzzz\" + i.ToString() + "-" + j.ToString() + ".bmp");
                     Bitmap b = new Bitmap(Helper.CreateBmpStream(MainCanvas));
-
-
-                    //RenderTargetBitmap rtb = new RenderTargetBitmap((int)MainCanvas.RenderSize.Width,
-                    //    (int)MainCanvas.RenderSize.Height, 96d, 96d, System.Windows.Media.PixelFormats.Default);
-                    //rtb.Render(MainCanvas);
-                    //rtb.
-
                     writer.WriteVideoFrame(b);
                 }
             }

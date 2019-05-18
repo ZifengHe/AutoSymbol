@@ -16,9 +16,9 @@ namespace AutoSymbol
         {
             One = new Member("1", this.ShortName, false);
             this.MemStore.Add(One);
-            NPlus = new Operator("+", this);
+            NPlus = new Operator("+", this, false);
             this.OpStore[NPlus.ShortName] = NPlus;
-            NMul = new Operator("×", this);
+            NMul = new Operator("×", this, false);
             this.OpStore[NMul.ShortName] = NMul;
 
             HydrateER();

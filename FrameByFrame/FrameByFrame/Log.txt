@@ -1,4 +1,16 @@
-﻿5/10/2019
+﻿5/17/2019
+1. Enable grouping
+
+5/16/2019
+1. Add numbers to the end
+2. Add number line
+
+5/14/2019
+1. Right side line
+2. Align flag to the right side
+3. Distance between groups
+
+5/10/2019
 1. Improve interpolation frame to become smoothly 3 minutes
 2. Default color
 
