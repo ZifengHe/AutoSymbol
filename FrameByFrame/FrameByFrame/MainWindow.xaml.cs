@@ -166,10 +166,13 @@ namespace FrameByFrame
                 {
                     if (fe is RichTextBox)
                     {
-                        if (rtcMapping[(RichTextBox)fe] == (string)cbEdit.SelectedValue)
+                        if (rtcMapping.ContainsKey((RichTextBox)fe))
                         {
-                            toDelete = (RichTextBox)fe;
-                            cbEdit.Items.Remove(rtcMapping[toDelete]);
+                            if (rtcMapping[(RichTextBox)fe] == (string)cbEdit.SelectedValue)
+                            {
+                                toDelete = (RichTextBox)fe;
+                                cbEdit.Items.Remove(rtcMapping[toDelete]);
+                            }
                         }
                     }
                 }

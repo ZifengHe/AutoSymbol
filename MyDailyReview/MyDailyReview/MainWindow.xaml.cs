@@ -32,15 +32,12 @@ namespace MyDailyReview
         List<Line> All = new List<Line>();
         string fileName = @"C:\Users\zifengh\OneDrive\DailyReview\ContentOne.txt";
         string backupFile = @"C:\Users\zifengh\OneDrive\DailyReview\ContentOneBackup.txt";
+        string logFile = @"C:\Users\zifengh\OneDrive\DailyReview\log.txt";
         int current = 0;
+        int lastScore = 0;
         public MainWindow()
         {
-            if (File.Exists(fileName) == false)
-            {
-                fileName = @"C:\Users\zifeng\OneDrive\DailyReview\ContentOne.txt";
-                backupFile = @"C:\Users\zifeng\OneDrive\DailyReview\ContentOneBackup.txt";
-            }
-            InitializeComponent();
+            InitializeComponent();           
             StartClicked(null, null);
         }
 
@@ -59,14 +56,23 @@ namespace MyDailyReview
 
             if (File.Exists(backupFile) == false || File.ReadAllLines(backupFile).Length < File.ReadAllLines(fileName).Length)
                 File.Copy(fileName, backupFile, true);
+
+            List<string> list = new List<string>();
+            if (File.Exists(logFile))
+                list = File.ReadAllLines(logFile).ToList();
+            list.Insert(0, string.Format("Score ： {0} on {1}", lastScore, DateTime.Today.Date));
+            File.WriteAllLines(logFile, list.ToArray());
+
         }
 
         private void StartClicked(object sender, RoutedEventArgs e)
         {
             All.Clear();
             string[] lines = File.ReadAllLines(fileName);
+            int score = 0;
             for (int i = 1; i < lines.Length; i++)
             {
+                score += 10;
                 string[] item = lines[i].Split('|');
                 Line newOne = new Line();
                 newOne.Index = int.Parse(item[0].TrimStart().TrimEnd());
@@ -75,6 +81,7 @@ namespace MyDailyReview
                 newOne.Question = item[3].TrimStart().TrimEnd();
                 newOne.Answer = item[4].TrimStart().TrimEnd();
                 newOne.TestFrequency = item[5].TrimStart().TrimEnd().First();
+                score += 3 * (int)(newOne.TestFrequency - 'A');
                 All.Add(newOne);
             }
 
@@ -82,31 +89,40 @@ namespace MyDailyReview
             cbCategory.ItemsSource = All.GroupBy(x => x.Category).Select(x => x.Key).ToList();
 
             current = 0;
-            lblName.Content = All[0].Question;
+            lblName.Content = string.Format("{0} : {1}", All[current].Category, All[current].Question);
+            tbScore.Text = score.ToString();
+            lastScore = score;
+
+            cbLog.Items.Clear();
+            cbAll.Items.Clear();
+            foreach (var one in lines.ToList().Take(200))
+                cbAll.Items.Add(one);
+            foreach (var one in File.ReadAllLines(logFile).Take(200))
+                cbLog.Items.Add(one);
+
         }
 
         private void Pass_Checked(object sender, RoutedEventArgs e)
         {
             All[current].TestFrequency = (char)((int)(All[current].TestFrequency) + 1);
-            WaitAndMoveToNext();
-        }
-
-        private void WaitAndMoveToNext()
-        {
             Application.Current.Dispatcher.BeginInvoke(
                 DispatcherPriority.Background,
-                new Action(() => { System.Threading.Thread.Sleep(1000); cbFail.IsChecked = false; cbPass.IsChecked = false; cbSkip.IsChecked = false; }));
+                new Action(() => { System.Threading.Thread.Sleep(1000); cbFail.IsChecked = false; cbPass.IsChecked = false; }));
 
             MoveToNext();
-        }
-
+        }               
         private void FailClicked(object sender, RoutedEventArgs e)
         {
             if (All[current].TestFrequency > 'A')
             {
                 All[current].TestFrequency = (char)((int)(All[current].TestFrequency) - 1);
             }
-            WaitAndMoveToNext();
+            Application.Current.Dispatcher.BeginInvoke(
+                DispatcherPriority.Background,
+                new Action(() => { System.Threading.Thread.Sleep(1000); cbFail.IsChecked = false; cbPass.IsChecked = false; }));
+
+
+            MoveToNext();
         }
         private void MoveToNext()
         {
@@ -146,9 +162,8 @@ namespace MyDailyReview
 
         private void UpdateClicked(object sender, RoutedEventArgs e)
         {
-            All[current - 1].Question = txtQuestion.Text;
-            All[current - 1].Answer = txtAnswer.Text;
-            All[current - 1].Category = (string)cbCategory.SelectedValue;
+            All[current-1].Question = txtQuestion.Text;
+            All[current-1].Answer = txtAnswer.Text;
             DoneClicked(null, null);
             MessageBox.Show("Current entry updated");
         }
@@ -159,9 +174,9 @@ namespace MyDailyReview
             StartClicked(null, null);
         }
 
-        private void SkipClicked(object sender, RoutedEventArgs e)
+        private void ReviewOnlyClicked(object sender, RoutedEventArgs e)
         {
-            WaitAndMoveToNext();
+            MoveToNext();
         }
     }
 }

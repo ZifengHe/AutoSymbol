@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6D80CA92-9DA3-41E1-87CD-0584505AE7E9}</ProjectGuid>
+    <ProjectGuid>{628754B7-4842-404F-B4C6-04B0107F21E6}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>ReviewApp</RootNamespace>
-    <AssemblyName>ReviewApp</AssemblyName>
+    <RootNamespace>MyDailyReview</RootNamespace>
+    <AssemblyName>MyDailyReview</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>

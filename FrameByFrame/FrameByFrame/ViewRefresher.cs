@@ -13,6 +13,7 @@ using System.Windows.Shapes;
 
 namespace FrameByFrame
 {
+    using RichTextBox = Xceed.Wpf.Toolkit.RichTextBox;
     public partial class MainWindow : Window
     {
         public string ImgRoot = @"file://C:\Users\zifengh\source\repos\ZifengHe\AutoSymbol\FrameByFrame\Flags\";
@@ -178,6 +179,22 @@ namespace FrameByFrame
 
         private void DrawGroupHeader(int rowTop, int rowHeight, string content)
         {
+            if(MyProj.RichTexts.Where(x=>x.Title == content).Count() ==0)
+            {
+                RichTextConfig config = new RichTextConfig();
+                config.Title = content;
+                RichTextBox one = new RichTextBox();
+                one.Text = content;
+                Canvas.SetTop(one, rowTop);
+                Canvas.SetLeft(one, 500);
+                rtcMapping[one] = content;
+                config.xamlStr = XamlWriter.Save(one);
+                cbEdit.Items.Add(content);
+                MyProj.RichTexts.Add(config);
+
+
+            }
+            
         }
 
         private double DrawGroupParkingLine(int rowHeight, Dictionary<string, double> longestByGroup, string g)
