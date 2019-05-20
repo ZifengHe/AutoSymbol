@@ -37,7 +37,8 @@ namespace MyDailyReview
         int lastScore = 0;
         public MainWindow()
         {
-            InitializeComponent();           
+            InitializeComponent();
+            this.WindowState = System.Windows.WindowState.Maximized;
             StartClicked(null, null);
         }
 

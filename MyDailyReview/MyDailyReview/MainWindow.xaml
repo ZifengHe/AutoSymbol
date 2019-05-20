@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MyDailyReview"
         mc:Ignorable="d"
-        Title="MainWindow"  Closing="wndClosing">
+        Title="MainWindow"  Closing="wndClosing" Background="LightBlue">
     <Grid Margin="0,0,0,-140">
         <StackPanel Margin="10" HorizontalAlignment="Left">
             <Label FontWeight="Bold" FontSize="50" Name="lblName" FontFamily="Kaiti">Questions Here</Label>
@@ -30,17 +30,17 @@
                         Review Only
                     </Button>
                 </StackPanel>
-                <TextBlock Name="tbScore" Margin="100,2,2,2" FontSize="88" Foreground="Green">446</TextBlock>
+                <TextBlock Name="tbScore" Margin="100,2,2,2" FontSize="88" Foreground="Green">8888</TextBlock>
             </StackPanel>
             <!--<Button FontSize="20" Click="DoneClicked" Margin="20" Visibility="Hidden">Done For Today!</Button>
             <Button FontSize="20" Click="StartClicked" Margin=" 20" Visibility="Hidden">Start</Button>-->
             <StackPanel  Orientation="Horizontal" Margin="0,0,0,10">
                 <Label FontSize="15">Question :</Label>
-                <TextBox FontSize="15" Name="txtQuestion" FontFamily="Kaiti" Width="500"></TextBox>
+                <TextBox Name="txtQuestion" FontFamily="Kaiti" Width="1000" FontSize="40"></TextBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                 <Label FontSize="15">Answer :</Label>
-                <TextBox FontSize="15" FontFamily="Kaiti" Name="txtAnswer" Width="500" Margin="10,0,0,0"></TextBox>
+                <TextBox FontSize="40" FontFamily="Kaiti" Name="txtAnswer" Width="1000" Margin="10,0,0,0"></TextBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal"  Margin="0,0,0,10">
                 <Label>Category :</Label>
@@ -53,8 +53,12 @@
                 <Button FontSize="20" Click="ClearClicked" Margin=" 20">Clear</Button>
                 <Button FontSize="20" Click="RestartClicked" Margin=" 20">Restart</Button>
             </StackPanel>
-            <ComboBox Name="cbLog"></ComboBox>
-            <ComboBox Name="cbAll"></ComboBox>
+            <ComboBox Name="cbLog" Margin="2"></ComboBox>
+            <ComboBox Name="cbAll" Margin="2"></ComboBox>
+            <ComboBox Name="cbScoreCard" Margin="2"></ComboBox>
+            <WrapPanel>
+                <CheckBox Name="cb1" FontFamily="Kaiti">仪式:早上锻炼，饭后刷牙，睡前读书</CheckBox>
+            </WrapPanel>
         </StackPanel>
     </Grid>
 </Window>
