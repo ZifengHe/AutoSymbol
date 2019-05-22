@@ -78,8 +78,14 @@ namespace FrameByFrame
         {
             Microsoft.Win32.OpenFileDialog dlg = OpenFile("*.csv", "CSV Files (*.csv)|*.csv");
 
+            LoadCsvToMyProj(dlg.FileName);
+            System.Windows.MessageBox.Show("CSV Loaded");
+        }
+
+        private void LoadCsvToMyProj(string fileName)
+        {
             MyProj = new ProjData();
-            MyProj.CSVContent = File.ReadAllText(dlg.FileName);
+            MyProj.CSVContent = File.ReadAllText(fileName);
             MyProj.ProcessCSVFile();
 
             if (loadEveryRowInCombobox)
@@ -91,7 +97,6 @@ namespace FrameByFrame
                 }
             }
             loadEveryRowInCombobox = true;
-            System.Windows.MessageBox.Show("CSV Loaded");
         }
 
         private void RowLineColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
@@ -362,17 +367,26 @@ namespace FrameByFrame
 
         private void SaveProjectClicked(object sender, RoutedEventArgs e)
         {
-            CavasToData();
             Microsoft.Win32.SaveFileDialog dlg = SaveXmlFile();
             CurrentProj = dlg.FileName;
-            ObjectManager.ToXmlFile<ProjData>(CurrentProj, MyProj);
+            SaveProjectByFileName(CurrentProj);
+        }
+
+        private void SaveProjectByFileName(string fileName)
+        {
+            CavasToData();
+            ObjectManager.ToXmlFile<ProjData>(fileName, MyProj);
         }
 
         private void LoadProjClicked(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog dlg = OpenFile("*.xml", "XML Files (*.xml)|*.xml");
+            LoadProjFile(dlg.FileName);
+        }
 
-            MyProj = ObjectManager.FromXml<ProjData>(dlg.FileName);
+        private void LoadProjFile(string fileName)
+        {
+            MyProj = ObjectManager.FromXml<ProjData>(fileName);
             MyProj.ProcessCSVFile();
 
             cbConfig.Items.Clear();
@@ -562,10 +576,13 @@ namespace FrameByFrame
             foreach (var item in cbIndicator.SelectedItems)
                 csvName += item.ToString() + " ";
             string csvFile = Path.Combine(RootFolder, @"FrameByFrame\csv\" + csvName + ".csv");
-
             File.WriteAllLines(csvFile, result.ToArray());
 
+            LoadCsvToMyProj(csvFile);
 
+            string projFile = Path.Combine(RootFolder, @"FrameByFrame\proj\" + csvName + ".xml");
+            SaveProjectByFileName(projFile);
+            LoadProjFile(projFile);
         }
 
         private void IndicatorChanged(object sender, Xceed.Wpf.Toolkit.Primitives.ItemSelectionChangedEventArgs e)

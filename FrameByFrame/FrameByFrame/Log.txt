@@ -4,6 +4,7 @@
 5/21/2019
 1. Process all WDI rows  
 2. Run filter to reduce based on country
+3. Autogen csv and proj file
 
 5/20/2019
 1. First csv file
