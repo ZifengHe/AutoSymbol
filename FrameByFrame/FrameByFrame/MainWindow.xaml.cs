@@ -32,7 +32,7 @@ using Accord.Video.FFMPEG;
 
 namespace FrameByFrame
 {
-
+    using MB = System.Windows.MessageBox;
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -45,6 +45,10 @@ namespace FrameByFrame
         private Dictionary<RichTextBox, string> rtcMapping = new Dictionary<RichTextBox, string>();
         ProjData MyProj = new ProjData();
         string CurrentProj;
+        bool loadEveryRowInCombobox = true;
+        ProjData RawData;
+        Dictionary<string, Dictionary<string, OneRow>> filtered = new Dictionary<string, Dictionary<string, OneRow>>();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -52,6 +56,7 @@ namespace FrameByFrame
             LoadCountryCode();
             CurrentProj = Path.Combine(RootFolder, @"FrameByFrame\Proj\Current.xml");
             ProjData.TempFile = Path.Combine(RootFolder, @"FrameByFrame\Proj\temp.csv");
+            FlagRoot = @"file://" + RootFolder + @"\FrameByFrame\Flags\";
         }
 
         void FindRootFolder()
@@ -59,9 +64,7 @@ namespace FrameByFrame
             if (Directory.Exists(@"C:\Users\zifengh\Source\Repos\ZifengHe\AutoSymbol"))
                 RootFolder = @"C:\Users\zifengh\Source\Repos\ZifengHe\AutoSymbol";
             if (Directory.Exists(@"C:\Users\Zifeng\source\repos\ZifengHe\AutoSymbol"))
-                RootFolder = @"C:\Users\Zifeng\source\repos\ZifengHe\AutoSymbol";
-            if (Directory.Exists(@"C:\Users\Zifeng\source\repos\ZifengHe\AutoSymbol\FrameByFrame\Flags"))
-                ImgRoot = @"file://C:\Users\Zifeng\source\repos\ZifengHe\AutoSymbol\FrameByFrame\Flags\";
+                RootFolder = @"C:\Users\Zifeng\source\repos\ZifengHe\AutoSymbol";          
         }
 
         private void ProcessOneFrame(int index)
@@ -75,14 +78,20 @@ namespace FrameByFrame
         {
             Microsoft.Win32.OpenFileDialog dlg = OpenFile("*.csv", "CSV Files (*.csv)|*.csv");
 
+            MyProj = new ProjData();
             MyProj.CSVContent = File.ReadAllText(dlg.FileName);
             MyProj.ProcessCSVFile();
 
-            cbConfig.Items.Clear();
-            foreach (var one in MyProj.Rows)
+            if (loadEveryRowInCombobox)
             {
-                cbConfig.Items.Add(one.Id());
+                cbConfig.Items.Clear();
+                foreach (var one in MyProj.Rows)
+                {
+                    cbConfig.Items.Add(one.Id());
+                }
             }
+            loadEveryRowInCombobox = true;
+            System.Windows.MessageBox.Show("CSV Loaded");
         }
 
         private void RowLineColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
@@ -423,5 +432,166 @@ namespace FrameByFrame
             System.Windows.MessageBox.Show("Complete in " + sw.Elapsed.TotalSeconds + " Seconds");
         }
 
+        private void WDIClicked(object sender, RoutedEventArgs e)
+        {
+            RawData = new ProjData();
+            string wdiFile = Path.Combine(RootFolder, @"FrameByFrame\csv\download\wdi.csv");
+            RawData.CSVContent = File.ReadAllText(wdiFile);
+            RawData.ProcessCSVFile();
+            
+            cbCountry.Items.Clear();
+            foreach(var one in  RawData.Rows.GroupBy(x=>x.CountryName))
+                cbCountry.Items.Add(one.Key);
+
+           
+            System.Windows.MessageBox.Show("wdi file loaded");
+        }
+
+        private void RunFilterClicked(object sender, RoutedEventArgs e)
+        {
+            if (cbCountry.SelectedItems.Count != 1)
+            {
+                MB.Show("Filter must work on single focused country");
+                return;
+            }
+
+            /// Start year 1996 end year 2016
+            int index1996 = -1;
+            int index2016 = -1;
+            string focusCountry = cbCountry.SelectedValue;
+
+            for(int i=0; i< RawData.Header.Length; i++)
+            {
+                if (RawData.Header[i].Contains("1996"))
+                    index1996 = i;
+                if (RawData.Header[i].Contains("2016"))
+                    index2016 = i;
+            }
+
+            
+            filtered.Clear();
+
+            foreach(var one in RawData.Rows)
+            {
+                if (one.Data.ContainsKey(RawData.Header[index1996]) == false)
+                    continue;
+                if(one.Data.ContainsKey(RawData.Header[index2016]) == false)
+                    continue;
+
+                double d1996;
+                double d2016;
+
+                if (double.TryParse(one.Data[RawData.Header[index1996]], out d1996) == false)
+                    continue;
+                if (double.TryParse(one.Data[RawData.Header[index2016]], out d2016) == false)
+                    continue;
+                if (d1996 == 0)
+                    continue;
+
+                one.Magic = (d2016 - d1996) / d1996;
+
+                if (filtered.ContainsKey(one.SeriesName) == false)
+                    filtered.Add(one.SeriesName, new Dictionary<string, OneRow>());
+
+                if (filtered[one.SeriesName].ContainsKey(one.CountryName) == false)
+                    filtered[one.SeriesName][one.CountryName] = one;
+            }
+
+            cbIndicator.Items.Clear();
+            List<string> toRemove = new List<string>();
+            foreach (var one in filtered)
+            {
+                if (one.Value.ContainsKey(focusCountry) == false)
+                    continue;
+
+                if(one.Value.Where(x=>x.Value.Magic!=0).Max(x=>x.Value.Magic) == one.Value[focusCountry].Magic
+                    || one.Value.Where(x => x.Value.Magic != 0).Min(x => x.Value.Magic) == one.Value[focusCountry].Magic)
+                {
+                    cbIndicator.Items.Add(one.Key);
+                    Trace.TraceInformation(one.Key);
+                    foreach(var detail in one.Value)
+                    {
+                        Trace.TraceInformation("{0} ratio={1} From {2} in 1996 to {3} in 2016 ",
+                            detail.Key,
+                            detail.Value.Magic,
+                            double.Parse(detail.Value.Data[RawData.Header[index1996]]),
+                            double.Parse(detail.Value.Data[RawData.Header[index2016]]));
+                    }
+                }
+                else
+                {
+                    toRemove.Add(one.Key);                    
+                }
+            }
+            foreach (var key in toRemove)
+                filtered.Remove(key);
+        }
+
+        private void GenerateProj(object sender, RoutedEventArgs e)
+        {
+            /// 1. read raw csv and delete unintended line, use series name
+            /// 2. Auto save project 
+            /// 
+            string wdiFile = Path.Combine(RootFolder, @"FrameByFrame\csv\download\wdi.csv");
+            List<string> result = new List<string>();
+            string[] rawLines = File.ReadAllLines(wdiFile);
+            result.Add(rawLines[0]);
+
+            foreach(string line in rawLines)
+            {
+                bool keep = false;
+                foreach(var indicator in cbIndicator.SelectedItems)
+                {
+                    string key = indicator.ToString();
+                    if(line.Contains(key))
+                    {
+                        foreach(var item in filtered[key])
+                        {
+                            if(line.Contains(item.Key))
+                            {
+                                keep = true;
+                            }
+                        }
+                    }
+                }
+                if (keep)
+                    result.Add(line);
+            }
+
+            string csvName = string.Empty;
+            foreach (var item in cbIndicator.SelectedItems)
+                csvName += item.ToString() + " ";
+            string csvFile = Path.Combine(RootFolder, @"FrameByFrame\csv\" + csvName + ".csv");
+
+            File.WriteAllLines(csvFile, result.ToArray());
+
+
+        }
+
+        private void IndicatorChanged(object sender, Xceed.Wpf.Toolkit.Primitives.ItemSelectionChangedEventArgs e)
+        {
+            cbCountry.Items.Clear();
+            if (cbIndicator.SelectedItems.Count == 0)
+                return;
+
+            Dictionary<string, int> countryCount = new Dictionary<string, int>();
+            foreach (var one in cbIndicator.SelectedItems)
+            {
+                foreach (var item in filtered[one.ToString()].Where(x => x.Value.Magic != 0))
+                {
+                    if (countryCount.ContainsKey(item.Key) == false)
+                        countryCount[item.Key] = 0;
+                    countryCount[item.Key]++;
+                }
+            }
+            foreach(var one in countryCount)
+            {
+                if(one.Value == cbIndicator.SelectedItems.Count)
+                {
+                    cbCountry.Items.Add(one.Key);
+                }
+            }
+            cbCountry.SelectAll();
+        }
     }
 }

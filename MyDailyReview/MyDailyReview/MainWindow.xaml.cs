@@ -33,10 +33,18 @@ namespace MyDailyReview
         string fileName = @"C:\Users\zifengh\OneDrive\DailyReview\ContentOne.txt";
         string backupFile = @"C:\Users\zifengh\OneDrive\DailyReview\ContentOneBackup.txt";
         string logFile = @"C:\Users\zifengh\OneDrive\DailyReview\log.txt";
+        string scoreFile = @"C:\Users\zifengh\OneDrive\DailyReview\ScoreCard.txt";
         int current = 0;
         int lastScore = 0;
         public MainWindow()
         {
+            if(File.Exists(@"C:\Users\zifeng\OneDrive\DailyReview\ContentOne.txt"))
+            {
+                fileName = @"C:\Users\zifeng\OneDrive\DailyReview\ContentOne.txt";
+                backupFile = @"C:\Users\zifeng\OneDrive\DailyReview\ContentOneBackup.txt";
+                logFile = @"C:\Users\zifeng\OneDrive\DailyReview\log.txt";
+                scoreFile = @"C:\Users\zifeng\OneDrive\DailyReview\ScoreCard.txt";
+            }
             InitializeComponent();
             this.WindowState = System.Windows.WindowState.Maximized;
             StartClicked(null, null);
@@ -96,10 +104,13 @@ namespace MyDailyReview
 
             cbLog.Items.Clear();
             cbAll.Items.Clear();
+            cbScoreCard.Items.Clear();
             foreach (var one in lines.ToList().Take(200))
                 cbAll.Items.Add(one);
             foreach (var one in File.ReadAllLines(logFile).Take(200))
                 cbLog.Items.Add(one);
+            foreach (var one in File.ReadAllLines(scoreFile).Take(200))
+                cbScoreCard.Items.Add(one);
 
         }
 
@@ -178,6 +189,55 @@ namespace MyDailyReview
         private void ReviewOnlyClicked(object sender, RoutedEventArgs e)
         {
             MoveToNext();
+        }
+
+        private void ScoreCardSubmitted(object sender, RoutedEventArgs e)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(DateTime.Today.Date.ToShortDateString() + " ");
+            if (cb1.IsChecked.Value)
+                sb.Append("1P ");
+            else
+                sb.Append("1F ");
+
+            if (cb2.IsChecked.Value)
+                sb.Append("2P ");
+            else
+                sb.Append("2F ");
+
+            if (cb3.IsChecked.Value)
+                sb.Append("3P ");
+            else
+                sb.Append("3F ");
+
+            if (cb4.IsChecked.Value)
+                sb.Append("4P ");
+            else
+                sb.Append("4F ");
+
+            if (cb5.IsChecked.Value)
+                sb.Append("5P ");
+            else
+                sb.Append("5F ");
+
+            if (cb6.IsChecked.Value)
+                sb.Append("6P ");
+            else
+                sb.Append("6F ");
+
+            if (cb7.IsChecked.Value)
+                sb.Append("7P ");
+            else
+                sb.Append("7F ");
+
+            if (cb8.IsChecked.Value)
+                sb.Append("8P ");
+            else
+                sb.Append("8F ");
+
+            List<string> list = File.ReadAllLines(scoreFile).ToList();
+            list.Insert(0, sb.ToString());
+            File.WriteAllLines(scoreFile, list.ToArray());
         }
     }
 }

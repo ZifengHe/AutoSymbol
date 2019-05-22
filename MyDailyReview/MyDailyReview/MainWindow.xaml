@@ -56,9 +56,17 @@
             <ComboBox Name="cbLog" Margin="2"></ComboBox>
             <ComboBox Name="cbAll" Margin="2"></ComboBox>
             <ComboBox Name="cbScoreCard" Margin="2"></ComboBox>
-            <WrapPanel>
-                <CheckBox Name="cb1" FontFamily="Kaiti">仪式:早上锻炼，饭后刷牙，睡前读书</CheckBox>
-            </WrapPanel>
+            <StackPanel Orientation="Vertical">
+                <CheckBox Name="cb1" FontFamily="Kaiti" FontSize="15">仪式:早上锻炼，饭后刷牙，睡前读书</CheckBox>
+                <CheckBox Name="cb2" FontFamily="Kaiti"  FontSize="15">坚持小目标编程</CheckBox>
+                <CheckBox Name="cb3" FontFamily="Kaiti"  FontSize="15">饮食无糖，无咖啡因，无代糖，优质蛋白适量</CheckBox>
+                <CheckBox Name="cb4" FontFamily="Kaiti"  FontSize="15">空腹睡眠</CheckBox>
+                <CheckBox Name="cb5" FontFamily="Kaiti"  FontSize="15">用计时器控制随机阅读</CheckBox>
+                <CheckBox Name="cb6" FontFamily="Kaiti"  FontSize="15">足够家人互动</CheckBox>
+                <CheckBox Name="cb7" FontFamily="Kaiti"  FontSize="15">完成计分卡100分</CheckBox>
+                <CheckBox Name="cb8" FontFamily="Kaiti"  FontSize="15">成交后笔记，九点后不看</CheckBox>
+                <Button Click="ScoreCardSubmitted">Submit</Button>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>

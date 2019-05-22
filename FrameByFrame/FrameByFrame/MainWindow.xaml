@@ -51,6 +51,12 @@
                             <ComboBox Width="50" Name="cbEdit"  SelectionChanged="EditItemChanged" Margin="2">
                             </ComboBox>
 
+                            <Button Content="WDI" Click="WDIClicked" Margin="2" />
+                            <xctk:CheckComboBox Name="cbCountry" Width="50" Margin="2" />
+                            <Button Content="RunFilter" Click="RunFilterClicked" Margin="2" />
+                            <xctk:CheckComboBox Name="cbIndicator" Width="50" Margin="2" ItemSelectionChanged="IndicatorChanged" />
+                            <Button Content="GenProj" Click="GenerateProj" Margin="2" />
+
                         </StackPanel>
                     </StackPanel>
 

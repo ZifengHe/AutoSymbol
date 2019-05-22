@@ -16,7 +16,7 @@ namespace FrameByFrame
     using RichTextBox = Xceed.Wpf.Toolkit.RichTextBox;
     public partial class MainWindow : Window
     {
-        public string ImgRoot = @"file://C:\Users\zifengh\source\repos\ZifengHe\AutoSymbol\FrameByFrame\Flags\";
+        public string FlagRoot = @"file://C:\Users\zifengh\source\repos\ZifengHe\AutoSymbol\FrameByFrame\Flags\";
         public int CurrentHeaderIndex = 5;
         public int MaxInterpolation = 2;
         public int CurrentInterpolationIndex = 0;
@@ -106,7 +106,7 @@ namespace FrameByFrame
         {
             if (rawData > 0.1)
             {
-                string imgPath = ImgRoot + CountryDict[row.CountryCode].ShortCode + ".png";
+                string imgPath = FlagRoot + CountryDict[row.CountryCode].ShortCode + ".png";
                 string key = row.RowNumber.ToString() + imgPath;
 
                 if (ImgDict.ContainsKey(key) == false)

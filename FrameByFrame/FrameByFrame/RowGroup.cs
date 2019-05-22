@@ -221,6 +221,8 @@ namespace FrameByFrame
 
         public int LineThickness = 10;
         public int RowNumber = -1;
+
+        public double Magic = 0;
         
 
         [XmlIgnore]
