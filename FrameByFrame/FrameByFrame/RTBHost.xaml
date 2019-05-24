@@ -9,17 +9,19 @@
         Title="RTBHost" Height="450" Width="800">
     <StackPanel Name="gridHost" Orientation="Vertical" HorizontalAlignment="Left">
         <StackPanel Orientation="Horizontal">
-            <TextBlock Margin="5">Title </TextBlock>
+            <TextBlock Margin="5">Title</TextBlock>
             <TextBox Name="txtTitle" Width="300" Margin="10"></TextBox>
         </StackPanel>
         <!--<Grid.ColumnDefinitions>
             <ColumnDefinition Width="5*"/>
             <ColumnDefinition Width="6*"/>
         </Grid.ColumnDefinitions>-->
-        <xctk:RichTextBox Name="rtbItem" Width="456" Height="50" >
-            <xctk:RichTextBoxFormatBarManager.FormatBar>
-                <xctk:RichTextBoxFormatBar />
-            </xctk:RichTextBoxFormatBarManager.FormatBar>
-        </xctk:RichTextBox>
+        <StackPanel Name="MainItem">
+            <xctk:RichTextBox Name="rtbItem" Width="456" Height="50" Margin="5">
+                <xctk:RichTextBoxFormatBarManager.FormatBar>
+                    <xctk:RichTextBoxFormatBar />
+                </xctk:RichTextBoxFormatBarManager.FormatBar>
+            </xctk:RichTextBox>
+        </StackPanel>
     </StackPanel>
 </Window>

@@ -16,10 +16,10 @@ namespace FrameByFrame
     {
         public static string TempFile;
 
-        public int CanvasHeight = 900;
-        public int CanvasWidth = 1200;
+        public int CanvasHeight = 1080;
+        public int CanvasWidth = 1920;
         public int AxTop = 100;
-        public int AxBottom = 500;
+        public int AxBottom = 700;
         public int RowMargin = 5;
         public  int AxLeft = 1100;
         public int AxRight = 300;
@@ -27,6 +27,7 @@ namespace FrameByFrame
         public string FontFamily;
         public FontWeight FontWeight;
         public FontStyle FontStyle;
+        public bool FirstRender = true;
 
 
         [XmlIgnore]
@@ -159,6 +160,7 @@ namespace FrameByFrame
                 xamlStr64 = Helper.Base64Encode(value);
             }
         }
+
         public string xamlStr64;
 
         public string GetKey()

@@ -22,6 +22,15 @@ namespace FrameByFrame
             All["IN"] = Color.FromRgb(255, 165, 0);
             All["ID"] = Color.FromRgb(247, 26, 26);
             All["JP"] = Color.FromRgb(0, 0, 139);
+            All["ID"] = Color.FromRgb(214, 23, 13);
+            All["IT"] = Color.FromRgb(34, 139, 34);
+            All["MY"] = Color.FromRgb(227, 240, 10);
+            All["MX"] = Color.FromRgb(14, 171, 24);
+            All["FR"] = Color.FromRgb(0, 0, 255);
+            All["PH"] = Color.FromRgb(20, 66, 245);
+            All["US"] = Color.FromRgb(242, 19, 19);
+            All["GB"] = Color.FromRgb(247, 16, 16);
+            All["RU"] = Color.FromRgb(71, 36, 235);
         }
     }
 }

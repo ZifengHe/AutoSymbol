@@ -29,6 +29,7 @@ using Accord.Video;
 using System.Drawing;
 using System.Diagnostics;
 using Accord.Video.FFMPEG;
+using System.Runtime;
 
 namespace FrameByFrame
 {
@@ -42,7 +43,7 @@ namespace FrameByFrame
         private static Random Rand = new Random();
         private string RootFolder;
         private Dictionary<string, CountryCodeMapping> CountryDict = new Dictionary<string, CountryCodeMapping>();
-        private Dictionary<RichTextBox, string> rtcMapping = new Dictionary<RichTextBox, string>();
+        //private Dictionary<RichTextBox, string> rtcMapping = new Dictionary<RichTextBox, string>();
         ProjData MyProj = new ProjData();
         string CurrentProj;
         bool loadEveryRowInCombobox = true;
@@ -64,7 +65,7 @@ namespace FrameByFrame
             if (Directory.Exists(@"C:\Users\zifengh\Source\Repos\ZifengHe\AutoSymbol"))
                 RootFolder = @"C:\Users\zifengh\Source\Repos\ZifengHe\AutoSymbol";
             if (Directory.Exists(@"C:\Users\Zifeng\source\repos\ZifengHe\AutoSymbol"))
-                RootFolder = @"C:\Users\Zifeng\source\repos\ZifengHe\AutoSymbol";          
+                RootFolder = @"C:\Users\Zifeng\source\repos\ZifengHe\AutoSymbol";
         }
 
         private void ProcessOneFrame(int index)
@@ -123,157 +124,53 @@ namespace FrameByFrame
 
         private void AutoColorClicked(object sender, RoutedEventArgs e)
         {
-            foreach(var row in MyProj.Rows)
+            foreach (var row in MyProj.Rows)
             {
                 string shortCode = CountryDict[row.CountryCode].ShortCode;
-                
-                if(ColorByCountry.All.ContainsKey(shortCode))
+
+                if (ColorByCountry.All.ContainsKey(shortCode))
                 {
                     row.TextColor = ColorByCountry.All[shortCode];
                     row.LineColor = ColorByCountry.All[shortCode];
                 }
             }
             RefreshView();
-
         }
-
-
-        //  Dictionary<string, UIElement> Created = new Dictionary<string, UIElement>();
-        private void AddRtbClicked(object sender, RoutedEventArgs e)
-        {
-            RTBHost host = new RTBHost();
-            host.ShowDialog();
-
-            RichTextConfig rtc = new RichTextConfig();
-            rtc.Title = host.txtTitle.Text;
-            MyProj.RichTexts.Add(rtc);
-
-            cbEdit.Items.Add(rtc.GetKey());
-            host.gridHost.Children.Remove(host.rtbItem);
-            MainCanvas.Children.Add(host.rtbItem);
-            rtcMapping[host.rtbItem] = rtc.Title;
-
-            // SyncData();
-            //RefreshCanvas();
-        }
-
-
-
-        //private void SyncClicked(object sender, RoutedEventArgs e)
-        //{
-        //    CavasToData();
-        //    DataToCanvas();
-        //}
-
 
         private void RowChanged(object sender, SelectionChangedEventArgs e)
         {
         }
 
 
-        private void DeleteItemClicked(object sender, RoutedEventArgs e)
+        private void AddRtbClicked(object sender, RoutedEventArgs e)
         {
-            if (cbEdit.SelectedValue != null)
-            {
-                RichTextBox toDelete = null;
-                foreach (FrameworkElement fe in MainCanvas.Children)
-                {
-                    if (fe is RichTextBox)
-                    {
-                        if (rtcMapping.ContainsKey((RichTextBox)fe))
-                        {
-                            if (rtcMapping[(RichTextBox)fe] == (string)cbEdit.SelectedValue)
-                            {
-                                toDelete = (RichTextBox)fe;
-                                cbEdit.Items.Remove(rtcMapping[toDelete]);
-                            }
-                        }
-                    }
-                }
-                if (toDelete != null)
-                {
-                    MainCanvas.Children.Remove(toDelete);
-                    rtcMapping.Remove(toDelete);
-                }
-            }
+            RichTextConfig rtc = new RichTextConfig();
+            EditRichTextBox(rtc);
+            MyProj.RichTexts.Add(rtc);
+            RefreshView();
+        }
 
+        private void EditRichTextBox(RichTextConfig rtc)
+        {
+            RTBHost host = new RTBHost();
+            host.txtTitle.Text = rtc.Title;
+            host.MainItem.Children.Clear();
+            host.MainItem.Children.Add((RichTextBox)XamlReader.Load(Helper.GenerateStreamFromString(rtc.xamlStr)));
+            host.ShowDialog();
+            rtc.Title = host.txtTitle.Text;
+            rtc.xamlStr = XamlWriter.Save(VisualTreeHelper.GetChild(host.MainItem, 0));
         }
 
         private void EditItemClicked(object sender, RoutedEventArgs e)
         {
-            if (cbEdit.SelectedValue != null)
-            {
-                RichTextBox toEdit = null;
-                foreach (FrameworkElement fe in MainCanvas.Children)
-                {
-                    if (fe is RichTextBox)
-                    {
-                        if (rtcMapping[(RichTextBox)fe] == (string)cbEdit.SelectedValue)
-                        {
-                            toEdit = (RichTextBox)fe;
-                            RichTextConfig rtc = MyProj.GetRTC((string)cbEdit.SelectedValue);
-
-                            RTBHost host = new RTBHost();
-                            host.txtTitle.Text = rtc.Title;
-                            MainCanvas.Children.Remove(toEdit);
-                            host.rtbItem = toEdit;
-                            host.ShowDialog();
-                            host.gridHost.Children.Remove(host.rtbItem);
-                            MainCanvas.Children.Add(host.rtbItem);
-                            rtcMapping[host.rtbItem] = rtc.Title;
-                        }
-                    }
-                }
-            }
+            EditRichTextBox(MyProj.GetRTC((string)cbEdit.SelectedValue));
+            RefreshView();
         }
 
-        private void EditItemChanged(object sender, SelectionChangedEventArgs e)
+        private void DeleteItemClicked(object sender, RoutedEventArgs e)
         {
-
-        }
-
-
-        private void RefreshClicked(object sender, RoutedEventArgs e)
-        {
-            //DataToCanvas();
-            //RefreshView();
-        }
-
-
-
-        private void FirstFrameClicked(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-
-
-        private void ConfigureFirstFrame()
-        {
-            /// Methodology
-            /// Step 1. Show 1st Frame
-            /// Step 2. Click text to configure,  link Config->CountryCode
-            /// Step 3. Redrasw 1s Frame
-            /// Step 4. CountryCode will be invisible in all frame mode
-
-        }
-        private void StartClicked(object sender, RoutedEventArgs e)
-        {
-            foreach (string file in Directory.GetFiles(@"c:\temp\zzzzz\"))
-                File.Delete(file);
-
-            for (int i = 5; i <= MyProj.Header.Length - 1; i++)
-            {
-                CurrentHeaderIndex = i;
-                RefreshView();
-                Transform transform = MainCanvas.LayoutTransform;
-                MainCanvas.LayoutTransform = null;
-                System.Windows.Size size = new System.Windows.Size(MainCanvas.Width, MainCanvas.Height);
-                MainCanvas.Measure(size);
-                MainCanvas.Arrange(new Rect(size));
-                Helper.SaveToPng(MainCanvas, @"c:\temp\zzzzz\" + i.ToString() + ".png");
-
-            }
+            MyProj.RichTexts.Remove(MyProj.GetRTC((string)cbEdit.SelectedValue));
+            RefreshView();
         }
 
         private void BackGroundClicked(object sender, RoutedEventArgs e)
@@ -345,24 +242,24 @@ namespace FrameByFrame
         }
 
 
-        public void CavasToData()
-        {
-            foreach (FrameworkElement fe in MainCanvas.Children)
-            {
-                if (fe is RichTextBox)
-                {
-                    RichTextBox item = (RichTextBox)fe;
-                    //RichTextConfig one = RichTextConfig.RTCDict[item.Text];
-                    RichTextConfig one = MyProj.GetRTC(rtcMapping[item]);
+        //public void CavasToData()
+        //{
+        //    foreach (FrameworkElement fe in MainCanvas.Children)
+        //    {
+        //        if (fe is RichTextBox)
+        //        {
+        //            RichTextBox item = (RichTextBox)fe;
+        //            //RichTextConfig one = RichTextConfig.RTCDict[item.Text];
+        //            RichTextConfig one = MyProj.GetRTC(rtcMapping[item]);
 
-                    //one.Width = item.Width;
-                    //one.Height = item.Height;
-                    // one.RenderTransform = item.RenderTransform;
-                    //one.RenderTransformOrigin = item.RenderTransformOrigin;
-                    one.xamlStr = XamlWriter.Save(item);
-                }
-            }
-        }
+        //            //one.Width = item.Width;
+        //            //one.Height = item.Height;
+        //            // one.RenderTransform = item.RenderTransform;
+        //            //one.RenderTransformOrigin = item.RenderTransformOrigin;
+        //            one.xamlStr = XamlWriter.Save(item);
+        //        }
+        //    }
+        //}
 
 
         private void SaveProjectClicked(object sender, RoutedEventArgs e)
@@ -374,7 +271,7 @@ namespace FrameByFrame
 
         private void SaveProjectByFileName(string fileName)
         {
-            CavasToData();
+            //CavasToData();
             ObjectManager.ToXmlFile<ProjData>(fileName, MyProj);
         }
 
@@ -411,23 +308,47 @@ namespace FrameByFrame
 
         private void RecordVideoClicked(object sender, RoutedEventArgs e)
         {
+            GC.Collect();
             int width = (int)MainCanvas.Width;
             int height = (int)MainCanvas.Height;
 
-            VideoFileWriter writer = new VideoFileWriter();
-            writer.Open(@"c:\temp\Ztest.avi", width, height, 15, VideoCodec.H264);
+            VideoFileWriter writer = null;
 
             int totalFrame = 15 * 20;
             MaxInterpolation = totalFrame / MyProj.Header.Length;
 
+            MemoryStream ms = new MemoryStream();
+            var encoder = new BmpBitmapEncoder();
+            PresentationSource source = PresentationSource.FromVisual(MainCanvas);
+
+            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)MainCanvas.ActualWidth, (int)MainCanvas.ActualHeight,
+                96 * source.CompositionTarget.TransformToDevice.M11,
+                96 * source.CompositionTarget.TransformToDevice.M22,
+                PixelFormats.Pbgra32);
+
             Stopwatch sw = new Stopwatch();
             sw.Start();
+            int counter = 0;
             for (int i = 5; i <= MyProj.Header.Length - 1; i++)
             {
                 Trace.TraceInformation("{0} of {1}", i, MyProj.Header.Length);
 
                 for (int j = 0; j < MaxInterpolation; j++)
                 {
+                    if (((i - 5) * MaxInterpolation + j) % 10000 == 0) // Memory can handle only 300 frames before OOM.
+                    {
+                        counter++;
+                        if (writer != null)
+                        {
+                            writer.Close();
+                        }
+                        writer = new VideoFileWriter();
+                        string fileName = @"c:\tempvideo\Result-" + counter.ToString() + ".avi";
+                        writer.Open(fileName, width, height, 15, VideoCodec.H264);
+                    }
+
+                    GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+                    GC.Collect();
                     CurrentHeaderIndex = i;
                     CurrentInterpolationIndex = j;
                     RefreshView();
@@ -436,13 +357,26 @@ namespace FrameByFrame
                     System.Windows.Size size = new System.Windows.Size(MainCanvas.ActualWidth, MainCanvas.ActualHeight);
                     MainCanvas.Measure(size);
                     MainCanvas.Arrange(new Rect(size));
-                    Bitmap b = new Bitmap(Helper.CreateBmpStream(MainCanvas));
-                    writer.WriteVideoFrame(b);
+
+                    ms.Seek(0, System.IO.SeekOrigin.Begin);
+                    ms.SetLength(0);
+
+                    bitmap.Render(MainCanvas);
+                    encoder = new BmpBitmapEncoder();
+                    BitmapFrame frame = BitmapFrame.Create(bitmap);
+                    encoder.Frames.Add(frame);
+                    encoder.Save(ms);
+
+                   // Helper.CreateBmpStream(MainCanvas, ms);
+                    using (Bitmap b = new Bitmap(ms))
+                    {
+                        writer.WriteVideoFrame(b);
+                    }
+
                 }
             }
 
             writer.Close();
-
             System.Windows.MessageBox.Show("Complete in " + sw.Elapsed.TotalSeconds + " Seconds");
         }
 
@@ -452,20 +386,23 @@ namespace FrameByFrame
             string wdiFile = Path.Combine(RootFolder, @"FrameByFrame\csv\download\wdi.csv");
             RawData.CSVContent = File.ReadAllText(wdiFile);
             RawData.ProcessCSVFile();
-            
-            cbCountry.Items.Clear();
-            foreach(var one in  RawData.Rows.GroupBy(x=>x.CountryName))
-                cbCountry.Items.Add(one.Key);
 
-           
+            cbCountry.Items.Clear();
+            cbCountryGroup.Items.Clear();
+            foreach (var one in RawData.Rows.GroupBy(x => x.CountryName))
+            {
+                cbCountry.Items.Add(one.Key);
+                cbCountryGroup.Items.Add(one.Key);
+            }
+
             System.Windows.MessageBox.Show("wdi file loaded");
         }
 
         private void RunFilterClicked(object sender, RoutedEventArgs e)
         {
-            if (cbCountry.SelectedItems.Count != 1)
+            if (cbCountry.SelectedItems.Count != 1 || cbCountryGroup.SelectedItems.Count == 0)
             {
-                MB.Show("Filter must work on single focused country");
+                MB.Show("Filter must work on single focused country, and several other in the group");
                 return;
             }
 
@@ -474,7 +411,7 @@ namespace FrameByFrame
             int index2016 = -1;
             string focusCountry = cbCountry.SelectedValue;
 
-            for(int i=0; i< RawData.Header.Length; i++)
+            for (int i = 0; i < RawData.Header.Length; i++)
             {
                 if (RawData.Header[i].Contains("1996"))
                     index1996 = i;
@@ -482,14 +419,25 @@ namespace FrameByFrame
                     index2016 = i;
             }
 
-            
+
             filtered.Clear();
 
-            foreach(var one in RawData.Rows)
+
+            foreach (var one in RawData.Rows)
             {
+                bool ignore = true;
+                if (one.CountryName == cbCountry.SelectedValue)
+                    ignore = false;
+                foreach (var c in cbCountryGroup.SelectedItems)
+                    if (c.ToString() == one.CountryName)
+                        ignore = false;
+
+                if (ignore)
+                    continue;
+
                 if (one.Data.ContainsKey(RawData.Header[index1996]) == false)
                     continue;
-                if(one.Data.ContainsKey(RawData.Header[index2016]) == false)
+                if (one.Data.ContainsKey(RawData.Header[index2016]) == false)
                     continue;
 
                 double d1996;
@@ -517,13 +465,15 @@ namespace FrameByFrame
             {
                 if (one.Value.ContainsKey(focusCountry) == false)
                     continue;
+                if (one.Value[focusCountry].Magic == 0)
+                    continue;
 
-                if(one.Value.Where(x=>x.Value.Magic!=0).Max(x=>x.Value.Magic) == one.Value[focusCountry].Magic
+                if (one.Value.Where(x => x.Value.Magic != 0).Max(x => x.Value.Magic) == one.Value[focusCountry].Magic
                     || one.Value.Where(x => x.Value.Magic != 0).Min(x => x.Value.Magic) == one.Value[focusCountry].Magic)
                 {
                     cbIndicator.Items.Add(one.Key);
                     Trace.TraceInformation(one.Key);
-                    foreach(var detail in one.Value)
+                    foreach (var detail in one.Value)
                     {
                         Trace.TraceInformation("{0} ratio={1} From {2} in 1996 to {3} in 2016 ",
                             detail.Key,
@@ -534,7 +484,7 @@ namespace FrameByFrame
                 }
                 else
                 {
-                    toRemove.Add(one.Key);                    
+                    toRemove.Add(one.Key);
                 }
             }
             foreach (var key in toRemove)
@@ -551,17 +501,17 @@ namespace FrameByFrame
             string[] rawLines = File.ReadAllLines(wdiFile);
             result.Add(rawLines[0]);
 
-            foreach(string line in rawLines)
+            foreach (string line in rawLines)
             {
                 bool keep = false;
-                foreach(var indicator in cbIndicator.SelectedItems)
+                foreach (var indicator in cbIndicator.SelectedItems)
                 {
                     string key = indicator.ToString();
-                    if(line.Contains(key))
+                    if (line.Contains(key))
                     {
-                        foreach(var item in filtered[key])
+                        foreach (var item in filtered[key])
                         {
-                            if(line.Contains(item.Key))
+                            if (line.Contains(item.Key))
                             {
                                 keep = true;
                             }
@@ -579,6 +529,7 @@ namespace FrameByFrame
             File.WriteAllLines(csvFile, result.ToArray());
 
             LoadCsvToMyProj(csvFile);
+            AutoColorClicked(null, null);
 
             string projFile = Path.Combine(RootFolder, @"FrameByFrame\proj\" + csvName + ".xml");
             SaveProjectByFileName(projFile);
@@ -601,14 +552,20 @@ namespace FrameByFrame
                     countryCount[item.Key]++;
                 }
             }
-            foreach(var one in countryCount)
+            foreach (var one in countryCount)
             {
-                if(one.Value == cbIndicator.SelectedItems.Count)
+                if (one.Value == cbIndicator.SelectedItems.Count)
                 {
                     cbCountry.Items.Add(one.Key);
                 }
             }
             cbCountry.SelectAll();
+        }
+
+        private void CanvasRightMouseClicked(object sender, MouseButtonEventArgs e)
+        {
+            System.Windows.Point p = Mouse.GetPosition(MainCanvas);
+            MB.Show(string.Format("({0},{1})", p.X, p.Y));
         }
     }
 }

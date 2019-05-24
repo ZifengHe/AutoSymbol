@@ -1,5 +1,24 @@
-﻿5/22/2019
+﻿5/24/2019
+1. Sorting inside group
+2. Split video files
+
+
+5/23/2019
+1. Fix edit rich textbox scenarios
+2. Fix position of group title box
+3. Learn to remove border box for for rich textbox controls
+
+5/22/2019
+1. Improve missing color
+2. Improve missing flag
+3. Solve one group sizing issue
+
+5/22/2019
 1. Need a readme
+2. Select accompanion country
+3. SaveP to final project folder
+4 xplo
+5. Solve GDP bar color issue
 
 5/21/2019
 1. Process all WDI rows  

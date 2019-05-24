@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,15 @@ namespace FrameByFrame
         public Dictionary<string, Image> ImgDict = new Dictionary<string, Image>();
         private void RefreshView()
         {
+            //cbEdit.Items.Add(rtc.GetKey());
+            //host.gridHost.Children.Remove(host.rtbItem);
+            //MainCanvas.Children.Add(host.rtbItem);
+            //rtcMapping[host.rtbItem] = rtc.Title;
+
+            // SyncData();
+            //RefreshCanvas();
+
+
             Dictionary<string, double> longestByGroup = MyProj.CalcLongestByGroup(CurrentHeaderIndex);
 
             MainCanvas.Children.Clear();
@@ -30,49 +40,77 @@ namespace FrameByFrame
             MainCanvas.Width = MyProj.CanvasWidth;
 
             int totalRows = MyProj.Rows.Count(x => x.RowNumber != -1);
-            int rowHeight = (MyProj.AxBottom - MyProj.AxTop) / (totalRows + longestByGroup.Count) - MyProj.RowMargin;
+            int rowHeight = (MyProj.AxBottom - MyProj.AxTop) / (totalRows + longestByGroup.Count);
             int axToAx = MyProj.AxLeft - MyProj.AxRight;
             int rowTop = MyProj.AxTop;
+            Random r = new Random();
 
             foreach (var g in longestByGroup.Keys)
             {
                 /// Draw group header
-                DrawGroupHeader(rowTop, rowHeight, MyProj.Rows.Where(x=>x.SeriesCode==g).First().SeriesName);
-
+                if (MyProj.FirstRender)
+                {
+                    string groupName = MyProj.Rows.Where(x => x.SeriesCode == g).First().SeriesName;
+                    AddGroupHeaderRichTextBox(rowTop, rowHeight, groupName);
+                }
                 /// Draw parking lines
                 double maxParking = DrawGroupParkingLine(rowHeight, longestByGroup, g);
-
                 rowTop += rowHeight;
 
-                foreach (var row in MyProj.Rows.Where(x => x.RowNumber != -1))
+                /// Sort the rows in a group
+                SortedList<double, OneRow> sortedNow = new SortedList<double, OneRow>();
+                SortedList<double, OneRow> sortedNext = new SortedList<double, OneRow>();
+                foreach (var row in MyProj.Rows.Where(x=>x.SeriesCode== g))
                 {
+                    double rawData = 0;
+                    double.TryParse(row.Data[MyProj.Header[CurrentHeaderIndex]], out rawData);
+                    double nextRawData = rawData;
+                    if (CurrentHeaderIndex < MyProj.Header.Length - 1)
+                        double.TryParse(row.Data[MyProj.Header[CurrentHeaderIndex + 1]], out nextRawData);
+
+                    sortedNow.Add(rawData + r.Next(10000)*0.00000001, row);
+                    sortedNext.Add(nextRawData + r.Next(10000000) * 0.00000000001, row);
+                }
+
+                foreach (var one in sortedNow.Reverse())
+                {
+                    OneRow row = one.Value;
                     if (row.SeriesCode == g)
                     {
                         /// Country name section
-                       DrawRowCountryName(rowTop, rowHeight, row);
+                        DrawRowCountryName(rowTop, rowHeight, row);
 
                         /// Horizontal bar section
+                        double rawData = 0;
+                        double.TryParse(row.Data[MyProj.Header[CurrentHeaderIndex]], out rawData);
+
+                        double nextRawData = rawData;
+                        if (CurrentHeaderIndex < MyProj.Header.Length - 1)
+                            double.TryParse(row.Data[MyProj.Header[CurrentHeaderIndex + 1]], out nextRawData);
+                        
+
                         Line line;
-                        double rawData;
                         DrawRowLineAndNumber(rowHeight, axToAx, maxParking, row, rowTop, out line, out rawData);
 
                         /// Load the flag section
                         DrawRowFlag(rowHeight, row, rowTop, rawData);
 
                         rowTop += rowHeight;
-                    }                   
+                    }
                 }
             }
 
             DrawBothAxis();
 
-            cbEdit.Items.Clear();
-            foreach (var rtc in MyProj.RichTexts)
-            {
-                cbEdit.Items.Add(rtc.Title);
-                RichTextBox one = (RichTextBox)XamlReader.Load(Helper.GenerateStreamFromString(rtc.xamlStr));
-                MainCanvas.Children.Add(one);
-            }
+            MyProj.FirstRender = false;
+            //cbEdit.Items.Clear();
+            //foreach (var rtc in MyProj.RichTexts)
+            //{
+            //    cbEdit.Items.Add(rtc.Title);
+            //    RichTextBox one = (RichTextBox)XamlReader.Load(Helper.GenerateStreamFromString(rtc.xamlStr));
+            //    //rtcMapping[one] = rtc.Title;
+            //    MainCanvas.Children.Add(one);
+            //}
         }
 
         private void DrawBothAxis()
@@ -104,26 +142,24 @@ namespace FrameByFrame
 
         private void DrawRowFlag(int rowHeight, OneRow row, int rowTop, double rawData)
         {
-            if (rawData > 0.1)
+            //if (rawData > 0.1)
+            string imgPath = FlagRoot + CountryDict[row.CountryCode].ShortCode + ".png";
+            string key = row.RowNumber.ToString() + imgPath;
+
+            if (ImgDict.ContainsKey(key) == false)
             {
-                string imgPath = FlagRoot + CountryDict[row.CountryCode].ShortCode + ".png";
-                string key = row.RowNumber.ToString() + imgPath;
-
-                if (ImgDict.ContainsKey(key) == false)
+                ImgDict[key] = new Image
                 {
-                    ImgDict[key] = new Image
-                    {
-                        Height = rowHeight / 3 * 2,
-                        Width = 550 * Height / 367,
-                        Name = CountryDict[row.CountryCode].ShortCode,
-                        Source = new BitmapImage(new Uri(imgPath)),
-                    };
-                }
-
-                Canvas.SetLeft(ImgDict[key], MyProj.CanvasWidth - MyProj.AxRight - 320);
-                Canvas.SetTop(ImgDict[key], rowTop - ImgDict[key].Height / 2);
-                MainCanvas.Children.Add(ImgDict[key]);
+                    Height = rowHeight / 3 * 2,
+                    Width = 550 * Height / 367,
+                    Name = CountryDict[row.CountryCode].ShortCode,
+                    Source = new BitmapImage(new Uri(imgPath)),
+                };
             }
+
+            Canvas.SetLeft(ImgDict[key], MyProj.CanvasWidth - MyProj.AxRight - 320);
+            Canvas.SetTop(ImgDict[key], rowTop - ImgDict[key].Height / 2);
+            MainCanvas.Children.Add(ImgDict[key]);
         }
 
         private void DrawRowLineAndNumber(int rowHeight, int axToAx, double maxParking, OneRow row, int rowTop, out Line line, out double rawData)
@@ -177,24 +213,22 @@ namespace FrameByFrame
             MainCanvas.Children.Add(tb);
         }
 
-        private void DrawGroupHeader(int rowTop, int rowHeight, string content)
+        private void AddGroupHeaderRichTextBox(int rowTop, int rowHeight, string content)
         {
-            if(MyProj.RichTexts.Where(x=>x.Title == content).Count() ==0)
-            {
-                RichTextConfig config = new RichTextConfig();
-                config.Title = content;
-                RichTextBox one = new RichTextBox();
-                one.Text = content;
-                Canvas.SetTop(one, rowTop);
-                Canvas.SetLeft(one, 500);
-                rtcMapping[one] = content;
-                config.xamlStr = XamlWriter.Save(one);
-                cbEdit.Items.Add(content);
-                MyProj.RichTexts.Add(config);
-
-
-            }
-            
+            Debug.Assert(MyProj.RichTexts.Where(x => x.Title == content).Count() == 0);
+            RichTextConfig config = new RichTextConfig();
+            config.Title = content;
+            RichTextBox one = new RichTextBox();
+            one.Text = content;
+            one.Height = rowHeight;
+            one.Width = content.Length * 30;
+            Canvas.SetTop(one, rowTop);
+            Canvas.SetLeft(one, 500);
+            // MainCanvas.Children.Add(one);
+            // rtcMapping[one] = content;
+            config.xamlStr = XamlWriter.Save(one);
+            cbEdit.Items.Add(content);
+            MyProj.RichTexts.Add(config);
         }
 
         private double DrawGroupParkingLine(int rowHeight, Dictionary<string, double> longestByGroup, string g)
@@ -235,11 +269,11 @@ namespace FrameByFrame
             {
                 return num.ToString("0,,,.##B", CultureInfo.InvariantCulture);
             }
-            else   if (num > 999999 || num < -999999)
+            else if (num > 999999 || num < -999999)
             {
                 return num.ToString("0,,.##M", CultureInfo.InvariantCulture);
             }
-            else    if (num > 999 || num < -999)
+            else if (num > 999 || num < -999)
             {
                 return num.ToString("0,.##K", CultureInfo.InvariantCulture);
             }
@@ -253,7 +287,7 @@ namespace FrameByFrame
         {
             double parking = 0.1;
 
-            for(int i=0; i <40;i++)
+            for (int i = 0; i < 40; i++)
             {
                 if (num < parking * 1.2)
                     return parking * 1.2;

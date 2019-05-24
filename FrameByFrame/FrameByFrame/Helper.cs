@@ -99,9 +99,9 @@ namespace FrameByFrame
             SaveUsingEncoder(visual, fileName, encoder);
         }
 
-        public static Stream CreateBmpStream(FrameworkElement visual)
+        public static Stream CreateBmpStream(FrameworkElement visual, MemoryStream ms)
         {
-            MemoryStream ms = new MemoryStream();
+            // MemoryStream ms = new MemoryStream();
             var encoder = new BmpBitmapEncoder();
             PresentationSource source = PresentationSource.FromVisual(visual);
 
