@@ -19,7 +19,9 @@ namespace FrameByFrame
     {
         public string FlagRoot = @"file://C:\Users\zifengh\source\repos\ZifengHe\AutoSymbol\FrameByFrame\Flags\";
         public int CurrentHeaderIndex = 5;
-        public int MaxInterpolation = 2;
+
+        public int SwapFrame = 15;
+        public int MaxInterpolation = 20;
         public int CurrentInterpolationIndex = 0;
         public Dictionary<string, Image> ImgDict = new Dictionary<string, Image>();
         private void RefreshView()
@@ -43,7 +45,9 @@ namespace FrameByFrame
             int rowHeight = (MyProj.AxBottom - MyProj.AxTop) / (totalRows + longestByGroup.Count);
             int axToAx = MyProj.AxLeft - MyProj.AxRight;
             int rowTop = MyProj.AxTop;
-            Random r = new Random();
+            int randomCounter = 0;
+
+            DrawTimeStamp();
 
             foreach (var g in longestByGroup.Keys)
             {
@@ -60,6 +64,7 @@ namespace FrameByFrame
                 /// Sort the rows in a group
                 SortedList<double, OneRow> sortedNow = new SortedList<double, OneRow>();
                 SortedList<double, OneRow> sortedNext = new SortedList<double, OneRow>();
+                SortedList<double, OneRow> sortedInterpolated = new SortedList<double, OneRow>();
                 foreach (var row in MyProj.Rows.Where(x=>x.SeriesCode== g))
                 {
                     double rawData = 0;
@@ -68,36 +73,54 @@ namespace FrameByFrame
                     if (CurrentHeaderIndex < MyProj.Header.Length - 1)
                         double.TryParse(row.Data[MyProj.Header[CurrentHeaderIndex + 1]], out nextRawData);
 
-                    sortedNow.Add(rawData + r.Next(10000)*0.00000001, row);
-                    sortedNext.Add(nextRawData + r.Next(10000000) * 0.00000000001, row);
-                }
+                    double interpolatedRawData = rawData + (nextRawData-rawData)*CurrentInterpolationIndex/ MaxInterpolation;
+                    sortedNow.Add(rawData + randomCounter*0.0000000001, row); randomCounter++;
+                    sortedNext.Add(nextRawData + randomCounter * 0.00000000001, row); randomCounter++;
+                    sortedInterpolated.Add(interpolatedRawData + randomCounter * 0.00000000001, row); randomCounter++;
+                }            
 
-                foreach (var one in sortedNow.Reverse())
+
+                foreach (var one in sortedInterpolated.Reverse())
                 {
                     OneRow row = one.Value;
                     if (row.SeriesCode == g)
                     {
-                        /// Country name section
-                        DrawRowCountryName(rowTop, rowHeight, row);
+                        /// Figure out rowTop, because the rows could swap
+                        int currentRowTop = rowTop + rowHeight * (sortedNow.Count - sortedNow.IndexOfValue(row));
+                        int nextRowTop = rowTop + rowHeight * (sortedNow.Count - sortedNext.IndexOfValue(row));
 
-                        /// Horizontal bar section
+                        if(currentRowTop != nextRowTop)
+                        {
+                            if (CurrentInterpolationIndex > MaxInterpolation - SwapFrame)
+                                currentRowTop += (nextRowTop - currentRowTop) * (SwapFrame - MaxInterpolation  + CurrentInterpolationIndex) / SwapFrame;
+                        }
+
+
                         double rawData = 0;
                         double.TryParse(row.Data[MyProj.Header[CurrentHeaderIndex]], out rawData);
 
                         double nextRawData = rawData;
                         if (CurrentHeaderIndex < MyProj.Header.Length - 1)
                             double.TryParse(row.Data[MyProj.Header[CurrentHeaderIndex + 1]], out nextRawData);
-                        
 
-                        Line line;
-                        DrawRowLineAndNumber(rowHeight, axToAx, maxParking, row, rowTop, out line, out rawData);
+                        /// Country name section
+                        DrawRowCountryName(currentRowTop, rowHeight, row);
+
+                        /// Horizontal bar section                     
+                       // Line line;
+                        double interpolatedData = one.Key;
+                        double maxRowDataInGroup = sortedInterpolated.Last().Key;
+                        DrawRowLineAndNumber(maxRowDataInGroup, rowHeight, row, currentRowTop, interpolatedData);//, out line);
+
 
                         /// Load the flag section
                         DrawRowFlag(rowHeight, row, rowTop, rawData);
 
-                        rowTop += rowHeight;
+                        
                     }
                 }
+
+                rowTop += rowHeight * sortedNow.Count;
             }
 
             DrawBothAxis();
@@ -111,6 +134,18 @@ namespace FrameByFrame
             //    //rtcMapping[one] = rtc.Title;
             //    MainCanvas.Children.Add(one);
             //}
+        }
+
+        private void DrawTimeStamp()
+        {
+            TextBlock timeTB = new TextBlock();
+            timeTB.FontSize = 30;
+            timeTB.Text = MyProj.Header[CurrentHeaderIndex].Split(new char[] { ' ' })[0];
+            timeTB.Foreground = new SolidColorBrush(Color.FromRgb(255, 0, 0));
+            timeTB.Height = 40;
+            Canvas.SetRight(timeTB, MyProj.CanvasWidth - MyProj.AxRight);
+            Canvas.SetTop(timeTB, MyProj.Setting.TimeStampFromTop);
+            MainCanvas.Children.Add(timeTB);
         }
 
         private void DrawBothAxis()
@@ -162,40 +197,34 @@ namespace FrameByFrame
             MainCanvas.Children.Add(ImgDict[key]);
         }
 
-        private void DrawRowLineAndNumber(int rowHeight, int axToAx, double maxParking, OneRow row, int rowTop, out Line line, out double rawData)
+        private void DrawRowLineAndNumber(double maxRowDataInGroup, int rowHeight, OneRow row, int currentRowTop, double interpolatedData)
         {
-            line = new Line();
+            Line line = new Line();
             line.Stroke = new SolidColorBrush(row.LineColor);
             line.SnapsToDevicePixels = true;
             line.SetValue(RenderOptions.EdgeModeProperty, EdgeMode.Aliased);
             line.StrokeThickness = rowHeight / 3 * 2;
             line.X1 = MyProj.CanvasWidth - MyProj.AxLeft;
-            line.Y1 = rowTop;
+            line.Y1 = currentRowTop;
             line.Y2 = line.Y1;
+            line.X2 = (int)(MyProj.CanvasWidth - MyProj.AxLeft  + (MyProj.AxLeft - MyProj.AxRight) * interpolatedData / maxRowDataInGroup);
 
-            rawData = 0;
-            double.TryParse(row.Data[MyProj.Header[CurrentHeaderIndex]], out rawData);
-
-            double nextRawData = rawData;
-            if (CurrentHeaderIndex < MyProj.Header.Length - 1)
-                double.TryParse(row.Data[MyProj.Header[CurrentHeaderIndex + 1]], out nextRawData);
-
-            line.X2 = MyProj.CanvasWidth - MyProj.AxLeft +
-                (int)(axToAx * (rawData + (nextRawData - rawData) * CurrentInterpolationIndex / MaxInterpolation) / maxParking);
+            //line.X2 = MyProj.CanvasWidth - MyProj.AxLeft +
+            //    (int)(axToAx * (rawData + (nextRawData - rawData) * CurrentInterpolationIndex / MaxInterpolation) / maxParking);
             MainCanvas.Children.Add(line);
 
             /// Numbers on the bar
             TextBlock numText = new TextBlock();
             numText.FontSize = rowHeight / 2;
-            numText.Text = ConvertDouble(rawData);
+            numText.Text = ConvertDouble(interpolatedData);
             numText.Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 255));
             numText.Height = rowHeight;
             Canvas.SetRight(numText, MyProj.CanvasWidth - line.X2 + 5);
-            Canvas.SetTop(numText, rowTop - numText.FontSize);
+            Canvas.SetTop(numText, currentRowTop - numText.FontSize);
             MainCanvas.Children.Add(numText);
         }
 
-        private void DrawRowCountryName(int rowTop, int rowHeight, OneRow row)
+        private void DrawRowCountryName(int currentRowTop, int rowHeight, OneRow row)
         {
             TextBlock tb = new TextBlock();
             tb.FontSize = rowHeight / 2;
@@ -209,7 +238,7 @@ namespace FrameByFrame
             tb.Foreground = new SolidColorBrush(row.TextColor);
             tb.Height = rowHeight;
             Canvas.SetRight(tb, MyProj.AxLeft + 5);
-            Canvas.SetTop(tb, rowTop - tb.FontSize);
+            Canvas.SetTop(tb, currentRowTop - tb.FontSize);
             MainCanvas.Children.Add(tb);
         }
 
