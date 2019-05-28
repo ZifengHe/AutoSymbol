@@ -21,14 +21,22 @@
                         <CheckBox.LayoutTransform>
                             <ScaleTransform ScaleX="4" ScaleY="4" />
                         </CheckBox.LayoutTransform>
-                        Fail
+                        Study More
                     </CheckBox>
-                    <Button  Click="ReviewOnlyClicked" Name="cbReviewOnly" Margin="5">
+                    <StackPanel Orientation="Horizontal">
+                    <Button  Click="ShowAnswerClicked" Name="cbReviewOnly" Margin="5">
                         <Button.LayoutTransform>
                             <ScaleTransform ScaleX="4" ScaleY="4" />
                         </Button.LayoutTransform>
-                        Review Only
+                        Show Answer
                     </Button>
+                        <Button  Click="NextClicked" Name="Next" Margin="5">
+                            <Button.LayoutTransform>
+                                <ScaleTransform ScaleX="4" ScaleY="4" />
+                            </Button.LayoutTransform>
+                            Next
+                        </Button>
+                    </StackPanel>
                 </StackPanel>
                 <TextBlock Name="tbScore" Margin="100,2,2,2" FontSize="88" Foreground="Green">8888</TextBlock>
             </StackPanel>
