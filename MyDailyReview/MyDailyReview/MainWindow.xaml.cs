@@ -138,8 +138,7 @@ namespace MyDailyReview
         }
         private void MoveToNext()
         {
-            txtQuestion.Text = string.Format("{0} : {1}", All[current].Category, All[current].Question);
-            txtAnswer.Text = All[current].Answer;
+            
             current++;
             if (current < All.Count())
                 lblName.Content = string.Format("{0} : {1}", All[current].Category, All[current].Question);
@@ -186,9 +185,10 @@ namespace MyDailyReview
             StartClicked(null, null);
         }
 
-        private void ReviewOnlyClicked(object sender, RoutedEventArgs e)
+        private void ShowAnswerClicked(object sender, RoutedEventArgs e)
         {
-            MoveToNext();
+            txtQuestion.Text = string.Format("{0} : {1}", All[current].Category, All[current].Question);
+            txtAnswer.Text = All[current].Answer;
         }
 
         private void ScoreCardSubmitted(object sender, RoutedEventArgs e)
@@ -239,5 +239,12 @@ namespace MyDailyReview
             list.Insert(0, sb.ToString());
             File.WriteAllLines(scoreFile, list.ToArray());
         }
+
+        private void NextClicked(object sender, RoutedEventArgs e)
+        {
+            MoveToNext();
+        }
+
+        
     }
 }
