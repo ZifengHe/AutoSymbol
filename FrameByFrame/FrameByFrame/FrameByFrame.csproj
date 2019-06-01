@@ -161,6 +161,7 @@
     <Compile Include="RTBHost.xaml.cs">
       <DependentUpon>RTBHost.xaml</DependentUpon>
     </Compile>
+    <Compile Include="TimeEvent.cs" />
     <Compile Include="ViewRefresher.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

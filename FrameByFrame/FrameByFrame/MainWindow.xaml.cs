@@ -30,6 +30,8 @@ using System.Drawing;
 using System.Diagnostics;
 using Accord.Video.FFMPEG;
 using System.Runtime;
+using System.Reflection;
+using System.Windows.Threading;
 
 namespace FrameByFrame
 {
@@ -39,25 +41,77 @@ namespace FrameByFrame
     /// </summary>
     public partial class MainWindow : Window
     {
-
+        DispatcherTimer dt;
         private static Random Rand = new Random();
         private string RootFolder;
         private Dictionary<string, CountryCodeMapping> CountryDict = new Dictionary<string, CountryCodeMapping>();
         //private Dictionary<RichTextBox, string> rtcMapping = new Dictionary<RichTextBox, string>();
         ProjData MyProj = new ProjData();
-        string CurrentProj;
+        string CurrentProjFileName;
         bool loadEveryRowInCombobox = true;
         ProjData RawData;
         Dictionary<string, Dictionary<string, OneRow>> filtered = new Dictionary<string, Dictionary<string, OneRow>>();
-
+        Dictionary<string, System.Windows.Controls.TextBox> settingDict = new Dictionary<string, System.Windows.Controls.TextBox>();
+        int CurrentSlowTick = 0;
         public MainWindow()
         {
             InitializeComponent();
             FindRootFolder();
             LoadCountryCode();
-            CurrentProj = Path.Combine(RootFolder, @"FrameByFrame\Proj\Current.xml");
+            CurrentProjFileName = Path.Combine(RootFolder, @"FrameByFrame\Proj\Current.xml");
             ProjData.TempFile = Path.Combine(RootFolder, @"FrameByFrame\Proj\temp.csv");
             FlagRoot = @"file://" + RootFolder + @"\FrameByFrame\Flags\";
+
+        }
+
+        void DisplaySetting()
+        {
+            SettingBox.Children.Clear();
+            FieldInfo[] fis = typeof(ProjSetting).GetFields();
+            foreach (var fi in fis)
+            {
+                StackPanel sp = new StackPanel();
+                sp.Orientation = System.Windows.Controls.Orientation.Horizontal;
+                SettingBox.Children.Add(sp);
+                TextBlock tb = new TextBlock();
+                tb.Text = fi.Name;
+                System.Windows.Controls.TextBox tbox = new System.Windows.Controls.TextBox();
+                sp.Children.Add(tb);
+                sp.Children.Add(tbox);
+                string content = (string)fi.GetValue(MyProj.Setting).ToString();
+                tbox.Text = content;
+                settingDict[fi.Name] = tbox;
+            }
+
+            //Type type = typeof(Job);
+            //Job job_out = new Job();
+            //FieldInfo[] fields = type.GetFields();
+
+            //// iterate through all fields of Job class
+            //for (int i = 0; i < fields.Length; i++)
+            //{
+            //    List<string> filterslist = new List<string>();
+            //    string filters = (string)fields[i].GetValue(job_filters);
+
+            //    // if job_filters contaisn magic word "$" for the field, then do something with a field, otherwise just copy it to job_out object
+            //    if (filters.Contains("$"))
+            //    {
+            //        filters = filters.Substring(filters.IndexOf("$") + 1, filters.Length - filters.IndexOf("$") - 1);
+            //        // MessageBox.Show(filters);
+            //        // do sothing useful...
+            //    }
+            //    else
+            //    {
+            //        // this is my current field value 
+            //        var str_value = fields[i].GetValue(job_in);
+            //        // this is my current filed name
+            //        var field_name = fields[i].Name;
+
+            //        //  I got stuck here :(
+            //        // I need to save (copy) data "str_value" from job_in.field_name to job_out.field_name
+            //        // HELP!!!
+
+            //    }
         }
 
         void FindRootFolder()
@@ -265,8 +319,8 @@ namespace FrameByFrame
         private void SaveProjectClicked(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.SaveFileDialog dlg = SaveXmlFile();
-            CurrentProj = dlg.FileName;
-            SaveProjectByFileName(CurrentProj);
+            CurrentProjFileName = dlg.FileName;
+            SaveProjectByFileName(CurrentProjFileName);
         }
 
         private void SaveProjectByFileName(string fileName)
@@ -278,6 +332,7 @@ namespace FrameByFrame
         private void LoadProjClicked(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog dlg = OpenFile("*.xml", "XML Files (*.xml)|*.xml");
+            CurrentProjFileName = dlg.FileName;
             LoadProjFile(dlg.FileName);
         }
 
@@ -286,6 +341,7 @@ namespace FrameByFrame
             MyProj = ObjectManager.FromXml<ProjData>(fileName);
             MyProj.ProcessCSVFile();
 
+            DisplaySetting();
             cbConfig.Items.Clear();
             foreach (var one in MyProj.Rows)
             {
@@ -313,10 +369,6 @@ namespace FrameByFrame
             int height = (int)MainCanvas.Height;
 
             VideoFileWriter writer = null;
-
-            int totalFrame = 15 * 20;
-            MaxInterpolation = totalFrame / MyProj.Header.Length;
-
             MemoryStream ms = new MemoryStream();
             var encoder = new BmpBitmapEncoder();
             PresentationSource source = PresentationSource.FromVisual(MainCanvas);
@@ -329,13 +381,13 @@ namespace FrameByFrame
             Stopwatch sw = new Stopwatch();
             sw.Start();
             int counter = 0;
-            for (int i = 5; i <= MyProj.Header.Length - 1; i++)
+            for (int i = CalcStartHeaderIndex(); i <= MyProj.Header.Length - 1; i++)
             {
                 Trace.TraceInformation("{0} of {1}", i, MyProj.Header.Length);
 
                 for (int j = 0; j < MaxInterpolation; j++)
                 {
-                    if (((i - 5) * MaxInterpolation + j) % 10000 == 0) // Memory can handle only 300 frames before OOM.
+                    if (((i - 5) * MaxInterpolation + j) % 10000 == 0) // Max frame per file in case too big
                     {
                         counter++;
                         if (writer != null)
@@ -367,7 +419,7 @@ namespace FrameByFrame
                     encoder.Frames.Add(frame);
                     encoder.Save(ms);
 
-                   // Helper.CreateBmpStream(MainCanvas, ms);
+                    // Helper.CreateBmpStream(MainCanvas, ms);
                     using (Bitmap b = new Bitmap(ms))
                     {
                         writer.WriteVideoFrame(b);
@@ -566,6 +618,80 @@ namespace FrameByFrame
         {
             System.Windows.Point p = Mouse.GetPosition(MainCanvas);
             MB.Show(string.Format("({0},{1})", p.X, p.Y));
+        }
+
+        private void SettingClicked(object sender, RoutedEventArgs e)
+        {
+            FieldInfo[] fis = typeof(ProjSetting).GetFields();
+            foreach (var one in fis)
+            {
+                one.SetValue(MyProj.Setting, int.Parse(settingDict[one.Name].Text));
+            }
+            SaveProjectClicked(null, null);
+            SaveProjectByFileName(CurrentProjFileName);
+            RefreshView();
+        }
+        private void FastPlayClicked(object sender, RoutedEventArgs e)
+        {
+            CurrentHeaderIndex = CalcStartHeaderIndex();
+            dt = new DispatcherTimer();
+            dt.Interval = new TimeSpan(0, 0, 0, 0, 250);
+            dt.Tick += FastPlayTick;
+            dt.Start();
+        }
+        private void SlowPlayClicked(object sender, RoutedEventArgs e)
+        {
+            CurrentSlowTick = MaxInterpolation * CalcStartHeaderIndex();
+            dt = new DispatcherTimer();
+            dt.Interval = new TimeSpan(0, 0, 0, 0, 1000/MaxInterpolation);
+            dt.Tick += SlowPlayTick;
+            dt.Start();
+        }
+
+        private int CalcStartHeaderIndex()
+        {
+            for (int i = 0; i < MyProj.Header.Length; i++)
+            {
+                if (MyProj.Header[i].StartsWith(MyProj.Setting.StartYear))
+                    return i;
+            }
+            return 5;
+        }
+
+        private void StopPlayClicked(object sender, RoutedEventArgs e)
+        {
+            if (dt != null)
+            {
+                dt.Stop();
+            }
+        }
+        private void FastPlayTick(object sender, EventArgs e)
+        {
+            if (CurrentHeaderIndex < MyProj.Header.Length - 1)
+            {
+                RefreshView();
+                CurrentHeaderIndex++;
+            }
+            else
+            {
+                dt.Stop();
+            }
+        }
+
+        private void SlowPlayTick(object sender, EventArgs e)
+        {
+            CurrentSlowTick++;
+            CurrentHeaderIndex = CurrentSlowTick / MaxInterpolation;
+            CurrentInterpolationIndex = CurrentSlowTick % MaxInterpolation;
+            if (CurrentHeaderIndex < MyProj.Header.Length - 1)
+            {
+                RefreshView();
+                CurrentHeaderIndex++;
+            }
+            else
+            {
+                dt.Stop();
+            }
         }
     }
 }

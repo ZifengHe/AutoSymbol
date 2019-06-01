@@ -6,13 +6,16 @@
         xmlns:local="clr-namespace:FrameByFrame"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="MainWindow" Height="900" Width="1500" Background="White" UseLayoutRounding="True">
+        Title="MainWindow" Height="900" Width="1500" Background="White" UseLayoutRounding="True" WindowState="Maximized">
     <DockPanel LastChildFill="True">
         <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
             <ToolBarTray >
                 <ToolBar>
                     <StackPanel Orientation="Vertical">
                         <StackPanel Orientation="Horizontal">
+                            <Button Content="FastPlay" Click="FastPlayClicked" Margin="2"/>
+                            <Button Content="SlowPlay" Click="SlowPlayClicked" Margin="2"/>
+                            <Button Content="StopPlay" Click="StopPlayClicked" Margin="2"/>
                             <Button Content="LoadP" Click="LoadProjClicked" Margin="2"/>
                             <Button Content="SaveP" Click="SaveProjectClicked" Margin="2"/>                           
                             <Button Content="Video" Click="RecordVideoClicked"  Margin="2"/>
@@ -39,6 +42,7 @@
                             <xctk:ColorPicker Name="RowLineColor" SelectedColorChanged="RowLineColorChanged" Margin="2"></xctk:ColorPicker>
                             <Button Content="AutoColor" Click="AutoColorClicked"  Margin="2"/>
                             <Button Content="Font" Click="FontClicked"  Margin="2"/>
+                            <Button Content="SyncSetting" Click="SettingClicked" Margin="2" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Button Content="Add" Click="AddRtbClicked"  Margin="2" />
@@ -65,6 +69,10 @@
                 <TextBlock x:Name="MessageTextBlock"></TextBlock>
             </StatusBarItem>
         </StatusBar>
+        <StackPanel Orientation="Horizontal">
+            <StackPanel Name="SettingBox" Orientation="Vertical" Width="200">
+                
+            </StackPanel>
         <!--<Canvas Name="MainCanvas" Width="1920" Height="1080" MouseRightButtonDown="CanvasRightMouseClicked" />-->
         <local:DragCanvas x:Name="MainCanvas" Width="1920" Height="1080" MouseRightButtonDown="CanvasRightMouseClicked">
             <xctk:RichTextBox Name="rtbTitle" Width="456" Height="30" ScrollViewer.VerticalScrollBarVisibility="Auto" BorderBrush="Transparent">
@@ -82,6 +90,7 @@
                 </LinearGradientBrush>
             </Canvas.Background>
         </local:DragCanvas>
+        </StackPanel>
         <!--<DataGrid Name="gridData" ItemsSource="{Binding}"></DataGrid>-->
     </DockPanel>
 </Window>

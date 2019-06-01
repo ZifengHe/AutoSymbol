@@ -11,9 +11,15 @@ using System.Xml.Serialization;
 
 namespace FrameByFrame
 {
-
+    public class ProjSetting
+    {
+        public string StartYear = "1996";
+        public int TimeStampFromTop = 900;        
+    }
     public class ProjData
     {
+        public ProjSetting Setting = new ProjSetting();
+
         public static string TempFile;
 
         public int CanvasHeight = 1080;

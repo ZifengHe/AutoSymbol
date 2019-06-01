@@ -1,7 +1,23 @@
-﻿5/24/2019
+﻿5/29/2019
+1. Update RunFilter for the new design for events
+
+5/28/2019
+1. High-level design of story line
+
+5/27/2019
+1. Quick play and slow play
+2. Setting for years
+
+5/25/2019
+1. Display year text
+2. Setting Panel
+3. Play on screen
+
+5/24/2019
 1. Sorting inside group
 2. Split video files
-
+3. Lock max size
+4. Transitional swap
 
 5/23/2019
 1. Fix edit rich textbox scenarios
