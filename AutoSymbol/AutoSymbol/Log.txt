@@ -1,4 +1,13 @@
-﻿5/17/2019
+﻿5/29/2019
+1. Fix the blocking bug
+2. Rename Try
+3. How to proceed next : Optimize to rule that less bracket, better sorting to merge
+
+5/28/2019
+1. Write ReadMe
+2. Explore latest benchmark code
+
+5/17/2019
 1. Generate OpChainConstruct at the set level
 
 5/16/2019

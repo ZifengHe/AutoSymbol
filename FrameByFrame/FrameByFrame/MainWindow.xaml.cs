@@ -52,7 +52,7 @@ namespace FrameByFrame
         ProjData RawData;
         Dictionary<string, Dictionary<string, OneRow>> filtered = new Dictionary<string, Dictionary<string, OneRow>>();
         Dictionary<string, System.Windows.Controls.TextBox> settingDict = new Dictionary<string, System.Windows.Controls.TextBox>();
-
+        int CurrentSlowTick = 0;
         public MainWindow()
         {
             InitializeComponent();
@@ -61,14 +61,14 @@ namespace FrameByFrame
             CurrentProjFileName = Path.Combine(RootFolder, @"FrameByFrame\Proj\Current.xml");
             ProjData.TempFile = Path.Combine(RootFolder, @"FrameByFrame\Proj\temp.csv");
             FlagRoot = @"file://" + RootFolder + @"\FrameByFrame\Flags\";
-            
+
         }
 
         void DisplaySetting()
         {
             SettingBox.Children.Clear();
             FieldInfo[] fis = typeof(ProjSetting).GetFields();
-            foreach(var fi in fis)
+            foreach (var fi in fis)
             {
                 StackPanel sp = new StackPanel();
                 sp.Orientation = System.Windows.Controls.Orientation.Horizontal;
@@ -79,7 +79,7 @@ namespace FrameByFrame
                 sp.Children.Add(tb);
                 sp.Children.Add(tbox);
                 string content = (string)fi.GetValue(MyProj.Setting).ToString();
-                tbox.Text = content;             
+                tbox.Text = content;
                 settingDict[fi.Name] = tbox;
             }
 
@@ -112,7 +112,7 @@ namespace FrameByFrame
             //        // HELP!!!
 
             //    }
-            }
+        }
 
         void FindRootFolder()
         {
@@ -369,9 +369,6 @@ namespace FrameByFrame
             int height = (int)MainCanvas.Height;
 
             VideoFileWriter writer = null;
-
-           
-
             MemoryStream ms = new MemoryStream();
             var encoder = new BmpBitmapEncoder();
             PresentationSource source = PresentationSource.FromVisual(MainCanvas);
@@ -384,7 +381,7 @@ namespace FrameByFrame
             Stopwatch sw = new Stopwatch();
             sw.Start();
             int counter = 0;
-            for (int i = 5; i <= MyProj.Header.Length - 1; i++)
+            for (int i = CalcStartHeaderIndex(); i <= MyProj.Header.Length - 1; i++)
             {
                 Trace.TraceInformation("{0} of {1}", i, MyProj.Header.Length);
 
@@ -422,7 +419,7 @@ namespace FrameByFrame
                     encoder.Frames.Add(frame);
                     encoder.Save(ms);
 
-                   // Helper.CreateBmpStream(MainCanvas, ms);
+                    // Helper.CreateBmpStream(MainCanvas, ms);
                     using (Bitmap b = new Bitmap(ms))
                     {
                         writer.WriteVideoFrame(b);
@@ -626,29 +623,67 @@ namespace FrameByFrame
         private void SettingClicked(object sender, RoutedEventArgs e)
         {
             FieldInfo[] fis = typeof(ProjSetting).GetFields();
-            foreach(var one in fis)
+            foreach (var one in fis)
             {
                 one.SetValue(MyProj.Setting, int.Parse(settingDict[one.Name].Text));
             }
-           SaveProjectClicked(null, null);
+            SaveProjectClicked(null, null);
             SaveProjectByFileName(CurrentProjFileName);
-           RefreshView();
+            RefreshView();
         }
-
-
-        
-        private void PlayClicked(object sender, RoutedEventArgs e)
+        private void FastPlayClicked(object sender, RoutedEventArgs e)
         {
-            CurrentHeaderIndex = 6;
+            CurrentHeaderIndex = CalcStartHeaderIndex();
             dt = new DispatcherTimer();
             dt.Interval = new TimeSpan(0, 0, 0, 0, 250);
-            dt.Tick += Dt_Tick;
+            dt.Tick += FastPlayTick;
+            dt.Start();
+        }
+        private void SlowPlayClicked(object sender, RoutedEventArgs e)
+        {
+            CurrentSlowTick = MaxInterpolation * CalcStartHeaderIndex();
+            dt = new DispatcherTimer();
+            dt.Interval = new TimeSpan(0, 0, 0, 0, 1000/MaxInterpolation);
+            dt.Tick += SlowPlayTick;
             dt.Start();
         }
 
-        private void Dt_Tick(object sender, EventArgs e)
-        {            
-            if(CurrentHeaderIndex< MyProj.Header.Length-1)
+        private int CalcStartHeaderIndex()
+        {
+            for (int i = 0; i < MyProj.Header.Length; i++)
+            {
+                if (MyProj.Header[i].StartsWith(MyProj.Setting.StartYear))
+                    return i;
+            }
+            return 5;
+        }
+
+        private void StopPlayClicked(object sender, RoutedEventArgs e)
+        {
+            if (dt != null)
+            {
+                dt.Stop();
+            }
+        }
+        private void FastPlayTick(object sender, EventArgs e)
+        {
+            if (CurrentHeaderIndex < MyProj.Header.Length - 1)
+            {
+                RefreshView();
+                CurrentHeaderIndex++;
+            }
+            else
+            {
+                dt.Stop();
+            }
+        }
+
+        private void SlowPlayTick(object sender, EventArgs e)
+        {
+            CurrentSlowTick++;
+            CurrentHeaderIndex = CurrentSlowTick / MaxInterpolation;
+            CurrentInterpolationIndex = CurrentSlowTick % MaxInterpolation;
+            if (CurrentHeaderIndex < MyProj.Header.Length - 1)
             {
                 RefreshView();
                 CurrentHeaderIndex++;

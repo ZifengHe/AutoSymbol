@@ -42,8 +42,8 @@ namespace AutoSymbol
                     foreach (var er in multiER)
                     {
                         bool condition = item.Key == d.TrackingSig
-                            && ((er.Left.Sig == d.TrackingER.Left.Sig && er.Right.Sig == d.TrackingER.Right.Sig)
-                            ||d.TrackingER==null);
+                            && (d.TrackingER == null ||
+                            (er.Left.Sig == d.TrackingER.Left.Sig && er.Right.Sig == d.TrackingER.Right.Sig));
                         d.StartTreeMessage("Before BuildERChainAtAllBranchOnce",
                             condition,
                             er,

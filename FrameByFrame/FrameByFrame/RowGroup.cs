@@ -13,7 +13,8 @@ namespace FrameByFrame
 {
     public class ProjSetting
     {
-        public int TimeStampFromTop = 900;
+        public string StartYear = "1996";
+        public int TimeStampFromTop = 900;        
     }
     public class ProjData
     {

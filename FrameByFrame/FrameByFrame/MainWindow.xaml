@@ -6,14 +6,16 @@
         xmlns:local="clr-namespace:FrameByFrame"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="MainWindow" Height="900" Width="1500" Background="White" UseLayoutRounding="True">
+        Title="MainWindow" Height="900" Width="1500" Background="White" UseLayoutRounding="True" WindowState="Maximized">
     <DockPanel LastChildFill="True">
         <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
             <ToolBarTray >
                 <ToolBar>
                     <StackPanel Orientation="Vertical">
                         <StackPanel Orientation="Horizontal">
-                            <Button Content="Play" Click="PlayClicked" Margin="2"/>
+                            <Button Content="FastPlay" Click="FastPlayClicked" Margin="2"/>
+                            <Button Content="SlowPlay" Click="SlowPlayClicked" Margin="2"/>
+                            <Button Content="StopPlay" Click="StopPlayClicked" Margin="2"/>
                             <Button Content="LoadP" Click="LoadProjClicked" Margin="2"/>
                             <Button Content="SaveP" Click="SaveProjectClicked" Margin="2"/>                           
                             <Button Content="Video" Click="RecordVideoClicked"  Margin="2"/>

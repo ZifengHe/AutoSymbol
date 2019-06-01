@@ -108,7 +108,7 @@ namespace AutoSymbol
                     foreach (var sig in one.Value.Keys)
                     {
                         graph.AddEdge(prevSig, sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Green;
-                        prevSig = sig;
+                        //prevSig = sig;
                         //graph.AddNode(sig);
                     }
                 }

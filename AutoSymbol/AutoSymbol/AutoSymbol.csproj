@@ -134,5 +134,8 @@
   <ItemGroup>
     <Resource Include="Log.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="ReadMe.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

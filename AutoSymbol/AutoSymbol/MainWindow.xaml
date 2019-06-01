@@ -19,19 +19,17 @@
                             <TextBox Name="txtTrackingSig" Width="150" TextChanged="TrackingSigChanged" Margin="2">N[((X+Y)×(((X+Y)×X)+((Y+X)×Y)))]</TextBox>
                             <TextBlock Margin="2">ER=</TextBlock>
                             <ComboBox Width="50" Name="cbER" SelectionChanged="TrackingERChanged" Margin="2"></ComboBox>
-
                             <Button Content="Debug" Click="DebugClicked" Margin="2"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="2">
-                            <Button Content="Try"  Click="TryManualBuildClicked" Margin="2"/>
                             <ComboBox Width="50" Name="cbScenario" SelectionChanged="ScenarioChanged" Margin="2"></ComboBox>
                             <ComboBox Width="50" Name="cbFilterER" SelectionChanged="FilterERChanged"  Margin="2"></ComboBox>
+                            <Button Content="TryOneER"  Click="TryManualBuildClicked" Margin="2"/>
                             <Button Content="Optimize" Click="OptimizeClicked" Margin="2"/>
                         </StackPanel>
                     </StackPanel>
                 </ToolBar>
             </ToolBarTray>
-
         </StackPanel>
         <StatusBar Name="statusbar" DockPanel.Dock="Bottom" >
             <StatusBarItem>
