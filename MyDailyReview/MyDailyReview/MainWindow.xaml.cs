@@ -36,9 +36,10 @@ namespace MyDailyReview
         string scoreFile = @"C:\Users\zifengh\OneDrive\DailyReview\ScoreCard.txt";
         int current = 0;
         int lastScore = 0;
+        FileSystemWatcher fsw;
         public MainWindow()
         {
-            if(File.Exists(@"C:\Users\zifeng\OneDrive\DailyReview\ContentOne.txt"))
+            if (File.Exists(@"C:\Users\zifeng\OneDrive\DailyReview\ContentOne.txt"))
             {
                 fileName = @"C:\Users\zifeng\OneDrive\DailyReview\ContentOne.txt";
                 backupFile = @"C:\Users\zifeng\OneDrive\DailyReview\ContentOneBackup.txt";
@@ -48,10 +49,35 @@ namespace MyDailyReview
             InitializeComponent();
             this.WindowState = System.Windows.WindowState.Maximized;
             StartClicked(null, null);
+            EnableWatchAndNotify();
         }
 
+        private void DisableWatchAndNotify()
+        {
+            if (fsw != null)
+            {
+                fsw.Changed -= OnChanged;
+                fsw.Dispose();
+            }            
+        }
+
+        private void EnableWatchAndNotify()
+        {
+            fsw = new FileSystemWatcher();
+            fsw.Path = fileName;
+            fsw.NotifyFilter = NotifyFilters.LastWrite;
+            fsw.Changed += OnChanged;
+            fsw.EnableRaisingEvents = true;
+        }
+
+        private void OnChanged(object source, FileSystemEventArgs e)
+        {
+            MessageBox.Show("File changed while this instance sits idle");
+        }
+        
         private void DoneClicked(object sender, RoutedEventArgs e)
         {
+            DisableWatchAndNotify();
             All = All.OrderByDescending(x => x.Index).ToList();
             string[] items = new string[All.Count + 1];
             items[0] = "Index|Date|Category|Question|Answer|TestFrequency";
@@ -71,7 +97,7 @@ namespace MyDailyReview
                 list = File.ReadAllLines(logFile).ToList();
             list.Insert(0, string.Format("Score ： {0} on {1}", lastScore, DateTime.Today.Date));
             File.WriteAllLines(logFile, list.ToArray());
-
+            EnableWatchAndNotify();
         }
 
         private void StartClicked(object sender, RoutedEventArgs e)
@@ -122,7 +148,7 @@ namespace MyDailyReview
                 new Action(() => { System.Threading.Thread.Sleep(1000); cbFail.IsChecked = false; cbPass.IsChecked = false; }));
 
             MoveToNext();
-        }               
+        }
         private void FailClicked(object sender, RoutedEventArgs e)
         {
             if (All[current].TestFrequency > 'A')
@@ -138,7 +164,7 @@ namespace MyDailyReview
         }
         private void MoveToNext()
         {
-            
+
             current++;
             if (current < All.Count())
                 lblName.Content = string.Format("{0} : {1}", All[current].Category, All[current].Question);
@@ -173,8 +199,8 @@ namespace MyDailyReview
 
         private void UpdateClicked(object sender, RoutedEventArgs e)
         {
-            All[current-1].Question = txtQuestion.Text;
-            All[current-1].Answer = txtAnswer.Text;
+            All[current - 1].Question = txtQuestion.Text;
+            All[current - 1].Answer = txtAnswer.Text;
             DoneClicked(null, null);
             MessageBox.Show("Current entry updated");
         }
@@ -245,6 +271,6 @@ namespace MyDailyReview
             MoveToNext();
         }
 
-        
+
     }
 }
