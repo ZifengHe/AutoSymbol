@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MyDailyReview"
         mc:Ignorable="d"
-        Title="MainWindow"  Closing="wndClosing" Background="LightBlue">
+        Title="MainWindow"  Closing="wndClosing" Background="LightBlue" Loaded="WindowsLoaded">
     <Grid Margin="0,0,0,-140">
         <StackPanel Margin="10" HorizontalAlignment="Left">
             <Label FontWeight="Bold" FontSize="50" Name="lblName" FontFamily="Kaiti">Questions Here</Label>
@@ -59,21 +59,17 @@
                 <Button FontSize="20" Click="AddNewClicked" Margin=" 20">Add</Button>
                 <Button FontSize="20" Click="UpdateClicked" Margin=" 20">Update</Button>
                 <Button FontSize="20" Click="ClearClicked" Margin=" 20">Clear</Button>
-                <Button FontSize="20" Click="RestartClicked" Margin=" 20">Restart</Button>
             </StackPanel>
             <ComboBox Name="cbLog" Margin="2"></ComboBox>
             <ComboBox Name="cbAll" Margin="2"></ComboBox>
             <ComboBox Name="cbScoreCard" Margin="2"></ComboBox>
             <StackPanel Orientation="Vertical">
-                <CheckBox Name="cb1" FontFamily="Kaiti" FontSize="15">仪式:早上锻炼，饭后刷牙，睡前读书</CheckBox>
-                <CheckBox Name="cb2" FontFamily="Kaiti"  FontSize="15">坚持小目标编程</CheckBox>
-                <CheckBox Name="cb3" FontFamily="Kaiti"  FontSize="15">饮食无糖，无咖啡因，无代糖，优质蛋白适量</CheckBox>
-                <CheckBox Name="cb4" FontFamily="Kaiti"  FontSize="15">空腹睡眠</CheckBox>
-                <CheckBox Name="cb5" FontFamily="Kaiti"  FontSize="15">用计时器控制随机阅读</CheckBox>
-                <CheckBox Name="cb6" FontFamily="Kaiti"  FontSize="15">足够家人互动</CheckBox>
-                <CheckBox Name="cb7" FontFamily="Kaiti"  FontSize="15">完成计分卡100分</CheckBox>
-                <CheckBox Name="cb8" FontFamily="Kaiti"  FontSize="15">成交后笔记，九点后不看</CheckBox>
-                <Button Click="ScoreCardSubmitted">Submit</Button>
+                <TextBlock Name="CurrentItem"></TextBlock>
+                <CheckBox Name="cDone">Done</CheckBox>
+                <CheckBox Name="cValidExcuse">ValidExcuse</CheckBox>
+                <CheckBox Name="cDoItNow">DoItNow</CheckBox>
+                <CheckBox Name="cFailed">Failed</CheckBox>
+                <Button Click="SaveOneEntry">SaveToDailyLog</Button>
             </StackPanel>
         </StackPanel>
     </Grid>

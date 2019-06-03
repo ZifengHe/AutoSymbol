@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -18,6 +22,7 @@ using System.Windows.Threading;
 
 namespace MyDailyReview
 {
+
     public class Line
     {
         public int Index;
@@ -29,6 +34,21 @@ namespace MyDailyReview
     }
     public partial class MainWindow : Window
     {
+        private const int GWL_STYLE = -16;
+        private const int WS_SYSMENU = 0x80000;
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+        [DllImport("user32.dll")]
+        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+        [DllImport("user32.dll", EntryPoint = "FindWindow", SetLastError = true)]
+        static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+        [DllImport("user32.dll", EntryPoint = "SendMessage", SetLastError = true)]
+        static extern IntPtr SendMessage(IntPtr hWnd, Int32 Msg, IntPtr wParam, IntPtr lParam);
+
+        const int WM_COMMAND = 0x111;
+        const int MIN_ALL = 419;
+        const int MIN_ALL_UNDO = 416;
+
         List<Line> All = new List<Line>();
         string fileName = @"C:\Users\zifengh\OneDrive\DailyReview\ContentOne.txt";
         string backupFile = @"C:\Users\zifengh\OneDrive\DailyReview\ContentOneBackup.txt";
@@ -39,6 +59,12 @@ namespace MyDailyReview
         FileSystemWatcher fsw;
         public MainWindow()
         {
+            Mutex mutex = new Mutex(false, "Global\\12345678");
+            if (!mutex.WaitOne(0, false))
+            {
+                Environment.Exit(100);
+            }
+
             if (File.Exists(@"C:\Users\zifeng\OneDrive\DailyReview\ContentOne.txt"))
             {
                 fileName = @"C:\Users\zifeng\OneDrive\DailyReview\ContentOne.txt";
@@ -48,34 +74,84 @@ namespace MyDailyReview
             }
             InitializeComponent();
             this.WindowState = System.Windows.WindowState.Maximized;
-            StartClicked(null, null);
+            ReloadFile();
             EnableWatchAndNotify();
+
+            System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+            dispatcherTimer.Tick += DispatcherTimer_Tick;
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 10);
+            dispatcherTimer.Start();
         }
 
+         void Harass()
+        {
+            IntPtr lHwnd = FindWindow("Shell_TrayWnd", null);
+            SendMessage(lHwnd, WM_COMMAND, (IntPtr)MIN_ALL, IntPtr.Zero);
+            this.Activate();
+            this.Topmost = true;
+        }
+
+        private void DispatcherTimer_Tick(object sender, EventArgs e)
+        {
+            CloseTabs();
+        }
+
+        private void CloseTabs()
+        {
+            Process[] procsChrome = Process.GetProcessesByName("chrome");
+            if (procsChrome.Length <= 0)
+            {
+                Console.WriteLine("Chrome is not running");
+                return;
+            }
+
+            foreach (Process proc in procsChrome)
+            {
+                Trace.TraceInformation(proc.MainWindowTitle);
+                // the chrome process must have a window 
+                if (proc.MainWindowHandle == IntPtr.Zero)
+                {
+                    continue;
+                }
+
+                string x = proc.MainWindowTitle.ToLower();
+                if (x.Contains("seekingalpha")
+                    || x.Contains("seeking alpha"))
+                    proc.Kill();
+
+
+            }
+
+        }
+        private void StartClicked(object sender, RoutedEventArgs e)
+        { }
+        private void DoneClicked(object sender, RoutedEventArgs e)
+        { }
         private void DisableWatchAndNotify()
         {
             if (fsw != null)
             {
-                fsw.Changed -= OnChanged;
+                fsw.Changed -= OnFileChangedElsewhere;
                 fsw.Dispose();
-            }            
+            }
         }
 
         private void EnableWatchAndNotify()
         {
             fsw = new FileSystemWatcher();
-            fsw.Path = fileName;
+            fsw.Path = System.IO.Path.GetDirectoryName(fileName);
             fsw.NotifyFilter = NotifyFilters.LastWrite;
-            fsw.Changed += OnChanged;
+            fsw.Changed += OnFileChangedElsewhere;
             fsw.EnableRaisingEvents = true;
         }
 
-        private void OnChanged(object source, FileSystemEventArgs e)
+        private void OnFileChangedElsewhere(object source, FileSystemEventArgs e)
         {
-            MessageBox.Show("File changed while this instance sits idle");
+            MessageBox.Show("File changed while this instance sits idle. Reloading ...");
+            ReloadFile();
         }
-        
-        private void DoneClicked(object sender, RoutedEventArgs e)
+
+        private void SaveAllChanges()
         {
             DisableWatchAndNotify();
             All = All.OrderByDescending(x => x.Index).ToList();
@@ -100,7 +176,7 @@ namespace MyDailyReview
             EnableWatchAndNotify();
         }
 
-        private void StartClicked(object sender, RoutedEventArgs e)
+        private void ReloadFile()
         {
             All.Clear();
             string[] lines = File.ReadAllLines(fileName);
@@ -182,7 +258,7 @@ namespace MyDailyReview
             one.Index = All.Count + 1;
             one.TestFrequency = 'A';
             All.Insert(0, one);
-            DoneClicked(null, null);
+            SaveAllChanges();
             MessageBox.Show("New entry added");
         }
 
@@ -194,22 +270,18 @@ namespace MyDailyReview
 
         private void wndClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            DoneClicked(null, null);
+            SaveAllChanges();
         }
 
         private void UpdateClicked(object sender, RoutedEventArgs e)
         {
             All[current - 1].Question = txtQuestion.Text;
             All[current - 1].Answer = txtAnswer.Text;
-            DoneClicked(null, null);
+            SaveAllChanges();
             MessageBox.Show("Current entry updated");
         }
 
-        private void RestartClicked(object sender, RoutedEventArgs e)
-        {
-            DoneClicked(null, null);
-            StartClicked(null, null);
-        }
+
 
         private void ShowAnswerClicked(object sender, RoutedEventArgs e)
         {
@@ -217,60 +289,22 @@ namespace MyDailyReview
             txtAnswer.Text = All[current].Answer;
         }
 
-        private void ScoreCardSubmitted(object sender, RoutedEventArgs e)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append(DateTime.Today.Date.ToShortDateString() + " ");
-            if (cb1.IsChecked.Value)
-                sb.Append("1P ");
-            else
-                sb.Append("1F ");
-
-            if (cb2.IsChecked.Value)
-                sb.Append("2P ");
-            else
-                sb.Append("2F ");
-
-            if (cb3.IsChecked.Value)
-                sb.Append("3P ");
-            else
-                sb.Append("3F ");
-
-            if (cb4.IsChecked.Value)
-                sb.Append("4P ");
-            else
-                sb.Append("4F ");
-
-            if (cb5.IsChecked.Value)
-                sb.Append("5P ");
-            else
-                sb.Append("5F ");
-
-            if (cb6.IsChecked.Value)
-                sb.Append("6P ");
-            else
-                sb.Append("6F ");
-
-            if (cb7.IsChecked.Value)
-                sb.Append("7P ");
-            else
-                sb.Append("7F ");
-
-            if (cb8.IsChecked.Value)
-                sb.Append("8P ");
-            else
-                sb.Append("8F ");
-
-            List<string> list = File.ReadAllLines(scoreFile).ToList();
-            list.Insert(0, sb.ToString());
-            File.WriteAllLines(scoreFile, list.ToArray());
-        }
+       
 
         private void NextClicked(object sender, RoutedEventArgs e)
         {
             MoveToNext();
         }
 
+        private void WindowsLoaded(object sender, RoutedEventArgs e)
+        {
+            //var hwnd = new WindowInteropHelper(this).Handle;
+            //SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) & ~WS_SYSMENU);
+        }
 
+        private void SaveOneEntry(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
