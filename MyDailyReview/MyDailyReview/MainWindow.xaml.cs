@@ -49,7 +49,9 @@ namespace MyDailyReview
         const int MIN_ALL = 419;
         const int MIN_ALL_UNDO = 416;
 
+        AllDailyLog allDailyLog = new AllDailyLog();
         List<Line> All = new List<Line>();
+        OneCheckItem currentItem;
         string fileName = @"C:\Users\zifengh\OneDrive\DailyReview\ContentOne.txt";
         string backupFile = @"C:\Users\zifengh\OneDrive\DailyReview\ContentOneBackup.txt";
         string logFile = @"C:\Users\zifengh\OneDrive\DailyReview\log.txt";
@@ -78,22 +80,32 @@ namespace MyDailyReview
             EnableWatchAndNotify();
 
             System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
-            dispatcherTimer.Tick += DispatcherTimer_Tick;
+            dispatcherTimer.Tick += OnTimerAction;
             dispatcherTimer.Interval = new TimeSpan(0, 0, 10);
             dispatcherTimer.Start();
         }
 
-         void Harass()
+        void Harass()
         {
             IntPtr lHwnd = FindWindow("Shell_TrayWnd", null);
-            SendMessage(lHwnd, WM_COMMAND, (IntPtr)MIN_ALL, IntPtr.Zero);
+           // SendMessage(lHwnd, WM_COMMAND, (IntPtr)MIN_ALL, IntPtr.Zero);
             this.Activate();
             this.Topmost = true;
+            this.WindowState = WindowState.Maximized;
         }
 
-        private void DispatcherTimer_Tick(object sender, EventArgs e)
+        private void OnTimerAction(object sender, EventArgs e)
         {
-            CloseTabs();
+            currentItem = allDailyLog.CheckPendingItemForToday();
+            if (currentItem != null)
+            {
+                CurrentItemText.Text = currentItem.Description;
+                Harass();
+                return;
+            }
+            // AllDailyLog.ch
+            /// Step 1 check pending incomplete log
+            // CloseTabs();
         }
 
         private void CloseTabs()
@@ -168,11 +180,9 @@ namespace MyDailyReview
             if (File.Exists(backupFile) == false || File.ReadAllLines(backupFile).Length < File.ReadAllLines(fileName).Length)
                 File.Copy(fileName, backupFile, true);
 
-            List<string> list = new List<string>();
-            if (File.Exists(logFile))
-                list = File.ReadAllLines(logFile).ToList();
-            list.Insert(0, string.Format("Score ： {0} on {1}", lastScore, DateTime.Today.Date));
-            File.WriteAllLines(logFile, list.ToArray());
+            ObjectManager.ToXmlFile<AllDailyLog>(scoreFile, allDailyLog);
+
+
             EnableWatchAndNotify();
         }
 
@@ -204,15 +214,11 @@ namespace MyDailyReview
             tbScore.Text = score.ToString();
             lastScore = score;
 
-            cbLog.Items.Clear();
             cbAll.Items.Clear();
-            cbScoreCard.Items.Clear();
             foreach (var one in lines.ToList().Take(200))
                 cbAll.Items.Add(one);
-            foreach (var one in File.ReadAllLines(logFile).Take(200))
-                cbLog.Items.Add(one);
-            foreach (var one in File.ReadAllLines(scoreFile).Take(200))
-                cbScoreCard.Items.Add(one);
+            if (File.Exists(scoreFile))
+                allDailyLog = ObjectManager.FromXml<AllDailyLog>(scoreFile);
 
         }
 
@@ -289,7 +295,7 @@ namespace MyDailyReview
             txtAnswer.Text = All[current].Answer;
         }
 
-       
+
 
         private void NextClicked(object sender, RoutedEventArgs e)
         {
@@ -304,7 +310,12 @@ namespace MyDailyReview
 
         private void SaveOneEntry(object sender, RoutedEventArgs e)
         {
+            if (cDone.IsChecked == true) currentItem.Status = CompleteStatus.Done;
+            if (cValidExcuse.IsChecked == true) currentItem.Status = CompleteStatus.ValidExcuse;
+            if (cDoItNow.IsChecked == true) currentItem.Status = CompleteStatus.DoItNow;
+            if (cFailed.IsChecked == true) currentItem.Status = CompleteStatus.Failed;
 
+            OnTimerAction(null, null);
         }
     }
 }

@@ -60,16 +60,14 @@
                 <Button FontSize="20" Click="UpdateClicked" Margin=" 20">Update</Button>
                 <Button FontSize="20" Click="ClearClicked" Margin=" 20">Clear</Button>
             </StackPanel>
-            <ComboBox Name="cbLog" Margin="2"></ComboBox>
             <ComboBox Name="cbAll" Margin="2"></ComboBox>
-            <ComboBox Name="cbScoreCard" Margin="2"></ComboBox>
             <StackPanel Orientation="Vertical">
-                <TextBlock Name="CurrentItem"></TextBlock>
-                <CheckBox Name="cDone">Done</CheckBox>
-                <CheckBox Name="cValidExcuse">ValidExcuse</CheckBox>
-                <CheckBox Name="cDoItNow">DoItNow</CheckBox>
-                <CheckBox Name="cFailed">Failed</CheckBox>
-                <Button Click="SaveOneEntry">SaveToDailyLog</Button>
+                <TextBlock Name="CurrentItemText" FontSize="20" Margin="5"></TextBlock>
+                <CheckBox Name="cDone" Margin="2">Done</CheckBox>
+                <CheckBox Name="cValidExcuse" Margin="2">ValidExcuse</CheckBox>
+                <CheckBox Name="cDoItNow" Margin="2">DoItNow</CheckBox>
+                <CheckBox Name="cFailed" Margin="2">Failed</CheckBox>
+                <Button Click="SaveOneEntry" Margin="2">SaveToDailyLog</Button>
             </StackPanel>
         </StackPanel>
     </Grid>

@@ -8,6 +8,7 @@ namespace MyDailyReview
 {
     public enum CompleteStatus
     {
+        NotStarted,
         Done,
         ValidExcuse,
         DoItNow,
@@ -19,11 +20,12 @@ namespace MyDailyReview
         public int Hour;
         public int Minute;
         public CompleteStatus Status;
-            
+
     }
     public class DailyLog
     {
-        public DateTime Date;
+        public string DateStr;
+        public int FinalScore;
         public List<OneCheckItem> AllItems;
 
         public DailyLog()
@@ -37,9 +39,9 @@ namespace MyDailyReview
             });
             AllItems.Add(new OneCheckItem()
             {
-                Description="Morining Excercise",
-                Hour=10,
-                Minute=0
+                Description = "Morining Excercise",
+                Hour = 10,
+                Minute = 0
             });
 
             AllItems.Add(new OneCheckItem()
@@ -136,9 +138,30 @@ namespace MyDailyReview
 
     public class AllDailyLog
     {
-        public List<AllDailyLog> All;
+        public List<DailyLog> All = new List<DailyLog>();
 
-        public void CheckPendingItemForToday()
-        { }
+        public OneCheckItem CheckPendingItemForToday()
+        {
+            string dateStr = DateTime.Today.ToLongTimeString();
+            DailyLog dl = All.Find(x => x.DateStr == dateStr);
+            if (dl == null)
+            {
+                dl = new DailyLog();
+                dl.DateStr = dateStr;
+                All.Add(dl);
+            }
+
+            foreach (var one in dl.AllItems)
+            {
+                if (one.Hour > DateTime.Now.Hour
+                    || (one.Hour == DateTime.Now.Hour && one.Minute > DateTime.Now.Minute))
+                {
+                    if (one.Status == CompleteStatus.NotStarted)
+                        return one;
+                }
+            }
+
+            return null;
+        }
     }
 }
