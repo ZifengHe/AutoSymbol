@@ -48,6 +48,25 @@ namespace MyDailyReview
         const int WM_COMMAND = 0x111;
         const int MIN_ALL = 419;
         const int MIN_ALL_UNDO = 416;
+        string[] trackinURL = {
+                "seekingalpha",
+                "seeking alpha",
+                "xueqiu",
+                "雪球",
+                "wallstreetcn",
+                "见闻",
+                "zhihu",
+                "知乎",
+                "linkedin",
+                "facebook",
+                "quora",
+                "youtube",
+                "wenxuecity",
+                "文学城",
+                "mitbbs",
+                "fidelity"
+            };
+        DateTime lastReadTime = DateTime.Now.AddMinutes(-20);
 
         AllDailyLog allDailyLog = new AllDailyLog();
         List<Line> All = new List<Line>();
@@ -88,14 +107,15 @@ namespace MyDailyReview
         void Harass()
         {
             IntPtr lHwnd = FindWindow("Shell_TrayWnd", null);
-           // SendMessage(lHwnd, WM_COMMAND, (IntPtr)MIN_ALL, IntPtr.Zero);
+            // SendMessage(lHwnd, WM_COMMAND, (IntPtr)MIN_ALL, IntPtr.Zero);
             this.Activate();
-            this.Topmost = true;
             this.WindowState = WindowState.Maximized;
         }
 
         private void OnTimerAction(object sender, EventArgs e)
         {
+            CloseForOverRead();
+
             currentItem = allDailyLog.CheckPendingItemForToday();
             if (currentItem != null)
             {
@@ -103,23 +123,23 @@ namespace MyDailyReview
                 Harass();
                 return;
             }
-            // AllDailyLog.ch
-            /// Step 1 check pending incomplete log
-            // CloseTabs();
         }
 
-        private void CloseTabs()
+        private void CloseForOverRead()
         {
+            TimeSpan ts = DateTime.Now - lastReadTime;
+            tbReadTime.Text = string.Format("{0} minutes since last read.", ts.Minutes);
+
+            List<Process> toKill = new List<Process>();
             Process[] procsChrome = Process.GetProcessesByName("chrome");
             if (procsChrome.Length <= 0)
-            {
-                Console.WriteLine("Chrome is not running");
                 return;
-            }
+
+            if (DateTime.Now.Hour == 7 || DateTime.Now.Hour == 19)
+                return;
 
             foreach (Process proc in procsChrome)
             {
-                Trace.TraceInformation(proc.MainWindowTitle);
                 // the chrome process must have a window 
                 if (proc.MainWindowHandle == IntPtr.Zero)
                 {
@@ -127,13 +147,27 @@ namespace MyDailyReview
                 }
 
                 string x = proc.MainWindowTitle.ToLower();
-                if (x.Contains("seekingalpha")
-                    || x.Contains("seeking alpha"))
-                    proc.Kill();
 
-
+                foreach (var one in trackinURL)
+                {
+                    if (x.ToLowerInvariant().Contains(one))
+                    {
+                        toKill.Add(proc);
+                    }
+                }
             }
 
+            if ((ts.Minutes > 8 && ts.Minutes < 40)
+                ||DateTime.Now.Hour>21 || DateTime.Now.Hour<7)
+            {
+                foreach (var p in toKill)
+                    p.Kill();
+            }
+            else if (ts.Minutes >= 40)
+            {
+                if (toKill.Count() > 0)
+                    lastReadTime = DateTime.Now;
+            }
         }
         private void StartClicked(object sender, RoutedEventArgs e)
         { }
@@ -159,30 +193,30 @@ namespace MyDailyReview
 
         private void OnFileChangedElsewhere(object source, FileSystemEventArgs e)
         {
-            MessageBox.Show("File changed while this instance sits idle. Reloading ...");
-            ReloadFile();
+            this.Dispatcher.Invoke(() => { ReloadFile(); });            
         }
 
-        private void SaveAllChanges()
+        private void SaveAllChanges(bool scoreCardOnly)
         {
             DisableWatchAndNotify();
-            All = All.OrderByDescending(x => x.Index).ToList();
-            string[] items = new string[All.Count + 1];
-            items[0] = "Index|Date|Category|Question|Answer|TestFrequency";
-            for (int i = 0; i < All.Count; i++)
+            if (scoreCardOnly == false)
             {
-                Line l = All[i];
-                items[i + 1] = string.Format("{0}|{1}|{2}|{3}|{4}|{5}", l.Index.ToString(),
-                    l.Date, l.Category, l.Question, l.Answer, l.TestFrequency);
-            }
-            File.WriteAllLines(fileName, items);
+                All = All.OrderByDescending(x => x.Index).ToList();
+                string[] items = new string[All.Count + 1];
+                items[0] = "Index|Date|Category|Question|Answer|TestFrequency";
+                for (int i = 0; i < All.Count; i++)
+                {
+                    Line l = All[i];
+                    items[i + 1] = string.Format("{0}|{1}|{2}|{3}|{4}|{5}", l.Index.ToString(),
+                        l.Date, l.Category, l.Question, l.Answer, l.TestFrequency);
+                }
+                File.WriteAllLines(fileName, items);
 
-            if (File.Exists(backupFile) == false || File.ReadAllLines(backupFile).Length < File.ReadAllLines(fileName).Length)
-                File.Copy(fileName, backupFile, true);
+                if (File.Exists(backupFile) == false || File.ReadAllLines(backupFile).Length < File.ReadAllLines(fileName).Length)
+                    File.Copy(fileName, backupFile, true);
+            }
 
             ObjectManager.ToXmlFile<AllDailyLog>(scoreFile, allDailyLog);
-
-
             EnableWatchAndNotify();
         }
 
@@ -217,6 +251,8 @@ namespace MyDailyReview
             cbAll.Items.Clear();
             foreach (var one in lines.ToList().Take(200))
                 cbAll.Items.Add(one);
+
+            /// Reload score card
             if (File.Exists(scoreFile))
                 allDailyLog = ObjectManager.FromXml<AllDailyLog>(scoreFile);
 
@@ -264,7 +300,7 @@ namespace MyDailyReview
             one.Index = All.Count + 1;
             one.TestFrequency = 'A';
             All.Insert(0, one);
-            SaveAllChanges();
+            SaveAllChanges(false);
             MessageBox.Show("New entry added");
         }
 
@@ -276,14 +312,14 @@ namespace MyDailyReview
 
         private void wndClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            SaveAllChanges();
+            SaveAllChanges(false);
         }
 
         private void UpdateClicked(object sender, RoutedEventArgs e)
         {
             All[current - 1].Question = txtQuestion.Text;
             All[current - 1].Answer = txtAnswer.Text;
-            SaveAllChanges();
+            SaveAllChanges(false);
             MessageBox.Show("Current entry updated");
         }
 
@@ -310,12 +346,26 @@ namespace MyDailyReview
 
         private void SaveOneEntry(object sender, RoutedEventArgs e)
         {
-            if (cDone.IsChecked == true) currentItem.Status = CompleteStatus.Done;
-            if (cValidExcuse.IsChecked == true) currentItem.Status = CompleteStatus.ValidExcuse;
-            if (cDoItNow.IsChecked == true) currentItem.Status = CompleteStatus.DoItNow;
-            if (cFailed.IsChecked == true) currentItem.Status = CompleteStatus.Failed;
+            if (currentItem != null)
+            {
+                if (cDone.IsChecked == true) currentItem.Status = CompleteStatus.Done;
+                if (cValidExcuse.IsChecked == true) currentItem.Status = CompleteStatus.ValidExcuse;
+                if (cDoItNow.IsChecked == true) currentItem.Status = CompleteStatus.DoItNow;
+                if (cFailed.IsChecked == true) currentItem.Status = CompleteStatus.Failed;
 
-            OnTimerAction(null, null);
+                SaveAllChanges(true);
+
+                OnTimerAction(null, null);
+            }
+            else
+            {
+                WindowState = WindowState.Minimized;
+            }
+        }
+
+        private void MinimizeClicked(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
         }
     }
 }

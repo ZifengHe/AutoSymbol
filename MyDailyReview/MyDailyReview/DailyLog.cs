@@ -28,7 +28,7 @@ namespace MyDailyReview
         public int FinalScore;
         public List<OneCheckItem> AllItems;
 
-        public DailyLog()
+        public void Init()
         {
             AllItems = new List<OneCheckItem>();
             AllItems.Add(new OneCheckItem()
@@ -88,13 +88,20 @@ namespace MyDailyReview
             AllItems.Add(new OneCheckItem()
             {
                 Description = "Dinner as planned",
-                Hour = 13,
+                Hour = 19,
                 Minute = 0
             });
 
             AllItems.Add(new OneCheckItem()
             {
                 Description = "Afternoon Coding mini tasks",
+                Hour = 15,
+                Minute = 0
+            });
+
+            AllItems.Add(new OneCheckItem()
+            {
+                Description = "Cleared outlook tasks",
                 Hour = 15,
                 Minute = 0
             });
@@ -142,22 +149,23 @@ namespace MyDailyReview
 
         public OneCheckItem CheckPendingItemForToday()
         {
-            string dateStr = DateTime.Today.ToLongTimeString();
+            string dateStr = DateTime.Today.ToShortDateString();
             DailyLog dl = All.Find(x => x.DateStr == dateStr);
             if (dl == null)
             {
                 dl = new DailyLog();
+                dl.Init();
                 dl.DateStr = dateStr;
                 All.Add(dl);
             }
 
             foreach (var one in dl.AllItems)
             {
-                if (one.Hour > DateTime.Now.Hour
-                    || (one.Hour == DateTime.Now.Hour && one.Minute > DateTime.Now.Minute))
+                if ((one.Status == CompleteStatus.NotStarted && (DateTime.Now.Hour > one.Hour
+                    || (one.Hour == DateTime.Now.Hour && DateTime.Now.Minute > one.Minute)))
+                    || (one.Status == CompleteStatus.DoItNow && (DateTime.Now.Hour > one.Hour + 1)))
                 {
-                    if (one.Status == CompleteStatus.NotStarted)
-                        return one;
+                    return one;
                 }
             }
 

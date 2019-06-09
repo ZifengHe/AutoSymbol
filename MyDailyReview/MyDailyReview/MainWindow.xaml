@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MyDailyReview"
         mc:Ignorable="d"
-        Title="MainWindow"  Closing="wndClosing" Background="LightBlue" Loaded="WindowsLoaded">
+        Title="MainWindow"  Closing="wndClosing" Background="LightBlue" Loaded="WindowsLoaded" WindowStyle="None">
     <Grid Margin="0,0,0,-140">
         <StackPanel Margin="10" HorizontalAlignment="Left">
             <Label FontWeight="Bold" FontSize="50" Name="lblName" FontFamily="Kaiti">Questions Here</Label>
@@ -68,6 +68,8 @@
                 <CheckBox Name="cDoItNow" Margin="2">DoItNow</CheckBox>
                 <CheckBox Name="cFailed" Margin="2">Failed</CheckBox>
                 <Button Click="SaveOneEntry" Margin="2">SaveToDailyLog</Button>
+                <TextBlock Name="tbReadTime" Margin="2"></TextBlock>
+                <Button Click="MinimizeClicked" FontSize="20">Minimize</Button>
             </StackPanel>
         </StackPanel>
     </Grid>

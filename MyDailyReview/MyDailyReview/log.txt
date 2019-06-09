@@ -1,4 +1,9 @@
-﻿6/3/2019
+﻿6/4/2019
+1. Allow next action for 1 hour postponement
+2. Auto shutdown after 8 minutes and black out for 30 minutes
+3. Fix Scorecard not preserving bug
+
+6/3/2019
 1. Harass if daily activity not complete
 2. Permission to consume random 
 3. Record calorie
