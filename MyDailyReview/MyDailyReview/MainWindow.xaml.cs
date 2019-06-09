@@ -128,7 +128,8 @@ namespace MyDailyReview
         private void CloseForOverRead()
         {
             TimeSpan ts = DateTime.Now - lastReadTime;
-            tbReadTime.Text = string.Format("{0} minutes since last read.", ts.Minutes);
+            int minutes = ts.Days * 1440 + ts.Hours * 60 + ts.Minutes;
+            tbReadTime.Text = string.Format("{0} minutes since last read.", minutes);
 
             List<Process> toKill = new List<Process>();
             Process[] procsChrome = Process.GetProcessesByName("chrome");
@@ -157,7 +158,7 @@ namespace MyDailyReview
                 }
             }
 
-            if ((ts.Minutes > 8 && ts.Minutes < 40)
+            if ((minutes > 8 && minutes < 40)
                 ||DateTime.Now.Hour>21 || DateTime.Now.Hour<7)
             {
                 foreach (var p in toKill)

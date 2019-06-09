@@ -1,4 +1,8 @@
-﻿5/29/2019
+﻿6/9/2019
+1. Find the next step to solve cubic benchmark
+2. Start manual optimization
+
+5/29/2019
 1. Fix the blocking bug
 2. Rename Try
 3. How to proceed next : Optimize to rule that less bracket, better sorting to merge

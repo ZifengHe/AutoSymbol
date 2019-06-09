@@ -9,4 +9,5 @@ namespace AutoSymbol
     class Optimizer
     {
     }
+
 }
