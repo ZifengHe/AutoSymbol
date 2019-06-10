@@ -80,6 +80,8 @@ namespace MyDailyReview
         FileSystemWatcher fsw;
         public MainWindow()
         {
+            
+
             Mutex mutex = new Mutex(false, "Global\\12345678");
             if (!mutex.WaitOne(0, false))
             {
@@ -102,6 +104,13 @@ namespace MyDailyReview
             dispatcherTimer.Tick += OnTimerAction;
             dispatcherTimer.Interval = new TimeSpan(0, 0, 10);
             dispatcherTimer.Start();
+
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        }
+
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            File.WriteAllText(@"c:\crash.txt", e.ToString());
         }
 
         void Harass()
@@ -153,7 +162,7 @@ namespace MyDailyReview
                 {
                     if (x.ToLowerInvariant().Contains(one))
                     {
-                        toKill.Add(proc);
+                            toKill.Add(proc);
                     }
                 }
             }
@@ -162,7 +171,14 @@ namespace MyDailyReview
                 ||DateTime.Now.Hour>21 || DateTime.Now.Hour<7)
             {
                 foreach (var p in toKill)
-                    p.Kill();
+                {
+                    try
+                    {
+                        p.Kill();
+                    }
+                    catch
+                    { }
+                }
             }
             else if (ts.Minutes >= 40)
             {

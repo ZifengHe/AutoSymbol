@@ -1,6 +1,10 @@
-﻿6/9/2019
+﻿6/10/2019
+1. Search algorithm that does optimization with limited sample
+
+6/9/2019
 1. Find the next step to solve cubic benchmark
 2. Start manual optimization
+
 
 5/29/2019
 1. Fix the blocking bug
