@@ -180,7 +180,7 @@ namespace MyDailyReview
                     { }
                 }
             }
-            else if (ts.Minutes >= 40)
+            else if (minutes >= 40)
             {
                 if (toKill.Count() > 0)
                     lastReadTime = DateTime.Now;
