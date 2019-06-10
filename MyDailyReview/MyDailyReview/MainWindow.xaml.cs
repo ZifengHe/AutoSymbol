@@ -210,6 +210,7 @@ namespace MyDailyReview
 
         private void OnFileChangedElsewhere(object source, FileSystemEventArgs e)
         {
+            Thread.Sleep(15000);
             this.Dispatcher.Invoke(() => { ReloadFile(); });            
         }
 
