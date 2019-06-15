@@ -37,8 +37,8 @@ namespace AutoSymbol
             n.MemStore.Add(x);
             Member y = new Member("Y", n.ShortName, true);
             n.MemStore.Add(y);
-            OpChain target = n.NMul.CreateOpChain(n.NPlus.Operate(x, y),
-                n.NMul.Operate(n.NPlus.Operate(x, y), n.NPlus.Operate(x, y)));
+            OpChain target = N.NMul.CreateOpChain(N.NPlus.Operate(x, y),
+                N.NMul.Operate(N.NPlus.Operate(x, y), N.NPlus.Operate(x, y)));
             return target;
         }
     }

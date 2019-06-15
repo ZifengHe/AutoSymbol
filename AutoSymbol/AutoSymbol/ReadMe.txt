@@ -5,3 +5,5 @@
 4. Manual training will be required to build those Beauty criteria library
 5. End goal is to let Beauty criteria to explore to find interesting equivalent relations
 
+Optimization
+1. To optimize beauty criteria, use manual approach so that I can discover factors visually

@@ -25,7 +25,8 @@ namespace AutoSymbol
             OpChain toChange,
             List<ER> multiER,
             int maxLevel,
-            int maxSizePerGen)
+            int maxSizePerGen,
+            Optimizer optimizer= null)
         {
             TriedBefore.Clear();
 
@@ -57,11 +58,7 @@ namespace AutoSymbol
                     }
                 }
 
-                StrToOp limited = new StrToOp();
-                foreach (var one in dict[i + 1].OrderBy(x => x.Key.Length).Take(maxSizePerGen))
-                {
-                    limited[one.Key] = one.Value;
-                }
+                StrToOp limited = ReduceSize(maxSizePerGen, dict[i+1], i, optimizer);
                 dict[i + 1] = limited;
 
                 foreach (var item in dict[i + 1])
@@ -71,6 +68,29 @@ namespace AutoSymbol
                 }
             }
             return total;
+        }
+
+        private static StrToOp ReduceSize(int maxSizePerGen, StrToOp src, int level, Optimizer optimizer)
+        {
+            StrToOp limited = new StrToOp();
+
+            if (optimizer == null)
+            {
+                foreach (var one in src.OrderBy(x => x.Key.Length).Take(maxSizePerGen))
+                {
+                    limited[one.Key] = one.Value;
+                }
+            }
+            else
+            {
+                int childCount;
+                foreach (var one in src.OrderBy(x => optimizer.GetWeightFunction(level).CalcWeight(x.Value,0,out childCount)).Take(maxSizePerGen))
+                {
+                    limited[one.Key] = one.Value;
+                }
+            }
+
+            return limited;
         }
 
         public static void ShortenOneChain(OpChain chain, StrToOp dict)

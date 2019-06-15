@@ -73,7 +73,7 @@ namespace MyDailyReview
         OneCheckItem currentItem;
         string fileName = @"C:\Users\zifengh\OneDrive\DailyReview\ContentOne.txt";
         string backupFile = @"C:\Users\zifengh\OneDrive\DailyReview\ContentOneBackup.txt";
-        string logFile = @"C:\Users\zifengh\OneDrive\DailyReview\log.txt";
+        //string logFile = @"C:\Users\zifengh\OneDrive\DailyReview\log.txt";
         string scoreFile = @"C:\Users\zifengh\OneDrive\DailyReview\ScoreCard.txt";
         int current = 0;
         int lastScore = 0;
@@ -92,7 +92,7 @@ namespace MyDailyReview
             {
                 fileName = @"C:\Users\zifeng\OneDrive\DailyReview\ContentOne.txt";
                 backupFile = @"C:\Users\zifeng\OneDrive\DailyReview\ContentOneBackup.txt";
-                logFile = @"C:\Users\zifeng\OneDrive\DailyReview\log.txt";
+                //logFile = @"C:\Users\zifeng\OneDrive\DailyReview\log.txt";
                 scoreFile = @"C:\Users\zifeng\OneDrive\DailyReview\ScoreCard.txt";
             }
             InitializeComponent();
@@ -168,7 +168,7 @@ namespace MyDailyReview
             }
 
             if ((minutes > 8 && minutes < 40)
-                ||DateTime.Now.Hour>21 || DateTime.Now.Hour<7)
+                ||DateTime.Now.Hour>20 || DateTime.Now.Hour<7)
             {
                 foreach (var p in toKill)
                 {
@@ -320,6 +320,8 @@ namespace MyDailyReview
             All.Insert(0, one);
             SaveAllChanges(false);
             MessageBox.Show("New entry added");
+            txtAnswer.Text= string.Empty;
+            txtQuestion.Text = string.Empty;
         }
 
         private void ClearClicked(object sender, RoutedEventArgs e)

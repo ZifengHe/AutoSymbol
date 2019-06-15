@@ -45,6 +45,7 @@ namespace AutoSymbol
     {
         public Operator Operator;
         public Member[] Operands;
+        public double lastWeight = 0;
         private string sig = null;
 
         public OpChain() : base()

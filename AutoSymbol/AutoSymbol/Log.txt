@@ -1,5 +1,24 @@
-﻿6/10/2019
+﻿6/15/2019
+1. 
+
+6/14/2019
+1. Fix benchmark to include weight function
+2. track last weight and expose them
+3. Review WndManualBuild
+4. Generation selection changed
+
+
+
+6/13/2019
+1. Design additional UI on top of the ones
+2. Add first manual optimizer
+3. Grouping capability for WeightFunction
+4. CalcWeight
+
+
+6/10/2019
 1. Search algorithm that does optimization with limited sample
+2. Decision : Manual optimization
 
 6/9/2019
 1. Find the next step to solve cubic benchmark

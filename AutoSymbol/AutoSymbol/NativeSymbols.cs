@@ -8,8 +8,8 @@ namespace AutoSymbol
 {
     public class N : Set
     {
-        public Operator NPlus;
-        public Operator NMul;
+        public static Operator NPlus;
+        public static Operator NMul;
         public Member One;
 
         public N() : base("N")

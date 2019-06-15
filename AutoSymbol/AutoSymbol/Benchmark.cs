@@ -46,7 +46,12 @@ namespace AutoSymbol
         {
             OpChain target = OpChainHelper.For_ProveAPlusBCubic();
             OneTransform.AddTransformWithNoSource(target.Sig);
-            StrToOp dict = ER.BuildERChainsForLevel(target, new N().ERStore.Values.ToList(), 10, 150);
+            StrToOp dict = ER.BuildERChainsForLevel(
+                target, 
+                new N().ERStore.Values.ToList(),
+                10, 
+                150,
+                Optimizer.GetOptimizer(OptimizerType.DoPolynormialExpansion));
             UIData.AllItems = OneTransform.AllResult.Keys.ToList();
 
             //AssertKeyInDictionary("N[((X×X)+(((X×Y)×2)+(Y×Y)))]", dict);
@@ -58,7 +63,7 @@ namespace AutoSymbol
             n.MemStore.Add(x);
             Member y = new Member("Y", n.ShortName, true);
             n.MemStore.Add(y);
-            OpChain target = n.NMul.CreateOpChain(n.NPlus.Operate(x, y), n.NPlus.Operate(x, y));
+            OpChain target = N.NMul.CreateOpChain(N.NPlus.Operate(x, y), N.NPlus.Operate(x, y));
 
             OneTransform.AddTransformWithNoSource(target.Sig);
             StrToOp dict = ER.BuildERChainsForLevel(target, n.ERStore.Values.ToList(), 10, 100);
@@ -66,16 +71,14 @@ namespace AutoSymbol
             UIData.AllItems = OneTransform.AllResult.Keys.ToList();
 
             AssertKeyInDictionary("N[((X×X)+(((X×Y)×2)+(Y×Y)))]", dict);
-        }
-
-       
+        }       
 
         public void ProveTwoPlusXPlusThree()
         {            
             N n = new N();
             Member x = new Member("X", n.ShortName, true);
             n.MemStore.Add(x);
-            OpChain target = n.NPlus.CreateOpChain(n.MemStore["2"], n.NPlus.Operate(x, n.MemStore["3"]));
+            OpChain target = N.NPlus.CreateOpChain(n.MemStore["2"], N.NPlus.Operate(x, n.MemStore["3"]));
 
             OneTransform.AddTransformWithNoSource(target.Sig);
             StrToOp dict = ER.BuildERChainsForLevel(target, n.ERStore.Values.ToList(), 7, 20);

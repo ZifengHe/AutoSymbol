@@ -15,6 +15,7 @@
                             <Button Content="RunOne"  Click="RunOneClicked" Margin="2"/>
                             <Button Content="RunAll" Click="RunAllClicked" Margin="2"/>
                             <ComboBox Width="50" Name="cbList" SelectionChanged="CbList_SelectionChanged" Margin="2"></ComboBox>
+                            <ComboBox Width="50" Name="cbGen" SelectionChanged="cbGenSelectionChanged" Margin="2"></ComboBox>
                             <TextBlock Margin="2">Sig=</TextBlock>
                             <TextBox Name="txtTrackingSig" Width="150" TextChanged="TrackingSigChanged" Margin="2">N[((X+Y)×(((X+Y)×X)+((Y+X)×Y)))]</TextBox>
                             <TextBlock Margin="2">ER=</TextBlock>

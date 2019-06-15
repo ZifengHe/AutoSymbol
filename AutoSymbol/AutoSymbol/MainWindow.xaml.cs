@@ -42,6 +42,8 @@ namespace AutoSymbol
         {            
             InitializeComponent();
             Loaded += MainWindow_Loaded;
+            for (int i = 0; i < 50; i++)
+                cbGen.Items.Add(i);
         }
 
         private static Dictionary<string, int> EdgeCount = new Dictionary<string, int>();
@@ -304,5 +306,40 @@ namespace AutoSymbol
                 }
             }
         }
+
+        private void cbGenSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            GraphViewer graphViewer = new GraphViewer();
+            Graph graph = PrepareLeftPanelGraph(graphViewer);
+
+            int gen = (int)cbGen.SelectedValue;
+
+            string prev = null;
+            string current = null;
+            foreach (var one in OneTransform.AllResult)
+            {
+                if (one.Value.Gen == gen)
+                {
+                    //  graph.AddEdge(one.Value.Original.Sig, one.Value.Result.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Green;
+                    // graph.AddEdge(one.Value.Result.Sig, one.Value.Result.lastWeight.ToString()).Attr.Color = Microsoft.Msagl.Drawing.Color.Red;
+                    current = one.Value.Result.Sig + "---" + one.Value.Result.lastWeight.ToString();
+                    if (prev == null)
+                    {
+                        graph.AddNode(current);
+                       
+                    }
+                    else
+                    {
+                        graph.AddEdge(prev, current).Attr.Color = Microsoft.Msagl.Drawing.Color.Green;
+                    }
+                    prev = current;
+                }
+            }
+
+            graphViewer.Graph = graph;
+
+           // ViewFromStartToLast();
+        }
+               
     }
 }
