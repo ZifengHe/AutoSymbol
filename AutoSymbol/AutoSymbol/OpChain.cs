@@ -10,9 +10,9 @@ namespace AutoSymbol
     { }
     public class Operator : Symbol
     {
-        public string ResultSetName;
-        public string FirstInputSetName;
-        public string SecondInputSetName;
+        public string ResultSetName = string.Empty;
+        public string FirstInputSetName = string.Empty;
+        public string SecondInputSetName = string.Empty;
         public bool IsSingleOperand = false;
         public Operator(string name, Set targetSet, bool bSingleOperand) : base(name)
         {
@@ -38,6 +38,14 @@ namespace AutoSymbol
             chain.Operands = mems;
 
             return chain;
+        }
+
+        public string Sig
+        {
+            get
+            {
+                return string.Format("{0}:={1}{2}{3}", ResultSetName, FirstInputSetName, this.ShortName, SecondInputSetName);
+            }
         }
     }
 

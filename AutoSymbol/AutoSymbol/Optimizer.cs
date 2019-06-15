@@ -47,6 +47,7 @@ namespace AutoSymbol
     {
         public bool ForNGroup;
         public double ForNPlus;
+        public double ForNPlusBelowNMul;
         public double ForNPlusDepth;
         public double ForNPlusDepthDepth;
         public double ForNPlusDepthChildCount;
@@ -62,7 +63,10 @@ namespace AutoSymbol
                     int currentChild = 0;
                     sum += CalcWeight(chain.Operands[i].FromChain, depth + 1, out currentChild);
                     childCount += currentChild;
-                }
+
+                    if (chain.Operator.Sig == N.NMul.Sig && chain.Operands[i].FromChain.Operator.Sig == N.NPlus.Sig)
+                        sum += ForNPlusBelowNMul / (depth+1);
+                }               
             }
 
             if (ForNGroup)
@@ -83,10 +87,11 @@ namespace AutoSymbol
         public static WeightFunction PolynormialExpansion = new WeightFunction()
         {
             ForNGroup =true,
-            ForNPlus = 1,
-            ForNPlusDepth = 1,
-            ForNPlusDepthDepth =1,
-            ForNPlusDepthChildCount =1
+            ForNPlus = 0,
+            ForNPlusBelowNMul =1,
+            ForNPlusDepth = 0,
+            ForNPlusDepthDepth =0,
+            ForNPlusDepthChildCount =0
         };
     }
 
