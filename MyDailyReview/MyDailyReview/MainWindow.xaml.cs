@@ -48,23 +48,37 @@ namespace MyDailyReview
         const int WM_COMMAND = 0x111;
         const int MIN_ALL = 419;
         const int MIN_ALL_UNDO = 416;
+        public static Reminder r = new Reminder();
+
         string[] trackinURL = {
                 "seekingalpha",
                 "seeking alpha",
                 "xueqiu",
                 "雪球",
-                "wallstreetcn",
+                "wallstreet",
                 "见闻",
-                "zhihu",
-                "知乎",
                 "linkedin",
                 "facebook",
                 "quora",
                 "youtube",
                 "wenxuecity",
+                "bloomberg",
+                "cnbc",
+                "google news",
+                "cnn",
+                "zhihu",
+                "wealthscape",
+                "知乎",
+                 "格隆汇",
                 "文学城",
                 "mitbbs",
-                "fidelity"
+                "fidelity",
+                "twitter",
+                "网易",
+                "新浪",
+                "搜狐",
+                "wall street",
+                "sven"
             };
         DateTime lastReadTime = DateTime.Now.AddMinutes(-20);
 
@@ -80,7 +94,7 @@ namespace MyDailyReview
         FileSystemWatcher fsw;
         public MainWindow()
         {
-            
+
 
             Mutex mutex = new Mutex(false, "Global\\12345678");
             if (!mutex.WaitOne(0, false))
@@ -102,7 +116,7 @@ namespace MyDailyReview
 
             System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
             dispatcherTimer.Tick += OnTimerAction;
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 10);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 30);
             dispatcherTimer.Start();
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
@@ -118,17 +132,32 @@ namespace MyDailyReview
             IntPtr lHwnd = FindWindow("Shell_TrayWnd", null);
             // SendMessage(lHwnd, WM_COMMAND, (IntPtr)MIN_ALL, IntPtr.Zero);
             this.Activate();
-            this.WindowState = WindowState.Maximized;
+            // if (MainWindow.r == null)
+            // if(MainWindow.r.Visibility== Visibility.Hidden
+            //    || MainWindow.r.WindowState == WindowState.)
+            // MainWindow.r.Visibility = Visibility.Visible;
+            MainWindow.r.Close();
+            MainWindow.r = new Reminder();
+            MainWindow.r.Show();
+            // MainWindow.r.WindowState = WindowState.Maximized;
+            // this.WindowState = WindowState.Maximized;
         }
 
         private void OnTimerAction(object sender, EventArgs e)
         {
+
             CloseForOverRead();
 
             currentItem = allDailyLog.CheckPendingItemForToday();
             if (currentItem != null)
             {
                 CurrentItemText.Text = currentItem.Description;
+                if (KeyAnswer.Text == currentItem.KeyAnswer)
+                {
+                    currentItem.Status = CompleteStatus.KeyInputComplete;
+                    return;
+                }
+
                 Harass();
                 return;
             }
@@ -145,7 +174,15 @@ namespace MyDailyReview
             if (procsChrome.Length <= 0)
                 return;
 
-            if (DateTime.Now.Hour == 7 || DateTime.Now.Hour == 19)
+            Process[] processVS = Process.GetProcessesByName("devenv");
+            if (procsChrome.Length > 0)
+                foreach (Process proc in processVS)
+                    proc.Kill();
+
+
+                    if (DateTime.Now.Hour == 20
+                || DateTime.Now.Hour == 11)
+                //|| (DateTime.Now.Hour <=13 && DateTime.Now.DayOfWeek== DayOfWeek.Friday))
                 return;
 
             foreach (Process proc in procsChrome)
@@ -162,29 +199,29 @@ namespace MyDailyReview
                 {
                     if (x.ToLowerInvariant().Contains(one))
                     {
-                            toKill.Add(proc);
+                        toKill.Add(proc);
                     }
                 }
             }
 
-            if ((minutes > 8 && minutes < 40)
-                ||DateTime.Now.Hour>20 || DateTime.Now.Hour<7)
+            //if (((minutes > 20 && minutes < 150)
+            //    ||DateTime.Now.Hour>20 || DateTime.Now.Hour<7))
+            //{
+            foreach (var p in toKill)
             {
-                foreach (var p in toKill)
+                try
                 {
-                    try
-                    {
-                        p.Kill();
-                    }
-                    catch
-                    { }
+                    p.Kill();
                 }
+                catch
+                { }
             }
-            else if (minutes >= 40)
-            {
-                if (toKill.Count() > 0)
-                    lastReadTime = DateTime.Now;
-            }
+            //}
+            //else if (minutes >= 40)
+            //{
+            //    if (toKill.Count() > 0)
+            //        lastReadTime = DateTime.Now;
+            //}
         }
         private void StartClicked(object sender, RoutedEventArgs e)
         { }
@@ -211,7 +248,7 @@ namespace MyDailyReview
         private void OnFileChangedElsewhere(object source, FileSystemEventArgs e)
         {
             Thread.Sleep(15000);
-            this.Dispatcher.Invoke(() => { ReloadFile(); });            
+            this.Dispatcher.Invoke(() => { ReloadFile(); });
         }
 
         private void SaveAllChanges(bool scoreCardOnly)
@@ -315,12 +352,13 @@ namespace MyDailyReview
             one.Category = (string)cbCategory.SelectedValue;
             one.Question = txtQuestion.Text;
             one.Answer = txtAnswer.Text;
+            ReloadFile();
             one.Index = All.Count + 1;
             one.TestFrequency = 'A';
             All.Insert(0, one);
             SaveAllChanges(false);
             MessageBox.Show("New entry added");
-            txtAnswer.Text= string.Empty;
+            txtAnswer.Text = string.Empty;
             txtQuestion.Text = string.Empty;
         }
 
@@ -332,13 +370,16 @@ namespace MyDailyReview
 
         private void wndClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+
             SaveAllChanges(false);
+            string fileName = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            Process.Start(fileName);
         }
 
         private void UpdateClicked(object sender, RoutedEventArgs e)
         {
-            All[current - 1].Question = txtQuestion.Text;
-            All[current - 1].Answer = txtAnswer.Text;
+            All[current].Question = txtQuestion.Text;
+            All[current].Answer = txtAnswer.Text;
             SaveAllChanges(false);
             MessageBox.Show("Current entry updated");
         }
@@ -347,8 +388,9 @@ namespace MyDailyReview
 
         private void ShowAnswerClicked(object sender, RoutedEventArgs e)
         {
-            txtQuestion.Text = string.Format("{0} : {1}", All[current].Category, All[current].Question);
+            txtQuestion.Text = string.Format("{0}", All[current].Question);
             txtAnswer.Text = All[current].Answer;
+            cbCategory.SelectedValue = All[current].Category;
         }
 
 
@@ -368,14 +410,18 @@ namespace MyDailyReview
         {
             if (currentItem != null)
             {
-                if (cDone.IsChecked == true) currentItem.Status = CompleteStatus.Done;
-                if (cValidExcuse.IsChecked == true) currentItem.Status = CompleteStatus.ValidExcuse;
-                if (cDoItNow.IsChecked == true) currentItem.Status = CompleteStatus.DoItNow;
-                if (cFailed.IsChecked == true) currentItem.Status = CompleteStatus.Failed;
+                if (currentItem.Status != CompleteStatus.KeyInputComplete)
+                {
+                    if (cDone.IsChecked == true) currentItem.Status = CompleteStatus.Done;
+                    if (cValidExcuse.IsChecked == true) currentItem.Status = CompleteStatus.ValidExcuse;
+                    if (cDoItNow.IsChecked == true) currentItem.Status = CompleteStatus.DoItNow;
+                    if (cFailed.IsChecked == true) currentItem.Status = CompleteStatus.Failed;
+                }
 
                 SaveAllChanges(true);
 
                 OnTimerAction(null, null);
+                KeyAnswer.Text = string.Empty;
             }
             else
             {
@@ -386,6 +432,15 @@ namespace MyDailyReview
         private void MinimizeClicked(object sender, RoutedEventArgs e)
         {
             this.WindowState = WindowState.Minimized;
+        }
+
+        private void SymbolLabelMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (txtSymbols.Visibility == Visibility.Collapsed)
+                txtSymbols.Visibility = Visibility.Visible;
+            else
+                txtSymbols.Visibility = Visibility.Collapsed;
+
         }
     }
 }

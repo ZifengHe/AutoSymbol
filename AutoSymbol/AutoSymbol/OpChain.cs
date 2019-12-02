@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,9 +11,9 @@ namespace AutoSymbol
     { }
     public class Operator : Symbol
     {
-        public string ResultSetName;
-        public string FirstInputSetName;
-        public string SecondInputSetName;
+        public string ResultSetName = string.Empty;
+        public string FirstInputSetName = string.Empty;
+        public string SecondInputSetName = string.Empty;
         public bool IsSingleOperand = false;
         public Operator(string name, Set targetSet, bool bSingleOperand) : base(name)
         {
@@ -39,13 +40,24 @@ namespace AutoSymbol
 
             return chain;
         }
+
+        public string Sig
+        {
+            get
+            {
+                return string.Format("{0}:={1}{2}{3}", ResultSetName, FirstInputSetName, this.ShortName, SecondInputSetName);
+            }
+        }
     }
 
     public class OpChain
     {
+        /// !!!  Any new member needs to be included in MakeCopy()
         public Operator Operator;
         public Member[] Operands;
-        public double lastWeight = 0;
+        //public ReadOnlyCollection<Member> Operands = new ReadOnlyCollection<Member>();
+        public double lastTotalWeight = 0;
+        public double lastLocalWeight = 0;
         private string sig = null;
 
         public OpChain() : base()
@@ -57,6 +69,8 @@ namespace AutoSymbol
             OpChain ret = new OpChain();
             ret.Operator = this.Operator;
             ret.Operands = new Member[this.Operands.Length];
+            ret.lastLocalWeight = this.lastLocalWeight;
+            ret.lastTotalWeight = this.lastTotalWeight;            
 
             for(int i=0; i < this.Operands.Length; i++)
             {
@@ -113,6 +127,45 @@ namespace AutoSymbol
             }
         }
 
+        public string SigWithWeight
+        {
+            get
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("{0}[", this.Operator.ResultSetName);
+                RecursivePrintWithWeight(this, sb);
+                sb.Append("]TotalWeight=" + this.lastTotalWeight.ToString());
+                return sb.ToString();
+            }
+        }
+
+        public void RecursivePrintWithWeight(OpChain chain, StringBuilder sb)
+        {
+            double sumChildren = 0;
+            sb.Append("(");
+            for (int i = 0; i < chain.Operands.Length; i++)
+            {
+                if (chain.Operands[i].FromChain == null)
+                {
+                    sb.Append(chain.Operands[i].ShortName);
+                }
+                else
+                {
+                    RecursivePrintWithWeight(chain.Operands[i].FromChain, sb);
+                    sumChildren += chain.Operands[i].FromChain.lastTotalWeight;
+                }
+                if (i != chain.Operands.Length - 1)
+                    sb.AppendFormat("{0}[{1} {2}]", 
+                        chain.Operator.ShortName, 
+                        chain.lastTotalWeight.ToString(),
+                        chain.lastLocalWeight.ToString());
+            }
+
+            double diff = Math.Abs(sumChildren + chain.lastLocalWeight - chain.lastTotalWeight);
+            d.BreakOnCondition(diff > 0.01);
+            sb.Append(")");
+        }
+
         public void RecursiveLeftChildFirstPrint(OpChain chain, StringBuilder sb)
         {
             sb.Append("(");
@@ -140,6 +193,17 @@ namespace AutoSymbol
             /// Operator weight at different level
         }
 
+        public void AssertChildrenWeightConsistency()
+        {
+            double testChildrenSum = 0;
+            for (int i = 0; i < this.Operands.Length; i++)
+            {
+                if (this.Operands[i].FromChain != null)
+                    testChildrenSum += this.Operands[i].FromChain.lastTotalWeight;
+            }
+            double diff = Math.Abs(testChildrenSum + this.lastLocalWeight - this.lastTotalWeight);
+            d.BreakOnCondition(diff > 0.01);
+        }
         public List<OpChain> GetAllChildren()
         {
             List<OpChain> list = new List<OpChain>();

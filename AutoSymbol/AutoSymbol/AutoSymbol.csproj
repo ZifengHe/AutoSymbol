@@ -70,7 +70,8 @@
     <Compile Include="DebugLog.xaml.cs">
       <DependentUpon>DebugLog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Draft.cs" />
+    <Compile Include="DraftGroupTheory.cs" />
+    <Compile Include="DraftManifold.cs" />
     <Compile Include="ER.cs" />
     <Compile Include="Hunch.cs" />
     <Compile Include="ManualScenario.cs" />

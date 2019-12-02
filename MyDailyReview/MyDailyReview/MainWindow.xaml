@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MyDailyReview"
         mc:Ignorable="d"
-        Title="MainWindow"  Closing="wndClosing" Background="LightBlue" Loaded="WindowsLoaded" WindowStyle="None">
+        Title="守护神"  Closing="wndClosing" Background="LightBlue" Loaded="WindowsLoaded" WindowStyle="None" >
     <Grid Margin="0,0,0,-140">
         <StackPanel Margin="10" HorizontalAlignment="Left">
-            <Label FontWeight="Bold" FontSize="50" Name="lblName" FontFamily="Kaiti">Questions Here</Label>
+            <Label FontWeight="Bold" FontSize="50" Name="lblName" FontFamily="Kaiti" Visibility="Hidden">Questions Here</Label>
             <StackPanel Orientation="Horizontal">
                 <StackPanel Orientation="Vertical">
                     <CheckBox Checked="Pass_Checked" Name="cbPass" >
@@ -24,12 +24,12 @@
                         Study More
                     </CheckBox>
                     <StackPanel Orientation="Horizontal">
-                    <Button  Click="ShowAnswerClicked" Name="cbReviewOnly" Margin="5">
-                        <Button.LayoutTransform>
-                            <ScaleTransform ScaleX="4" ScaleY="4" />
-                        </Button.LayoutTransform>
-                        Show Answer
-                    </Button>
+                        <Button  Click="ShowAnswerClicked" Name="cbReviewOnly" Margin="5">
+                            <Button.LayoutTransform>
+                                <ScaleTransform ScaleX="4" ScaleY="4" />
+                            </Button.LayoutTransform>
+                            Show Answer
+                        </Button>
                         <Button  Click="NextClicked" Name="Next" Margin="5">
                             <Button.LayoutTransform>
                                 <ScaleTransform ScaleX="4" ScaleY="4" />
@@ -50,6 +50,14 @@
                 <Label FontSize="15">Answer :</Label>
                 <TextBox FontSize="40" FontFamily="Kaiti" Name="txtAnswer" Width="1000" Margin="10,0,0,0"></TextBox>
             </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                <Label FontSize="15" MouseDoubleClick="SymbolLabelMouseDoubleClick">Symbols :</Label>
+                <TextBox Visibility="Collapsed" FontSize="60" FontFamily="Kaiti" Name="txtSymbols" Width="1000" Height="300" Margin="10,0,0,0" TextWrapping="Wrap" AcceptsReturn="True">
+                    ʃ∑∞∆ɸ˄˅αβγδεζηθλμνξοπρστυφχψωϕ-ᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᵒᵖʳˢᵗᵘᵛʷˣʸᶻ
+                    ᵅᵝᵞᵟᵋᶿᶥᶲᵠᵡ-ₐₑₕᵢⱼₖₗₘₙₒₚᵣₛₜᵤᵥₓ-₀₁₂₃₄₅₆₇₈₉⁴⁵⁶⁷⁸⁹⁻⁺⁽⁾ⁿⁱ
+                </TextBox>
+            </StackPanel>
+
             <StackPanel Orientation="Horizontal"  Margin="0,0,0,10">
                 <Label>Category :</Label>
                 <ComboBox Name="cbCategory" Width="300" Margin="12,0,0,0"></ComboBox>
@@ -62,7 +70,10 @@
             </StackPanel>
             <ComboBox Name="cbAll" Margin="2"></ComboBox>
             <StackPanel Orientation="Vertical">
-                <TextBlock Name="CurrentItemText" FontSize="20" Margin="5"></TextBlock>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Name="CurrentItemText" FontSize="20" Margin="5"></TextBlock>
+                    <TextBox Name="KeyAnswer" FontSize="20" FontFamily="Kaiti" Width="50"></TextBox>
+                </StackPanel>
                 <CheckBox Name="cDone" Margin="2">Done</CheckBox>
                 <CheckBox Name="cValidExcuse" Margin="2">ValidExcuse</CheckBox>
                 <CheckBox Name="cDoItNow" Margin="2">DoItNow</CheckBox>

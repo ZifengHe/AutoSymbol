@@ -26,7 +26,7 @@ namespace AutoSymbol
             List<ER> multiER,
             int maxLevel,
             int maxSizePerGen,
-            Optimizer optimizer= null)
+            Optimizer optimizer = null)
         {
             TriedBefore.Clear();
 
@@ -40,6 +40,7 @@ namespace AutoSymbol
                 dict[i + 1] = new StrToOp();
                 foreach (var item in dict[i])
                 {
+                    item.Value.AssertChildrenWeightConsistency();
                     foreach (var er in multiER)
                     {
                         bool condition = item.Key == d.TrackingSig
@@ -50,19 +51,29 @@ namespace AutoSymbol
                             er,
                             item.Value);
                         er.BuildERChainAtAllBranchOnce(dict[i + 1], item.Value);
+
+                        item.Value.AssertChildrenWeightConsistency();
                     }
                     List<string> keys = dict[i + 1].Keys.ToList();
                     foreach (var str in keys)
                     {
+                        dict[i + 1][str].AssertChildrenWeightConsistency();
                         ShortenOneChain(dict[i + 1][str], dict[i + 1]);
+                        //dict[i + 1][str].AssertChildrenWeightConsistency();
                     }
                 }
 
-                StrToOp limited = ReduceSize(maxSizePerGen, dict[i+1], i, optimizer);
+                //foreach (var item in dict[i + 1])
+                //{
+                //    item.Value.AssertChildrenWeightConsistency();
+                //}
+
+                StrToOp limited = ReduceSize(maxSizePerGen, dict[i + 1], i, optimizer);
                 dict[i + 1] = limited;
 
                 foreach (var item in dict[i + 1])
                 {
+                    item.Value.AssertChildrenWeightConsistency();
                     if (!total.ContainsKey(item.Key))
                         total[item.Key] = item.Value;
                 }
@@ -84,8 +95,24 @@ namespace AutoSymbol
             else
             {
                 int childCount;
-                foreach (var one in src.OrderBy(x => optimizer.GetWeightFunction(level).CalcWeight(x.Value,0,out childCount)).Take(maxSizePerGen))
+               
+
+                WeightFunction wf = optimizer.GetWeightFunction(level);
+                foreach (var one in src)
                 {
+                    //one.Value.AssertChildrenWeightConsistency();
+                    wf.CalcWeight(one.Value, 0, out childCount);
+                    one.Value.AssertChildrenWeightConsistency();
+                }
+                foreach (var one in src)
+                {
+                    one.Value.AssertChildrenWeightConsistency();
+                }
+
+                var list = src.OrderBy(x => x.Value.lastTotalWeight).Take(maxSizePerGen).ToList();
+                foreach (KeyValuePair<string, OpChain> one in list)
+                {
+                    one.Value.AssertChildrenWeightConsistency();
                     limited[one.Key] = one.Value;
                 }
             }
@@ -258,7 +285,7 @@ namespace AutoSymbol
                 if (chain.Operands[i].FromChain == null)
                 {
                     if (keyMap.ContainsKey(chain.Operands[i].ShortName))
-                        chain.Operands[i] = keyMap[chain.Operands[i].ShortName];
+                        chain.Operands[i] = keyMap[chain.Operands[i].ShortName].MakeCopy();
                 }
                 else
                 {

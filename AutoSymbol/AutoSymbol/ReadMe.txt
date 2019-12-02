@@ -1,4 +1,9 @@
-﻿Main Workflow
+﻿Core Value
+1. Build a library of basic equivalent relation, a library of construction template
+2. Let computer to expand based on beauty criteria
+
+
+Main Workflow
 1. Start with any symbol chain (OpChain), using constructor can create different OpChain. Each one is a seed.
 2. Apply EquivalentRelation to a seed, this process will develop many many equal OpChain, the key is to avoid explosion.
 3. From seed, to the ideal result Chain, there will be Beauty criteria to limit exploring too many paths

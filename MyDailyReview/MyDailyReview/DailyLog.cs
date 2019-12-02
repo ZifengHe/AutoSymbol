@@ -12,11 +12,13 @@ namespace MyDailyReview
         Done,
         ValidExcuse,
         DoItNow,
-        Failed
+        Failed,
+        KeyInputComplete
     }
     public class OneCheckItem
     {
         public string Description;
+        public string KeyAnswer;
         public int Hour;
         public int Minute;
         public CompleteStatus Status;
@@ -37,106 +39,121 @@ namespace MyDailyReview
                 Hour = 8,
                 Minute = 0
             });
+
+         
             AllItems.Add(new OneCheckItem()
             {
-                Description = "Morining Excercise",
-                Hour = 10,
+                Description = "锻炼是因为得到了",
+                KeyAnswer="自控",
+                Hour = 9,
                 Minute = 0
             });
 
             AllItems.Add(new OneCheckItem()
             {
-                Description = "Breakfast as planned",
-                Hour = 10,
-                Minute = 0
-            });
-            AllItems.Add(new OneCheckItem()
-            {
-                Description = "Morning 3 steps",
-                Hour = 10,
+                Description = "是否终生学习的标准是什么",
+                KeyAnswer = "笔记",
+                Hour = 9,
                 Minute = 0
             });
 
             AllItems.Add(new OneCheckItem()
             {
-                Description = "Morning Coding mini tasks ",
-                Hour = 11,
+                Description = "一个防止沉溺于什么样的奖励",
+                KeyAnswer = "快",
+                Hour = 9,
                 Minute = 0
             });
 
             AllItems.Add(new OneCheckItem()
             {
-                Description = "Morning review",
-                Hour = 11,
-                Minute = 0
-            });
-
-            AllItems.Add(new OneCheckItem()
-            {
-                Description = "Lunch as planned",
-                Hour = 13,
-                Minute = 0
-            });
-
-            AllItems.Add(new OneCheckItem()
-            {
-                Description = "Lunch Brush",
-                Hour = 13,
-                Minute = 0
-            });
-
-            AllItems.Add(new OneCheckItem()
-            {
-                Description = "Dinner as planned",
-                Hour = 19,
-                Minute = 0
-            });
-
-            AllItems.Add(new OneCheckItem()
-            {
-                Description = "Afternoon Coding mini tasks",
-                Hour = 15,
-                Minute = 0
-            });
-
-            AllItems.Add(new OneCheckItem()
-            {
-                Description = "Cleared outlook tasks",
-                Hour = 15,
-                Minute = 0
-            });
-
-            AllItems.Add(new OneCheckItem()
-            {
-                Description = "Afternoon review",
-                Hour = 15,
-                Minute = 0
-            });
-
-            AllItems.Add(new OneCheckItem()
-            {
-                Description = "Nothing unhealthy",
-                Hour = 17,
-                Minute = 0
-            });
-
-            AllItems.Add(new OneCheckItem()
-            {
-                Description = "Kids interaction",
-                Hour = 19,
-                Minute = 30
-            });
-
-            AllItems.Add(new OneCheckItem()
-            {
-                Description = "Evening review",
+                Description = "不确定性是智者欢迎的",
+                KeyAnswer = "机遇",
                 Hour = 20,
                 Minute = 0
             });
 
             AllItems.Add(new OneCheckItem()
             {
-                Description = "Daily chore",
+                Description = "高情商交流需要回避的字是",
+                KeyAnswer = "你",
+                Hour = 9,
+                Minute = 0
+            });
+
+            AllItems.Add(new OneCheckItem()
+            {
+                Description = "未来会好的，因为有什么样的可能性",
+                KeyAnswer = "无限",
+                Hour = 9,
+                Minute = 0
+            });
+
+
+
+            AllItems.Add(new OneCheckItem()
+            {
+                Description = "低热量饮食是因为得到了",
+                KeyAnswer = "不痛",
+                Hour = 9,
+                Minute = 20
+            });
+
+            AllItems.Add(new OneCheckItem()
+            {
+                Description = "可以感觉好，是因为得到了",
+                KeyAnswer = "洞见",
+                Hour = 11,
+                Minute = 20
+            });
+
+            AllItems.Add(new OneCheckItem()
+            {
+                Description = "无糖是因为得到了",
+                KeyAnswer = "不痒",
+                Hour = 10,
+                Minute = 40
+            });
+
+            AllItems.Add(new OneCheckItem()
+            {
+                Description = "什么只需等待，必会得到",
+                KeyAnswer = "好运",
+                Hour = 12,
+                Minute = 40
+            });
+           
+
+            AllItems.Add(new OneCheckItem()
+            {
+                Description = "表达不同意见应该以什么开头",
+                KeyAnswer = "yes",
+                Hour = 14,
+                Minute = 30
+            });
+
+           
+
+            AllItems.Add(new OneCheckItem()
+            {
+                Description = "获取智慧的套路",
+                KeyAnswer = "自问",
+                Hour = 18,
+                Minute = 30
+            });
+
+            AllItems.Add(new OneCheckItem()
+            {
+                Description = "高维赢低维靠的是",
+                KeyAnswer = "套路",
+                Hour = 21,
+                Minute = 30
+            });
+
+            AllItems.Add(new OneCheckItem()
+            {
+                Description = "做家务得到的是",
+                KeyAnswer = "干净",
                 Hour = 21,
                 Minute = 30
             });
@@ -164,6 +181,13 @@ namespace MyDailyReview
                 if ((one.Status == CompleteStatus.NotStarted && (DateTime.Now.Hour > one.Hour
                     || (one.Hour == DateTime.Now.Hour && DateTime.Now.Minute > one.Minute)))
                     || (one.Status == CompleteStatus.DoItNow && (DateTime.Now.Hour > one.Hour + 1)))
+                {
+                    return one;
+                }
+
+                if(string.IsNullOrEmpty(one.KeyAnswer)==false
+                    && one.Status!= CompleteStatus.KeyInputComplete
+                    && (DateTime.Now.Hour > one.Hour || (one.Hour == DateTime.Now.Hour && DateTime.Now.Minute > one.Minute)))
                 {
                     return one;
                 }

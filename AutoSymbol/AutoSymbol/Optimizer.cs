@@ -47,46 +47,63 @@ namespace AutoSymbol
     {
         public bool ForNGroup;
         public double ForNPlus;
+        public double ForNPlusBelowNMul;
         public double ForNPlusDepth;
         public double ForNPlusDepthDepth;
         public double ForNPlusDepthChildCount;
         public double CalcWeight(OpChain chain, int depth, out int childCount)
         {
-            double sum = 0;
+            double localSum = 0;
+            double childrenSum = 0;
 
             childCount = 0;
             for(int i=0; i < chain.Operands.Length;i++)
             {
                 if(chain.Operands[i].FromChain!= null)
                 {
-                    int currentChild = 0;
-                    sum += CalcWeight(chain.Operands[i].FromChain, depth + 1, out currentChild);
+                    int currentChild;
+                    double result = CalcWeight(chain.Operands[i].FromChain, depth + 1, out currentChild);
+                    childrenSum += result;
                     childCount += currentChild;
-                }
+                }               
             }
 
             if (ForNGroup)
             {
-                if(chain.Operator == N.NPlus)
+                for (int i = 0; i < chain.Operands.Length; i++)
                 {
-                    sum += ForNPlus;
-                    sum += ForNPlusDepth * depth;
-                    sum += ForNPlusDepthDepth * depth * depth;
-                    sum += ForNPlusDepthChildCount * depth * childCount;
+                    if (chain.Operands[i].FromChain != null)
+                    {
+                        if (chain.Operator.Sig == N.NMul.Sig && chain.Operands[i].FromChain.Operator.Sig == N.NPlus.Sig)
+                            localSum += ForNPlusBelowNMul / (depth + 1);
+                    }
+                }
+
+                if (chain.Operator == N.NPlus)
+                {
+                    localSum += ForNPlus;
+                    localSum += ForNPlusDepth * depth;
+                    localSum += ForNPlusDepthDepth * depth * depth;
+                    localSum += ForNPlusDepthChildCount * depth * childCount;
                 }
             }
 
-            chain.lastWeight = sum;
+            double sum = localSum + childrenSum;
+            chain.lastLocalWeight = localSum;
+            chain.lastTotalWeight = sum;
+
+            chain.AssertChildrenWeightConsistency();
             return sum;
         }
 
         public static WeightFunction PolynormialExpansion = new WeightFunction()
         {
             ForNGroup =true,
-            ForNPlus = 1,
-            ForNPlusDepth = 1,
-            ForNPlusDepthDepth =1,
-            ForNPlusDepthChildCount =1
+            ForNPlus = 0,
+            ForNPlusBelowNMul =1.0,
+            ForNPlusDepth = 0,
+            ForNPlusDepthDepth =0,
+            ForNPlusDepthChildCount =0
         };
     }
 

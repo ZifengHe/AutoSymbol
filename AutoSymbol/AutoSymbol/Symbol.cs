@@ -73,7 +73,13 @@ namespace AutoSymbol
         public OpChain FromChain;
         public bool IsVariable = false;
 
-
+        public Member MakeCopy()
+        {
+            Member ret = new Member(this.ShortName,this.TargetSetName,this.IsVariable);
+            if (FromChain != null)
+                ret.FromChain = this.FromChain.MakeCopy();
+            return ret;
+        }
        
         public Member(string shortName, string targetSetName, bool isVar) : base(shortName)
         {

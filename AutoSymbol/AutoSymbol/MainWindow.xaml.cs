@@ -322,7 +322,7 @@ namespace AutoSymbol
                 {
                     //  graph.AddEdge(one.Value.Original.Sig, one.Value.Result.Sig).Attr.Color = Microsoft.Msagl.Drawing.Color.Green;
                     // graph.AddEdge(one.Value.Result.Sig, one.Value.Result.lastWeight.ToString()).Attr.Color = Microsoft.Msagl.Drawing.Color.Red;
-                    current = one.Value.Result.Sig + "---" + one.Value.Result.lastWeight.ToString();
+                    current = one.Value.Result.Sig + "---" + one.Value.Result.SigWithWeight;
                     if (prev == null)
                     {
                         graph.AddNode(current);

@@ -1,5 +1,36 @@
-﻿6/15/2019
-1. 
+﻿7/18/2019
+1. Explore how geometry helped for algebra concept, could it be part of equivalent relations
+2. Geometry helps to construct, in short construction template
+
+7/10/2019
+1. Try to represent chart-atlas as Equivalent Relation on the set
+
+7/9/2019
+1. Explore Manifold concept representation
+2. Represent a new scenario that a set of operator on a single set
+3. Represent Equivalent Relation in manifold
+4. Represent C-infinity 
+5. Represent Equivalent relation for IsTrue statement and how to use this for finding new ER
+6. Need to see how math proof uses IsTrue relation
+
+7/8/2019
+1. Explore Manifold concept representation
+
+6/18/2019
+1. Benchmark Bug:  OpChain got reused incorrectly and caused TotalWeight inconsistency
+2. Solution : This is caused by either Member or OpChain reference got reassigned. Needs further debugging.
+
+6/17/2019
+1. Review code for BuildERChainAtAllBranchOnce to see if there is branch reuse that caused Weight reset afterwards
+2. RecursiveReplace seems to be the bug
+
+6/16/2019
+1. Bug: childrenSum get lost while calculating parent, occasionally - obvious in level 2
+
+6/15/2019
+1. Use NPlus above NMul as weight function
+2. Fix the bug last NPlus below NMul issue
+3. Prioritize weight function properly
 
 6/14/2019
 1. Fix benchmark to include weight function
