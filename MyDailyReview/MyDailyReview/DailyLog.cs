@@ -33,14 +33,15 @@ namespace MyDailyReview
         public void Init()
         {
             AllItems = new List<OneCheckItem>();
+
             AllItems.Add(new OneCheckItem()
             {
-                Description = "Night reading the day before",
-                Hour = 8,
+                Description = "减少时间段内信息的来源，原因是为了控制",
+                KeyAnswer = "情绪",
+                Hour = 9,
                 Minute = 0
             });
 
-         
             AllItems.Add(new OneCheckItem()
             {
                 Description = "锻炼是因为得到了",
@@ -51,7 +52,7 @@ namespace MyDailyReview
 
             AllItems.Add(new OneCheckItem()
             {
-                Description = "是否终生学习的标准是什么",
+                Description = "每天过得是否有意义的标准是什么",
                 KeyAnswer = "笔记",
                 Hour = 9,
                 Minute = 0
@@ -59,8 +60,40 @@ namespace MyDailyReview
 
             AllItems.Add(new OneCheckItem()
             {
-                Description = "一个防止沉溺于什么样的奖励",
-                KeyAnswer = "快",
+                Description = "貌似损失，其实人生一半的增量来自于",
+                KeyAnswer = "妥协",
+                Hour = 9,
+                Minute = 0
+            });
+
+            AllItems.Add(new OneCheckItem()
+            {
+                Description = "不看空和不批评的原因是有一种什么巨大成本",
+                KeyAnswer = "时间",
+                Hour = 9,
+                Minute = 0
+            });
+
+            AllItems.Add(new OneCheckItem()
+            {
+                Description = "消除决策恐慌靠的是什么",
+                KeyAnswer = "数学",
+                Hour = 9,
+                Minute = 0
+            });
+
+            AllItems.Add(new OneCheckItem()
+            {
+                Description = "管理多巴胺需求就是生活的",
+                KeyAnswer = "全部",
+                Hour = 9,
+                Minute = 0
+            });
+
+            AllItems.Add(new OneCheckItem()
+            {
+                Description = "所有的冲动情绪都是想以怎样的方式享受到结果",
+                KeyAnswer = "快速",
                 Hour = 9,
                 Minute = 0
             });
@@ -69,17 +102,17 @@ namespace MyDailyReview
             {
                 Description = "不确定性是智者欢迎的",
                 KeyAnswer = "机遇",
-                Hour = 20,
+                Hour = 9,
                 Minute = 0
             });
 
             AllItems.Add(new OneCheckItem()
             {
-                Description = "高情商交流需要回避的字是",
-                KeyAnswer = "你",
+                Description = "不盲目自信的原因是最大的不确定因素总是",
+                KeyAnswer = "未知",
                 Hour = 9,
                 Minute = 0
-            });
+            });           
 
             AllItems.Add(new OneCheckItem()
             {
@@ -96,31 +129,31 @@ namespace MyDailyReview
                 Description = "低热量饮食是因为得到了",
                 KeyAnswer = "不痛",
                 Hour = 9,
-                Minute = 20
+                Minute = 0
             });
 
             AllItems.Add(new OneCheckItem()
             {
                 Description = "可以感觉好，是因为得到了",
                 KeyAnswer = "洞见",
-                Hour = 11,
-                Minute = 20
+                Hour = 9,
+                Minute = 0
             });
 
             AllItems.Add(new OneCheckItem()
             {
                 Description = "无糖是因为得到了",
                 KeyAnswer = "不痒",
-                Hour = 10,
-                Minute = 40
+                Hour = 9,
+                Minute = 0
             });
 
             AllItems.Add(new OneCheckItem()
             {
                 Description = "什么只需等待，必会得到",
                 KeyAnswer = "好运",
-                Hour = 12,
-                Minute = 40
+                Hour = 9,
+                Minute = 0
             });
            
 
@@ -128,8 +161,8 @@ namespace MyDailyReview
             {
                 Description = "表达不同意见应该以什么开头",
                 KeyAnswer = "yes",
-                Hour = 14,
-                Minute = 30
+                Hour = 9,
+                Minute = 0
             });
 
            
@@ -138,24 +171,24 @@ namespace MyDailyReview
             {
                 Description = "获取智慧的套路",
                 KeyAnswer = "自问",
-                Hour = 18,
-                Minute = 30
+                Hour = 9,
+                Minute = 0
             });
 
             AllItems.Add(new OneCheckItem()
             {
                 Description = "高维赢低维靠的是",
                 KeyAnswer = "套路",
-                Hour = 21,
-                Minute = 30
+                Hour = 9,
+                Minute = 0
             });
 
             AllItems.Add(new OneCheckItem()
             {
                 Description = "做家务得到的是",
                 KeyAnswer = "干净",
-                Hour = 21,
-                Minute = 30
+                Hour = 9,
+                Minute = 0
             });
         }
     }

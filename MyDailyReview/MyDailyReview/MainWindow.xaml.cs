@@ -94,7 +94,11 @@ namespace MyDailyReview
         FileSystemWatcher fsw;
         public MainWindow()
         {
-
+            //if (Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Count() == 1)
+            //{
+            //    string fileName = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            //    Process.Start(fileName);
+            //}
 
             Mutex mutex = new Mutex(false, "Global\\12345678");
             if (!mutex.WaitOne(0, false))
@@ -116,7 +120,7 @@ namespace MyDailyReview
 
             System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
             dispatcherTimer.Tick += OnTimerAction;
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 30);
+            dispatcherTimer.Interval = new TimeSpan(0, 10, 3);
             dispatcherTimer.Start();
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
@@ -158,7 +162,8 @@ namespace MyDailyReview
                     return;
                 }
 
-                Harass();
+                if(this.Visibility != Visibility.Visible)
+                    Harass();
                 return;
             }
         }
@@ -171,21 +176,30 @@ namespace MyDailyReview
 
             List<Process> toKill = new List<Process>();
             Process[] procsChrome = Process.GetProcessesByName("chrome");
-            if (procsChrome.Length <= 0)
+            //Process[] processEdge = Process.GetProcessesByName("microsoftedge");
+            //foreach (var p in processEdge)
+            //    p.Kill();
+
+            List<Process> pList = new List<Process>();
+            //pList.AddRange(processEdge);
+            pList.AddRange(procsChrome);
+            if (pList.Count() <= 0)
                 return;
 
-            Process[] processVS = Process.GetProcessesByName("devenv");
-            if (procsChrome.Length > 0)
-                foreach (Process proc in processVS)
-                    proc.Kill();
+            //Process[] processVS = Process.GetProcessesByName("devenv");
+            //if (procsChrome.Length > 0)
+            //    foreach (Process proc in processVS)
+            //        proc.Kill();
 
 
-                    if (DateTime.Now.Hour == 20
-                || DateTime.Now.Hour == 11)
-                //|| (DateTime.Now.Hour <=13 && DateTime.Now.DayOfWeek== DayOfWeek.Friday))
+            if (DateTime.Now.Hour == 19
+                || DateTime.Now.Hour == 18
+                 || DateTime.Now.Hour == 17
+                || ((DateTime.Now.Hour == 6
+                || DateTime.Now.Hour == 7)&& DateTime.Now.DayOfWeek== DayOfWeek.Friday))
                 return;
 
-            foreach (Process proc in procsChrome)
+            foreach (Process proc in pList)
             {
                 // the chrome process must have a window 
                 if (proc.MainWindowHandle == IntPtr.Zero)
@@ -253,26 +267,26 @@ namespace MyDailyReview
 
         private void SaveAllChanges(bool scoreCardOnly)
         {
-            DisableWatchAndNotify();
-            if (scoreCardOnly == false)
-            {
-                All = All.OrderByDescending(x => x.Index).ToList();
-                string[] items = new string[All.Count + 1];
-                items[0] = "Index|Date|Category|Question|Answer|TestFrequency";
-                for (int i = 0; i < All.Count; i++)
-                {
-                    Line l = All[i];
-                    items[i + 1] = string.Format("{0}|{1}|{2}|{3}|{4}|{5}", l.Index.ToString(),
-                        l.Date, l.Category, l.Question, l.Answer, l.TestFrequency);
-                }
-                File.WriteAllLines(fileName, items);
+            //DisableWatchAndNotify();
+            //if (scoreCardOnly == false)
+            //{
+            //    All = All.OrderByDescending(x => x.Index).ToList();
+            //    string[] items = new string[All.Count + 1];
+            //    items[0] = "Index|Date|Category|Question|Answer|TestFrequency";
+            //    for (int i = 0; i < All.Count; i++)
+            //    {
+            //        Line l = All[i];
+            //        items[i + 1] = string.Format("{0}|{1}|{2}|{3}|{4}|{5}", l.Index.ToString(),
+            //            l.Date, l.Category, l.Question, l.Answer, l.TestFrequency);
+            //    }
+            //    File.WriteAllLines(fileName, items);
 
-                if (File.Exists(backupFile) == false || File.ReadAllLines(backupFile).Length < File.ReadAllLines(fileName).Length)
-                    File.Copy(fileName, backupFile, true);
-            }
+            //    if (File.Exists(backupFile) == false || File.ReadAllLines(backupFile).Length < File.ReadAllLines(fileName).Length)
+            //        File.Copy(fileName, backupFile, true);
+            //}
 
-            ObjectManager.ToXmlFile<AllDailyLog>(scoreFile, allDailyLog);
-            EnableWatchAndNotify();
+            //ObjectManager.ToXmlFile<AllDailyLog>(scoreFile, allDailyLog);
+            //EnableWatchAndNotify();
         }
 
         private void ReloadFile()
@@ -370,7 +384,6 @@ namespace MyDailyReview
 
         private void wndClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-
             SaveAllChanges(false);
             string fileName = System.Reflection.Assembly.GetExecutingAssembly().Location;
             Process.Start(fileName);

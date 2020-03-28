@@ -161,6 +161,9 @@
     <Compile Include="RTBHost.xaml.cs">
       <DependentUpon>RTBHost.xaml</DependentUpon>
     </Compile>
+    <Compile Include="RubicWindow.xaml.cs">
+      <DependentUpon>RubicWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TimeEvent.cs" />
     <Compile Include="ViewRefresher.cs" />
     <Page Include="MainWindow.xaml">
@@ -177,6 +180,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="RTBHost.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="RubicWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
