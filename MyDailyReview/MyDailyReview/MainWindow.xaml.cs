@@ -120,7 +120,7 @@ namespace MyDailyReview
 
             System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
             dispatcherTimer.Tick += OnTimerAction;
-            dispatcherTimer.Interval = new TimeSpan(0, 10, 3);
+            dispatcherTimer.Interval = new TimeSpan(0, 1, 0);
             dispatcherTimer.Start();
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
@@ -168,8 +168,10 @@ namespace MyDailyReview
             }
         }
 
+        private static long TimeCount = 0;
         private void CloseForOverRead()
         {
+            TimeCount++;
             TimeSpan ts = DateTime.Now - lastReadTime;
             int minutes = ts.Days * 1440 + ts.Hours * 60 + ts.Minutes;
             tbReadTime.Text = string.Format("{0} minutes since last read.", minutes);
@@ -190,14 +192,22 @@ namespace MyDailyReview
             //if (procsChrome.Length > 0)
             //    foreach (Process proc in processVS)
             //        proc.Kill();
-
-
-            if (DateTime.Now.Hour == 19
-                || DateTime.Now.Hour == 18
-                 || DateTime.Now.Hour == 17
-                || ((DateTime.Now.Hour == 6
-                || DateTime.Now.Hour == 7)&& DateTime.Now.DayOfWeek== DayOfWeek.Friday))
+            int hour = DateTime.Now.Hour;
+            if (hour < 17 && TimeCount % 8 != 0)
                 return;
+            if (hour < 20 && TimeCount % 15 != 0)
+                return;
+            if (hour<21 && TimeCount % 3 != 0)
+                return;
+
+
+
+            //if (DateTime.Now.Hour == 19
+            //    || DateTime.Now.Hour == 18
+            //     || DateTime.Now.Hour == 17
+            //    || ((DateTime.Now.Hour == 6
+            //    || DateTime.Now.Hour == 7)&& DateTime.Now.DayOfWeek== DayOfWeek.Friday))
+            //    return;
 
             foreach (Process proc in pList)
             {
