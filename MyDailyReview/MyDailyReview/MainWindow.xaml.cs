@@ -195,9 +195,9 @@ namespace MyDailyReview
             int hour = DateTime.Now.Hour;
             if (hour < 17 && TimeCount % 8 != 0)
                 return;
-            if (hour < 20 && TimeCount % 15 != 0)
+            if (hour>17 && hour < 20 && TimeCount % 15 != 0)
                 return;
-            if (hour<21 && TimeCount % 3 != 0)
+            if (hour==20 && TimeCount % 3 != 0)
                 return;
 
 
