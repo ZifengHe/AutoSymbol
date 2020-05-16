@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AutoSymbol
+namespace AutoSymbol.Core
 {
     public class OpDict<T> : Dictionary<OpChain, T>
     { }
@@ -15,7 +15,7 @@ namespace AutoSymbol
         public string FirstInputSetName = string.Empty;
         public string SecondInputSetName = string.Empty;
         public bool IsSingleOperand = false;
-        public Operator(string name, Set targetSet, bool bSingleOperand) : base(name)
+        public Operator(string name, SetBase targetSet, bool bSingleOperand) : base(name)
         {
             ResultSetName = targetSet.ShortName;
             FirstInputSetName = ResultSetName;
@@ -185,13 +185,7 @@ namespace AutoSymbol
             sb.Append(")");
         }
 
-        public void RecursiveCalculateBeautyIndex(OpChain chain, BeautyDef def)
-        {
-            /// Pure number is a plus
-            /// Left is low is a plus
-            /// Total Length is a plus
-            /// Operator weight at different level
-        }
+    
 
         public void AssertChildrenWeightConsistency()
         {

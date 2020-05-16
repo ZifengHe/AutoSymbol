@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.Diagnostics;
 
-
+using AutoSymbol.Core;
 
 namespace System
 {

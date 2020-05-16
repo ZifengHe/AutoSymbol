@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
+using AutoSymbol.Core;
+
 namespace AutoSymbol
 {
     public partial class MainWindow : Window
@@ -23,7 +25,7 @@ namespace AutoSymbol
             }
 
             cbFilterER.Items.Add("All");
-            foreach (var one in Set.GetAllManualTransform())
+            foreach (var one in SetBase.GetAllManualTransform())
             {
                 cbFilterER.Items.Add(one.Key);
             }
@@ -31,7 +33,7 @@ namespace AutoSymbol
             OneTransform.Reset();
 
             cbER.Items.Clear();
-            foreach (var one in Set.AllSets)
+            foreach (var one in SetBase.AllSets)
             {
                 foreach (var er in one.Value.ERStore)
                 {
@@ -45,7 +47,7 @@ namespace AutoSymbol
             OneLevelResult = new Dictionary<ManualTransform, StrToOp>();
             OneTransform.Reset();
             OneTransform.AddTransformWithNoSource(toChange.Sig);
-            foreach(var ms in Set.GetAllManualTransform().Where(x=>x.MyType== TransformType.ERReplace))
+            foreach(var ms in SetBase.GetAllManualTransform().Where(x=>x.MyType== TransformType.ERReplace))
             {
                 OneLevelResult[ms] = new StrToOp();
                 ms.ER.BuildERChainAtAllBranchOnce(OneLevelResult[ms], toChange);

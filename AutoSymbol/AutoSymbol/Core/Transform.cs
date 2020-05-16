@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AutoSymbol
+namespace AutoSymbol.Core
 {
     public class StrToOp : Dictionary<string, OpChain>
     { }
@@ -12,7 +12,7 @@ namespace AutoSymbol
     public class ManualTransform
     {
         public TransformType MyType;
-        public Set TargetSet;
+        public SetBase TargetSet;
         public ER ER;
         public ERDirection Direction;
 

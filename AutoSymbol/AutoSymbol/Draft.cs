@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoSymbol;
 
 namespace AutoSymbol.GroupTheory
 {
+    
     public class G: Set
     {
         public Operator GMul;

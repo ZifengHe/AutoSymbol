@@ -62,40 +62,44 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
+    <ApplicationDefinition Include="UI\App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Benchmark.cs" />
-    <Compile Include="DebugLog.xaml.cs">
+    <Compile Include="Benchmark\Benchmark.cs" />
+    <Compile Include="Core\Member.cs" />
+    <Compile Include="Core\SetBase.cs" />
+    <Compile Include="Core\Store.cs" />
+    <Compile Include="Draft\DraftCategory.cs" />
+    <Compile Include="UI\DebugLog.xaml.cs">
       <DependentUpon>DebugLog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DraftGroupTheory.cs" />
-    <Compile Include="DraftManifold.cs" />
-    <Compile Include="ER.cs" />
-    <Compile Include="Hunch.cs" />
-    <Compile Include="ManualScenario.cs" />
-    <Compile Include="NativeSymbols.cs" />
-    <Compile Include="OpChain.cs" />
-    <Compile Include="Optimizer.cs" />
-    <Compile Include="Symbol.cs" />
-    <Compile Include="Transform.cs" />
-    <Compile Include="Util.cs" />
-    <Compile Include="WndManualBuild.cs" />
-    <Page Include="DebugLog.xaml">
+    <Compile Include="Draft\DraftGroupTheory.cs" />
+    <Compile Include="Draft\DraftManifold.cs" />
+    <Compile Include="Draft\DraftNArray.cs" />
+    <Compile Include="Core\ER.cs" />
+    <Compile Include="Training\ManualScenario.cs" />
+    <Compile Include="Category\N.cs" />
+    <Compile Include="Core\OpChain.cs" />
+    <Compile Include="Training\Optimizer.cs" />
+    <Compile Include="Core\Symbol.cs" />
+    <Compile Include="Core\Transform.cs" />
+    <Compile Include="Util\Util.cs" />
+    <Compile Include="UI\WndManualBuild.cs" />
+    <Page Include="UI\DebugLog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="UI\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="App.xaml.cs">
+    <Compile Include="UI\App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ConsoleHelper.cs" />
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Util\ConsoleHelper.cs" />
+    <Compile Include="UI\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
@@ -127,16 +131,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="ToDo.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Algorithm.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Log.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="ReadMe.txt" />
+    <Resource Include="Doc\ReadMe.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

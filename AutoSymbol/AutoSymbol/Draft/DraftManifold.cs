@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using AutoSymbol.Core;
+
 namespace AutoSymbol.Draft.Manifold
 {
     public class OneOneOp : Operator
     {
-        public OneOneOp(string name, Set targetSet) :
+        public OneOneOp(string name, SetBase targetSet) :
             base(name, targetSet, true)
         { }
        
@@ -17,12 +19,12 @@ namespace AutoSymbol.Draft.Manifold
     public class OperatorSet
     { }
 
-    public class OpOnM : Set
+    public class OpOnM : SetBase
     {
         public OpOnM() : base("OpOnM")
         { }
     }
-    public class M:Set
+    public class M:SetBase
     {
         public Operator MToRn;
         public M() : base("M")
@@ -31,7 +33,7 @@ namespace AutoSymbol.Draft.Manifold
         /// Map to Rn should be Operator
     }
 
-    public class Rn : Set
+    public class Rn : SetBase
     {
         public Rn() : base("Rn")
         { }

@@ -4,8 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AutoSymbol
+namespace AutoSymbol.Core
 {
+    public enum ERDirection
+    {
+        Invalid,
+        LeftSource,
+        RightSource
+    }
     public class ER : Symbol
     {
         public OpChain Left;
@@ -149,7 +155,7 @@ namespace AutoSymbol
                 Member current = chain.Operands[i];
                 if (current.FromChain != null)
                 {
-                    Set s = Set.AllSets[current.TargetSetName];
+                    SetBase s = SetBase.AllSets[current.TargetSetName];
                     string longSig = current.FromChain.Sig;
                     if (s.SigToShortName.ContainsKey(longSig))
                     {

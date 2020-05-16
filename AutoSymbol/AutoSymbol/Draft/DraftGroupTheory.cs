@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using AutoSymbol.Core;
+
 namespace AutoSymbol.Draft.GroupTheory
 {
-    public class G: Set
+    public class G: SetBase
     {
         public Operator GMul;
         public Operator GId;
@@ -137,7 +139,7 @@ namespace AutoSymbol.Draft.GroupTheory
         public static List<OpChain> ExpandAll(OpChain incoming)
         {
             List<OpChain> final = new List<OpChain>();
-            Set target = Set.AllSets[incoming.Operator.ResultSetName];
+            SetBase target = SetBase.AllSets[incoming.Operator.ResultSetName];
             foreach(var op1 in target.OpStore.Values)
                 foreach(var op2 in target.OpStore.Values)
                 {

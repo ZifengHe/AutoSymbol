@@ -16,6 +16,8 @@ using System.Windows.Shapes;
 using Microsoft.Msagl.Drawing;
 using Microsoft.Msagl.WpfGraphControl;
 
+using AutoSymbol.Core;
+
 namespace AutoSymbol
 {
     using StrToOp = Dictionary<string, OpChain>;
@@ -297,7 +299,7 @@ namespace AutoSymbol
 
         private void TrackingERChanged(object sender, SelectionChangedEventArgs e)
         {
-            foreach (var one in Set.AllSets)
+            foreach (var one in SetBase.AllSets)
             {
                 foreach (var er in one.Value.ERStore)
                 {

@@ -162,7 +162,7 @@ namespace MyDailyReview
                     return;
                 }
 
-                if(this.Visibility != Visibility.Visible)
+                if (this.Visibility != Visibility.Visible)
                     Harass();
                 return;
             }
@@ -176,69 +176,59 @@ namespace MyDailyReview
             int minutes = ts.Days * 1440 + ts.Hours * 60 + ts.Minutes;
             tbReadTime.Text = string.Format("{0} minutes since last read.", minutes);
 
-            List<Process> toKill = new List<Process>();
-            Process[] procsChrome = Process.GetProcessesByName("chrome");
-            //Process[] processEdge = Process.GetProcessesByName("microsoftedge");
-            //foreach (var p in processEdge)
-            //    p.Kill();
-
-            List<Process> pList = new List<Process>();
-            //pList.AddRange(processEdge);
-            pList.AddRange(procsChrome);
-            if (pList.Count() <= 0)
-                return;
-
-            //Process[] processVS = Process.GetProcessesByName("devenv");
-            //if (procsChrome.Length > 0)
-            //    foreach (Process proc in processVS)
-            //        proc.Kill();
             int hour = DateTime.Now.Hour;
             if (hour < 17 && TimeCount % 8 != 0)
                 return;
-            if (hour>17 && hour < 20 && TimeCount % 15 != 0)
+            if (hour >= 17 && hour < 20 && TimeCount % 15 != 0)
                 return;
-            if (hour==20 && TimeCount % 3 != 0)
+            if (hour == 20 && TimeCount % 3 != 0)
                 return;
 
-
-
-            //if (DateTime.Now.Hour == 19
-            //    || DateTime.Now.Hour == 18
-            //     || DateTime.Now.Hour == 17
-            //    || ((DateTime.Now.Hour == 6
-            //    || DateTime.Now.Hour == 7)&& DateTime.Now.DayOfWeek== DayOfWeek.Friday))
-            //    return;
-
-            foreach (Process proc in pList)
+            for (int i = 0; i < 20; i++)
             {
-                // the chrome process must have a window 
-                if (proc.MainWindowHandle == IntPtr.Zero)
-                {
-                    continue;
-                }
+                Thread.Sleep(4000);
+                List<Process> toKill = new List<Process>();
+                Process[] procsChrome = Process.GetProcessesByName("chrome");
+                //Process[] processEdge = Process.GetProcessesByName("microsoftedge");
+                //foreach (var p in processEdge)
+                //    p.Kill();
 
-                string x = proc.MainWindowTitle.ToLower();
+                List<Process> pList = new List<Process>();
+                //pList.AddRange(processEdge);
+                pList.AddRange(procsChrome);            
 
-                foreach (var one in trackinURL)
+                foreach (Process proc in pList)
                 {
-                    if (x.ToLowerInvariant().Contains(one))
+                    // the chrome process must have a window 
+                    if (proc.MainWindowHandle == IntPtr.Zero)
                     {
-                        toKill.Add(proc);
+                        continue;
+                    }
+
+                    string x = proc.MainWindowTitle.ToLower();
+
+                    foreach (var one in trackinURL)
+                    {
+                        if (x.ToLowerInvariant().Contains(one))
+                        {
+                            toKill.Add(proc);
+                        }
                     }
                 }
-            }
 
-            //if (((minutes > 20 && minutes < 150)
-            //    ||DateTime.Now.Hour>20 || DateTime.Now.Hour<7))
-            //{
-            foreach (var p in toKill)
-            {
-                try
+                //if (((minutes > 20 && minutes < 150)
+                //    ||DateTime.Now.Hour>20 || DateTime.Now.Hour<7))
+                //{
+                foreach (var p in toKill)
                 {
-                    p.Kill();
+                    try
+                    {
+                        p.Kill();
+                    }
+                    catch
+                    { }
                 }
-                catch
-                { }
+
             }
             //}
             //else if (minutes >= 40)

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using AutoSymbol.Core;
+
 namespace AutoSymbol
 {
     public enum OptimizerType

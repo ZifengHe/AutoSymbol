@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoSymbol.Core;
 
 
 namespace AutoSymbol
@@ -42,6 +43,19 @@ namespace AutoSymbol
         public void ProveAPlusBSquareCrossSets()
         { }
 
+        public void ProveMulticativeFunction()
+        {
+            /*
+             * 
+             */
+        }
+
+        public void ProveOneOneOntoChainTransfer()
+        {
+            /// B=f(A) Inv(f)(B)=A,  C=g(B) Inv(g)(C)=B
+            /// => Inv(f)(Inv(g)(C))=A    C=g(f(A))
+            /// 
+        }
         public void ProveAPlusBCubic()
         {
             OpChain target = OpChainHelper.For_ProveAPlusBCubic();

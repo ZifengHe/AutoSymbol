@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using AutoSymbol.Core;
+
 namespace AutoSymbol
 {
-    public class N : Set
+    public class N : SetBase
     {
         public static Operator NPlus;
         public static Operator NMul;
