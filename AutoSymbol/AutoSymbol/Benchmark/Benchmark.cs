@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoSymbol.Core;
+using AutoSymbol.Category;
 
 
 namespace AutoSymbol
@@ -60,9 +61,9 @@ namespace AutoSymbol
         {
             OpChain target = OpChainHelper.For_ProveAPlusBCubic();
             OneTransform.AddTransformWithNoSource(target.Sig);
-            StrToOp dict = ER.BuildERChainsForLevel(
+            StrToOp dict = ReplaceRule.BuildERChainsForLevel(
                 target, 
-                new N().ERStore.Values.ToList(),
+                new N().RRStore.Values.ToList(),
                 10, 
                 150,
                 Optimizer.GetOptimizer(OptimizerType.DoPolynormialExpansion));
@@ -80,7 +81,7 @@ namespace AutoSymbol
             OpChain target = N.NMul.CreateOpChain(N.NPlus.Operate(x, y), N.NPlus.Operate(x, y));
 
             OneTransform.AddTransformWithNoSource(target.Sig);
-            StrToOp dict = ER.BuildERChainsForLevel(target, n.ERStore.Values.ToList(), 10, 100);
+            StrToOp dict = ReplaceRule.BuildERChainsForLevel(target, n.RRStore.Values.ToList(), 10, 100);
 
             UIData.AllItems = OneTransform.AllResult.Keys.ToList();
 
@@ -95,7 +96,7 @@ namespace AutoSymbol
             OpChain target = N.NPlus.CreateOpChain(n.MemStore["2"], N.NPlus.Operate(x, n.MemStore["3"]));
 
             OneTransform.AddTransformWithNoSource(target.Sig);
-            StrToOp dict = ER.BuildERChainsForLevel(target, n.ERStore.Values.ToList(), 7, 20);
+            StrToOp dict = ReplaceRule.BuildERChainsForLevel(target, n.RRStore.Values.ToList(), 7, 20);
 
             UIData.AllItems = OneTransform.AllResult.Keys.ToList();
 
@@ -114,12 +115,12 @@ namespace AutoSymbol
             Trace.WriteLine(mem.FromChain.PrintByDepth(1));
             Trace.WriteLine(mem.FromChain.PrintByDepth(2));
             Assert(mem.FromChain.PrintByDepth(4), "+(+([1][1])+(+([1][1])[1]))");
-            Trace.WriteLine(n.ERStore["NPlusAssoc"].Left.Sig);
-            Trace.WriteLine(n.ERStore["NPlusAssoc"].Right.Sig);
+            Trace.WriteLine(n.RRStore["NPlusAssoc"].Left.Sig);
+            Trace.WriteLine(n.RRStore["NPlusAssoc"].Right.Sig);
 
             OneTransform.AllResult.Clear(); // Only for this test case.
             OneTransform.AddTransformWithNoSource(target.Sig);
-            StrToOp dict = n.ERStore["NPlusAssoc"].BuildCompleteERChains(target);
+            StrToOp dict = n.RRStore["NPlusAssoc"].BuildCompleteERChains(target);
            // UIData.ItemMap = dict;
             UIData.AllItems = OneTransform.AllResult.Keys.ToList();
 

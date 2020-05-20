@@ -169,9 +169,9 @@ namespace AutoSymbol
                 OpChain opc = (OpChain) obj;
                 graph.AddNode(opc.Sig);
             }
-            if(obj is ER)
+            if(obj is ReplaceRule)
             {
-                ER er = (ER)obj;
+                ReplaceRule er = (ReplaceRule)obj;
                 graph.AddNode(er.Left.Sig);
                 graph.AddNode(er.Right.Sig);
 

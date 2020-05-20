@@ -35,7 +35,7 @@ namespace AutoSymbol
             cbER.Items.Clear();
             foreach (var one in SetBase.AllSets)
             {
-                foreach (var er in one.Value.ERStore)
+                foreach (var er in one.Value.RRStore)
                 {
                     cbER.Items.Add(er.Value.ToString());
                 }
@@ -54,7 +54,7 @@ namespace AutoSymbol
                 List<string> keys = OneLevelResult[ms].Keys.ToList();
                 foreach (var str in keys)
                 {
-                    ER.ShortenOneChain(OneLevelResult[ms][str], OneLevelResult[ms]);
+                    ReplaceRule.ShortenOneChain(OneLevelResult[ms][str], OneLevelResult[ms]);
                 }
             }         
         }

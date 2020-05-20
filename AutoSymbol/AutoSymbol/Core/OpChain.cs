@@ -32,6 +32,8 @@ namespace AutoSymbol.Core
 
             return chain.CreateMember("NotSet", true);
         }
+
+       
         public OpChain CreateOpChain(params Member[] mems)
         {
             OpChain chain = new OpChain();

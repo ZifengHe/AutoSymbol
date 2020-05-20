@@ -13,8 +13,8 @@ namespace AutoSymbol.Core
     {
         public TransformType MyType;
         public SetBase TargetSet;
-        public ER ER;
-        public ERDirection Direction;
+        public ReplaceRule ER;
+        public ReplaceRuleDirection Direction;
 
         public string Key
         {

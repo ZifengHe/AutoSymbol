@@ -31,9 +31,9 @@ namespace AutoSymbol.Core
         }
     }
 
-    public class EquivalentRelationStore : Dictionary<string, ER>
+    public class ReplaceRuleStore : Dictionary<string, ReplaceRule>
     {
-        public new ER this[string key]
+        public new ReplaceRule this[string key]
         {
             get
             {

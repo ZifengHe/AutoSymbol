@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace AutoSymbol.Core
 {
-    public enum ERDirection
+    public enum ReplaceRuleDirection
     {
         Invalid,
         LeftSource,
         RightSource
     }
-    public class ER : Symbol
+    public class ReplaceRule : Symbol
     {
         public OpChain Left;
         public OpChain Right;
@@ -29,7 +29,7 @@ namespace AutoSymbol.Core
 
         public static StrToOp BuildERChainsForLevel(
             OpChain toChange,
-            List<ER> multiER,
+            List<ReplaceRule> multiER,
             int maxLevel,
             int maxSizePerGen,
             Optimizer optimizer = null)
@@ -358,5 +358,15 @@ namespace AutoSymbol.Core
 
 
 
+    }
+
+    public abstract class RuleSet<T> where T : SetBase
+    {
+        public static void Subscribe(RuleSet<T> erSet, T t)
+        {
+            erSet.CreateAll(t);
+        }
+
+        public abstract void CreateAll(T t);
     }
 }

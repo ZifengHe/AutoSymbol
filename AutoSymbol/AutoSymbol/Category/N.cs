@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using AutoSymbol.Core;
 
-namespace AutoSymbol
+namespace AutoSymbol.Core
 {
     public class N : SetBase
     {
@@ -34,40 +34,40 @@ namespace AutoSymbol
             Member c = new Member("c", this.ShortName, true);
             Member n = new Member("n", this.ShortName, true);
 
-            ER er = new ER();
-            er.Left = NPlus.CreateOpChain(a, NPlus.Operate(b, c));
-            er.Right = NPlus.CreateOpChain(NPlus.Operate(a, b), c);
-            this.ERStore["NPlusAssoc"] = er;
+            ReplaceRule rr = new ReplaceRule();
+            rr.Left = NPlus.CreateOpChain(a, NPlus.Operate(b, c));
+            rr.Right = NPlus.CreateOpChain(NPlus.Operate(a, b), c);
+            this.RRStore["NPlusAssoc"] = rr;
 
-            er = new ER();
-            er.Left = NPlus.CreateOpChain(a, b);
-            er.Right = NPlus.CreateOpChain(b, a);
-            this.ERStore["NPlusCommute"] = er;
+            rr = new ReplaceRule();
+            rr.Left = NPlus.CreateOpChain(a, b);
+            rr.Right = NPlus.CreateOpChain(b, a);
+            this.RRStore["NPlusCommute"] = rr;
 
-            er = new ER();
-            er.Left = NMul.CreateOpChain(a, b);
-            er.Right = NMul.CreateOpChain(b, a);
-            this.ERStore["NMulCommute"] = er;
+            rr = new ReplaceRule();
+            rr.Left = NMul.CreateOpChain(a, b);
+            rr.Right = NMul.CreateOpChain(b, a);
+            this.RRStore["NMulCommute"] = rr;
 
-            er = new ER();
-            er.Left = NMul.CreateOpChain(NPlus.Operate(a, b), c);
-            er.Right = NPlus.CreateOpChain(NMul.Operate(a, c), NMul.Operate(b, c));
-            this.ERStore["NMulDistr"] = er;
+            rr = new ReplaceRule();
+            rr.Left = NMul.CreateOpChain(NPlus.Operate(a, b), c);
+            rr.Right = NPlus.CreateOpChain(NMul.Operate(a, c), NMul.Operate(b, c));
+            this.RRStore["NMulDistr"] = rr;
 
-            er = new ER();
-            er.Left = NMul.CreateOpChain(a, NMul.Operate(b, c));
-            er.Right = NMul.CreateOpChain(NMul.Operate(a, b), c);
-            this.ERStore["NMulAssoc"] = er;
+            rr = new ReplaceRule();
+            rr.Left = NMul.CreateOpChain(a, NMul.Operate(b, c));
+            rr.Right = NMul.CreateOpChain(NMul.Operate(a, b), c);
+            this.RRStore["NMulAssoc"] = rr;
 
-            er = new ER();
-            er.Left = NPlus.CreateOpChain(a, NMul.Operate(n, a));
-            er.Right = NMul.CreateOpChain(NPlus.Operate(n, One), a);
-            this.ERStore["NAnyPlusOne"] = er;
+            rr = new ReplaceRule();
+            rr.Left = NPlus.CreateOpChain(a, NMul.Operate(n, a));
+            rr.Right = NMul.CreateOpChain(NPlus.Operate(n, One), a);
+            this.RRStore["NAnyPlusOne"] = rr;
 
-            er = new ER();
-            er.Left = NPlus.CreateOpChain(a, a);
-            er.Right = NMul.CreateOpChain(a, NPlus.Operate(One, One));
-            this.ERStore["NOnePlusOne"] = er;
+            rr = new ReplaceRule();
+            rr.Left = NPlus.CreateOpChain(a, a);
+            rr.Right = NMul.CreateOpChain(a, NPlus.Operate(One, One));
+            this.RRStore["NOnePlusOne"] = rr;
         }
 
         public void PopulateSeedMember()
@@ -83,7 +83,7 @@ namespace AutoSymbol
                 shortOne.FromChain = null;
                 this.ShortMemStore.Add(shortOne.ShortName, shortOne);
 
-                StrToOp dict = this.ERStore["NPlusAssoc"].BuildCompleteERChains(lastOne.FromChain);
+                StrToOp dict = this.RRStore["NPlusAssoc"].BuildCompleteERChains(lastOne.FromChain);
                 foreach (var item in dict)
                 {
                     SigToShortName[item.Key] = i.ToString();

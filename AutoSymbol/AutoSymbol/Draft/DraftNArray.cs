@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using AutoSymbol.Core;
+using AutoSymbol.Category;
 
 namespace AutoSymbol.Draft.PrimeNumber
 {
@@ -15,11 +16,11 @@ namespace AutoSymbol.Draft.PrimeNumber
 
     }
 
-    public class ConditionalER : ER
+    public class ConditionalER : ReplaceRule
     {
-        public static ER GenCoPrimeER(Member a, Member b)
+        public static ReplaceRule GenCoPrimeER(Member a, Member b)
         {
-            ER er = new ER();
+            ReplaceRule er = new ReplaceRule();
             er.Left = NArray.Dim.CreateOpChain(NArray.NArrayMul.Operate(a, b));
             er.Right = N.NPlus.CreateOpChain(NArray.Dim.Operate(a), NArray.Dim.Operate(b));
             return er;

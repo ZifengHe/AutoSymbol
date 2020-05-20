@@ -44,4 +44,12 @@ namespace AutoSymbol.Core
             }
         }
     }
+
+    public class ConstMember : Member
+    {
+        public ConstMember(string shortName, string targetSetName, bool isVar) : base(shortName, targetSetName, isVar)
+        {
+        }
+
+    }
 }

@@ -18,7 +18,7 @@ namespace System
     {
         public static SortedDictionary<string, SortedDictionary<int, TreeMessageNode>> MsgDict = new SortedDictionary<string, SortedDictionary<int, TreeMessageNode>>();
         public static string TrackingSig = "NA";
-        public static ER TrackingER;
+        public static ReplaceRule TrackingER;
         public static void BreakOnCondition(bool b)
         {
             if (b)

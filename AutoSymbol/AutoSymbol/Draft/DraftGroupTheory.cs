@@ -50,32 +50,32 @@ namespace AutoSymbol.Draft.GroupTheory
             Member h = new Member("h", this.ShortName, true);
             Member k = new Member("k", this.ShortName, true);
 
-            ER er = new ER();
+            ReplaceRule er = new ReplaceRule();
             er.Left = GMul.CreateOpChain(g, GMul.Operate(h, k));
             er.Right = GMul.CreateOpChain(GMul.Operate(g, h), k);
-            this.ERStore["GMulAssoc"] = er;
+            this.RRStore["GMulAssoc"] = er;
 
-            er = new ER();
+            er = new ReplaceRule();
             er.Left = GMul.CreateOpChain(g, GInv.Operate(g));
             er.Right = GMul.CreateOpChain(GInv.Operate(g), g);
-            this.ERStore["GInvOne"] = er;
+            this.RRStore["GInvOne"] = er;
 
-            er = new ER();
+            er = new ReplaceRule();
             er.Left = GMul.CreateOpChain(g, GInv.Operate(g));
             er.Right = GId.CreateOpChain(h);
-            this.ERStore["GInvTwo"] = er;
+            this.RRStore["GInvTwo"] = er;
 
-            er = new ER();
+            er = new ReplaceRule();
             er.Left = GMul.CreateOpChain(g, GId.Operate(h));
             er.Right = GMul.CreateOpChain(g);
-            this.ERStore["GIdLeft"] = er;
+            this.RRStore["GIdLeft"] = er;
 
-            er = new ER();
+            er = new ReplaceRule();
             er.Left = GMul.CreateOpChain(GId.Operate(h), g);
             er.Right = GMul.CreateOpChain(g);
-            this.ERStore["GIdRight"] = er;
+            this.RRStore["GIdRight"] = er;
 
-            er = new ER();
+            er = new ReplaceRule();
             er.Left = GSelf.CreateOpChain(GSelf.Operate(g));
             er.Right = GSelf.CreateOpChain(g);
         }
@@ -96,7 +96,7 @@ namespace AutoSymbol.Draft.GroupTheory
 
     public class ERConstructor
     {
-        public void Construct(ER er, OpChain seed)
+        public void Construct(ReplaceRule er, OpChain seed)
         {
             /// 1. Find variables in ER, one of them represent the seed
             /// 2. Others will need to pick from top branches of the seed (and corresponding supported operations)

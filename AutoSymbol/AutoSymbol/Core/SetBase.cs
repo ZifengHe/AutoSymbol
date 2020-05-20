@@ -11,7 +11,7 @@ namespace AutoSymbol.Core
         public Dictionary<string, Operator> OpStore = new Dictionary<string, Operator>();
         public MemberStore MemStore = new MemberStore();
         public Dictionary<string, Member> ShortMemStore = new Dictionary<string, Member>();
-        public EquivalentRelationStore ERStore = new EquivalentRelationStore();
+        public ReplaceRuleStore RRStore = new ReplaceRuleStore();
         public Dictionary<string, string> SigToShortName = new Dictionary<string, string>();
         public static Dictionary<string, SetBase> AllSets = new Dictionary<string, SetBase>();
 
@@ -39,26 +39,41 @@ namespace AutoSymbol.Core
                 s.TargetSet = one.Value;
                 ret.Add(s);
 
-                foreach (var er in one.Value.ERStore)
+                foreach (var er in one.Value.RRStore)
                 {
                     ManualTransform left = new ManualTransform();
                     left.MyType = TransformType.ERReplace;
                     left.TargetSet = one.Value;
                     left.ER = er.Value;
-                    left.Direction = ERDirection.LeftSource;
+                    left.Direction = ReplaceRuleDirection.LeftSource;
                     ret.Add(left);
 
                     ManualTransform right = new ManualTransform();
                     right.MyType = TransformType.ERReplace;
                     right.TargetSet = one.Value;
                     right.ER = er.Value;
-                    right.Direction = ERDirection.RightSource;
+                    right.Direction = ReplaceRuleDirection.RightSource;
                     ret.Add(right);
                 }
             }
             return ret;
         }
 
+        public Operator CreateOperatorIfNotExist(string name, bool bSingleOperation)
+        {
+            if (this.OpStore.ContainsKey(name))
+                return this.OpStore[name];
+            else
+            {
+                Operator op = new Operator(name, this, bSingleOperation);
+                this.OpStore[name] = op;
+                return op;
+            }
+        }
+
+       
 
     }
+
+  
 }
