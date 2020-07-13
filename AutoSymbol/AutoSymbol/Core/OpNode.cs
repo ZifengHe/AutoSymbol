@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace AutoSymbol.Core
 {
-    public class OpDict<T> : Dictionary<OpChain, T>
-    { }
+   
     public class Operator : Symbol
     {
         public string ResultSetName = string.Empty;
@@ -22,11 +21,13 @@ namespace AutoSymbol.Core
             SecondInputSetName = ResultSetName;
             IsSingleOperand = bSingleOperand;
         }
+
+       
        
         public Member Operate(params Member[] mems)
         {
             d.BreakOnCondition(IsSingleOperand != (mems.Length == 1));
-            OpChain chain = new OpChain();
+            OpNode chain = new OpNode();
             chain.Operator = this;
             chain.Operands = mems;
 
@@ -34,9 +35,9 @@ namespace AutoSymbol.Core
         }
 
        
-        public OpChain CreateOpChain(params Member[] mems)
+        public OpNode CreateOpChain(params Member[] mems)
         {
-            OpChain chain = new OpChain();
+            OpNode chain = new OpNode();
             chain.Operator = this;
             chain.Operands = mems;
 
@@ -52,9 +53,10 @@ namespace AutoSymbol.Core
         }
     }
 
-    public class OpChain
+    public class OpNode
     {
         /// !!!  Any new member needs to be included in MakeCopy()
+        public Member Self = null;
         public Operator Operator;
         public Member[] Operands;
         //public ReadOnlyCollection<Member> Operands = new ReadOnlyCollection<Member>();
@@ -62,13 +64,17 @@ namespace AutoSymbol.Core
         public double lastLocalWeight = 0;
         private string sig = null;
 
-        public OpChain() : base()
+        public OpNode() : base()
         {
+        }      
+        public OpNode(Member mem) : base()
+        {
+            this.Self = mem;
         }
 
-        public OpChain MakeCopy()
+        public OpNode MakeCopy()
         {
-            OpChain ret = new OpChain();
+            OpNode ret = new OpNode();
             ret.Operator = this.Operator;
             ret.Operands = new Member[this.Operands.Length];
             ret.lastLocalWeight = this.lastLocalWeight;
@@ -91,7 +97,7 @@ namespace AutoSymbol.Core
             return ret;
         }
 
-        public static void InvalidateAllSignature(OpChain chain)
+        public static void InvalidateAllSignature(OpNode chain)
         {
             chain.sig = null;
 
@@ -141,7 +147,7 @@ namespace AutoSymbol.Core
             }
         }
 
-        public void RecursivePrintWithWeight(OpChain chain, StringBuilder sb)
+        public void RecursivePrintWithWeight(OpNode chain, StringBuilder sb)
         {
             double sumChildren = 0;
             sb.Append("(");
@@ -168,7 +174,7 @@ namespace AutoSymbol.Core
             sb.Append(")");
         }
 
-        public void RecursiveLeftChildFirstPrint(OpChain chain, StringBuilder sb)
+        public void RecursiveLeftChildFirstPrint(OpNode chain, StringBuilder sb)
         {
             sb.Append("(");
             for (int i = 0; i < chain.Operands.Length; i++)
@@ -200,9 +206,9 @@ namespace AutoSymbol.Core
             double diff = Math.Abs(testChildrenSum + this.lastLocalWeight - this.lastTotalWeight);
             d.BreakOnCondition(diff > 0.01);
         }
-        public List<OpChain> GetAllChildren()
+        public List<OpNode> GetAllChildren()
         {
-            List<OpChain> list = new List<OpChain>();
+            List<OpNode> list = new List<OpNode>();
             list.Add(this);
             for (int i = 0; i < Operands.Length; i++)
                 if (Operands[i].FromChain != null)
@@ -247,7 +253,7 @@ namespace AutoSymbol.Core
             return sb.ToString();
         }
 
-        private void VisitOpChain(OpChain chain, StringBuilder sb, int depth)
+        private void VisitOpChain(OpNode chain, StringBuilder sb, int depth)
         {
             sb.AppendFormat("{0}(", chain.Operator.ShortName);
             for (int i = 0; i < chain.Operands.Length; i++)

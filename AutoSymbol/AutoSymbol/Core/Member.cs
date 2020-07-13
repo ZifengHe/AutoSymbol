@@ -9,7 +9,7 @@ namespace AutoSymbol.Core
     public class Member : Symbol
     {
         public string TargetSetName;
-        public OpChain FromChain;
+        public OpNode FromChain;
         public bool IsVariable = false;
 
         public Member MakeCopy()

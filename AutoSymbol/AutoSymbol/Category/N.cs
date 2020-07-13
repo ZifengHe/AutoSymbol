@@ -37,37 +37,37 @@ namespace AutoSymbol.Core
             ReplaceRule rr = new ReplaceRule();
             rr.Left = NPlus.CreateOpChain(a, NPlus.Operate(b, c));
             rr.Right = NPlus.CreateOpChain(NPlus.Operate(a, b), c);
-            this.RRStore["NPlusAssoc"] = rr;
+            this.RuleStore["NPlusAssoc"] = rr;
 
             rr = new ReplaceRule();
             rr.Left = NPlus.CreateOpChain(a, b);
             rr.Right = NPlus.CreateOpChain(b, a);
-            this.RRStore["NPlusCommute"] = rr;
+            this.RuleStore["NPlusCommute"] = rr;
 
             rr = new ReplaceRule();
             rr.Left = NMul.CreateOpChain(a, b);
             rr.Right = NMul.CreateOpChain(b, a);
-            this.RRStore["NMulCommute"] = rr;
+            this.RuleStore["NMulCommute"] = rr;
 
             rr = new ReplaceRule();
             rr.Left = NMul.CreateOpChain(NPlus.Operate(a, b), c);
             rr.Right = NPlus.CreateOpChain(NMul.Operate(a, c), NMul.Operate(b, c));
-            this.RRStore["NMulDistr"] = rr;
+            this.RuleStore["NMulDistr"] = rr;
 
             rr = new ReplaceRule();
             rr.Left = NMul.CreateOpChain(a, NMul.Operate(b, c));
             rr.Right = NMul.CreateOpChain(NMul.Operate(a, b), c);
-            this.RRStore["NMulAssoc"] = rr;
+            this.RuleStore["NMulAssoc"] = rr;
 
             rr = new ReplaceRule();
             rr.Left = NPlus.CreateOpChain(a, NMul.Operate(n, a));
             rr.Right = NMul.CreateOpChain(NPlus.Operate(n, One), a);
-            this.RRStore["NAnyPlusOne"] = rr;
+            this.RuleStore["NAnyPlusOne"] = rr;
 
             rr = new ReplaceRule();
             rr.Left = NPlus.CreateOpChain(a, a);
             rr.Right = NMul.CreateOpChain(a, NPlus.Operate(One, One));
-            this.RRStore["NOnePlusOne"] = rr;
+            this.RuleStore["NOnePlusOne"] = rr;
         }
 
         public void PopulateSeedMember()
@@ -75,7 +75,7 @@ namespace AutoSymbol.Core
             Member lastOne = One;
             for (int i = 2; i < 7; i++)
             {
-                OpChain current = this.OpStore["+"].CreateOpChain(lastOne, One);
+                OpNode current = this.OpStore["+"].CreateOpChain(lastOne, One);
                 lastOne = current.CreateMember(i.ToString(), false);
                 this.MemStore.Add(lastOne);
 
@@ -83,7 +83,9 @@ namespace AutoSymbol.Core
                 shortOne.FromChain = null;
                 this.ShortMemStore.Add(shortOne.ShortName, shortOne);
 
-                StrToOp dict = this.RRStore["NPlusAssoc"].BuildCompleteERChains(lastOne.FromChain);
+                ReplaceRule rr = (ReplaceRule)this.RuleStore["NPlusAssoc"];
+
+                OpByStr dict = rr.BuildCompleteERChains(lastOne.FromChain);
                 foreach (var item in dict)
                 {
                     SigToShortName[item.Key] = i.ToString();

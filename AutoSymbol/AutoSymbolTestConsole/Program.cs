@@ -11,9 +11,10 @@ namespace AutoSymbolTestConsole
     {
         static void Main(string[] args)
         {
-            new RealTest().ProveAPlusBSquare();
+            //new NTest().ProveTwoPlusXPlusThree();
+            new RTest().ProveAPlusBSquare();
 
-            Console.WriteLine("Finished");
+            Console.WriteLine("Finished Successfully!");
             Console.ReadLine();
         }
     }

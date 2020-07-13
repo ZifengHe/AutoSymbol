@@ -14,8 +14,8 @@ namespace AutoSymbol
 {
     public partial class MainWindow : Window
     {
-        public List<OpChain> ManualBuilds = new List<OpChain>();
-        Dictionary<ManualTransform, StrToOp> OneLevelResult;
+        public List<OpNode> ManualBuilds = new List<OpNode>();
+        Dictionary<ManualTransform, OpByStr> OneLevelResult;
 
         private void LoadManualTransforms()
         {
@@ -30,26 +30,26 @@ namespace AutoSymbol
                 cbFilterER.Items.Add(one.Key);
             }
 
-            OneTransform.Reset();
+            TransformRecord.Reset();
 
             cbER.Items.Clear();
             foreach (var one in SetBase.AllSets)
             {
-                foreach (var er in one.Value.RRStore)
+                foreach (var er in one.Value.RuleStore)
                 {
                     cbER.Items.Add(er.Value.ToString());
                 }
             }
         }
 
-        private void ProceedOneLevel(OpChain toChange)
+        private void ProceedOneLevel(OpNode toChange)
         {
-            OneLevelResult = new Dictionary<ManualTransform, StrToOp>();
-            OneTransform.Reset();
-            OneTransform.AddTransformWithNoSource(toChange.Sig);
+            OneLevelResult = new Dictionary<ManualTransform, OpByStr>();
+            TransformRecord.Reset();
+            TransformRecord.AddTransformWithNoSource(toChange.Sig);
             foreach(var ms in SetBase.GetAllManualTransform().Where(x=>x.MyType== TransformType.ERReplace))
             {
-                OneLevelResult[ms] = new StrToOp();
+                OneLevelResult[ms] = new OpByStr();
                 ms.ER.BuildERChainAtAllBranchOnce(OneLevelResult[ms], toChange);
                 List<string> keys = OneLevelResult[ms].Keys.ToList();
                 foreach (var str in keys)
@@ -142,7 +142,7 @@ namespace AutoSymbol
                 Clipboard.SetText(selected);
                 GraphViewer graphViewer = new GraphViewer();
                 Graph graph = PrepareRightPanelGraph(graphViewer);
-                RenderOneTransform(OneTransform.AllResult[selected], graph);
+                RenderOneTransform(TransformRecord.AllRecordBySig[selected], graph);
                 graphViewer.Graph = graph;
 
                 /// Steps 1. Invoke BuildERChainAtAllBranchOnce

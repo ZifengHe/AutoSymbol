@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AutoSymbol.Core
 {
-    public class StrToOp : Dictionary<string, OpChain>
+    public class OpByStr  : Dictionary<string, OpNode>
     { }
 
     public class ManualTransform
@@ -37,40 +37,40 @@ namespace AutoSymbol.Core
         ERReplace,
         Shorten
     }
-    public class OneTransform
+    public class TransformRecord
     {
         public TransformType TransformType;
-        public static Dictionary<string, OneTransform> AllResult = new Dictionary<string, OneTransform>();
+        public static Dictionary<string, TransformRecord> AllRecordBySig = new Dictionary<string, TransformRecord>();
         public static Dictionary<string, Dictionary<string, Member>> Keymaps = new Dictionary<string, Dictionary<string, Member>>();
         public  static int GlobalSequenceNum = 0;
 
         public int Gen = -1;
         public int SequenceNumber = 0;
 
-        public OpChain TemplateSrc;
-        public OpChain TemplateTarget;
-        public OpChain Original;
-        public OpChain Result;
-        public OpChain BranchInResult;
-        public OpChain BranchInOrigin;
+        public OpNode TemplateSrc;
+        public OpNode TemplateTarget;
+        public OpNode Original;
+        public OpNode Result;
+        public OpNode BranchInResult;
+        public OpNode BranchInOrigin;
         public string ResultSig;
         public string Reason;
 
-        public static OneTransform AddTransformWithNoSource(string sig)
+        public static TransformRecord AddTransformWithNoSource(string sig)
         {
-            return new OneTransform(true, sig);
+            return new TransformRecord(true, sig);
         }
 
         public static void Reset()
         {
-            AllResult.Clear();
+            AllRecordBySig.Clear();
             Keymaps.Clear();
             GlobalSequenceNum = 0;
         }
 
-        public OneTransform(bool IsNoSource, string sig)
+        public TransformRecord(bool IsNoSource, string sig)
         {
-            lock(AllResult)
+            lock(AllRecordBySig)
             {
                 GlobalSequenceNum++;
                 this.SequenceNumber = GlobalSequenceNum;
@@ -80,35 +80,35 @@ namespace AutoSymbol.Core
             {
                 this.Gen = 0;
 
-                if (AllResult.ContainsKey(sig))
+                if (AllRecordBySig.ContainsKey(sig))
                     throw new ApplicationException("Duplicate GenZero signature");
-                AllResult[sig] = this;
+                AllRecordBySig[sig] = this;
             }
         }      
 
-        public static OneTransform CreateNew(string original, string result, string reason)
+        public static TransformRecord CreateNew(string original, string result, string reason)
         {
           //  d.BreakOnSequence(137);
                 
-            if(AllResult.ContainsKey(original)== false) 
+            if(AllRecordBySig.ContainsKey(original)== false) 
                 return null;
 
-            if(AllResult.ContainsKey(result) == true)
+            if(AllRecordBySig.ContainsKey(result) == true)
             {
-                if (AllResult[result].Original == null)
+                if (AllRecordBySig[result].Original == null)
                     return null;
 
                 /// Below logic avoids circular reference so that we can always find the root
-                string existingOriginal = AllResult[result].Original.Sig;
+                string existingOriginal = AllRecordBySig[result].Original.Sig;
                 if (existingOriginal.Length <= original.Length 
-                    || AllResult[original].SequenceNumber >= AllResult[result].SequenceNumber)
+                    || AllRecordBySig[original].SequenceNumber >= AllRecordBySig[result].SequenceNumber)
                     return null;
             }
 
-            OneTransform ret = new OneTransform(false, result);
+            TransformRecord ret = new TransformRecord(false, result);
             ret.Reason = reason;
-            ret.Gen = AllResult[original].Gen + 1;
-            AllResult[result] = ret;
+            ret.Gen = AllRecordBySig[original].Gen + 1;
+            AllRecordBySig[result] = ret;
 
             return ret;
         }

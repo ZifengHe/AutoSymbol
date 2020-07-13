@@ -1,0 +1,25 @@
+﻿7/4/2020
+1. Algorithm for filter a subset?
+
+
+
+
+7/2/2020
+1. Define a type AnyF (any from)
+2. Define another type AnyChildF ()
+3. Type SubSet
+
+How to represent subset with a condition?
+Set, Filter, Operator
+
+7/1/2020
+Steps to implement NormalChildGroup?
+1. Core issue : a set cannot prepare ER by its own, ER needs to support multiple
+2. Child set representation,
+
+5/24/2020
+class ReplaceRuleNode (can be ReplaceRule or other future rule)
+class RuleSeries
+ERGroup can exist
+RuleSeries.Run
+

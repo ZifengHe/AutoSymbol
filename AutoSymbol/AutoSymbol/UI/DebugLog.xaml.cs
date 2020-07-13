@@ -164,9 +164,9 @@ namespace AutoSymbol
             graphViewer.BindToPanel(panel);
             Graph graph = new Graph();
            
-            if(obj is OpChain)
+            if(obj is OpNode)
             {
-                OpChain opc = (OpChain) obj;
+                OpNode opc = (OpNode) obj;
                 graph.AddNode(opc.Sig);
             }
             if(obj is ReplaceRule)

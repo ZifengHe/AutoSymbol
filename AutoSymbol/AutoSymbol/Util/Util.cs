@@ -26,7 +26,7 @@ namespace System
         }
         public static void BreakOnSequence(int num)
         {
-            if (OneTransform.GlobalSequenceNum >= num)
+            if (TransformRecord.GlobalSequenceNum >= num)
                 Debugger.Break();
         }
         public static void Info(string msg)

@@ -54,7 +54,7 @@ namespace AutoSymbol
         public double ForNPlusDepth;
         public double ForNPlusDepthDepth;
         public double ForNPlusDepthChildCount;
-        public double CalcWeight(OpChain chain, int depth, out int childCount)
+        public double CalcWeight(OpNode chain, int depth, out int childCount)
         {
             double localSum = 0;
             double childrenSum = 0;

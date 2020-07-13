@@ -13,17 +13,17 @@ namespace AutoSymbol.Core
         {
             base.Add(mem.ShortName, mem);
 
-            if (OneTransform.AllResult.ContainsKey(mem.Sig) == false)
+            if (TransformRecord.AllRecordBySig.ContainsKey(mem.Sig) == false)
             {
                 if (mem.FromChain == null)
-                    OneTransform.AddTransformWithNoSource(mem.Sig);
+                    TransformRecord.AddTransformWithNoSource(mem.Sig);
                 else
                 {
-                    OneTransform small = OneTransform.AddTransformWithNoSource(mem.shortSig);
+                    TransformRecord small = TransformRecord.AddTransformWithNoSource(mem.shortSig);
                     small.Result = mem.FromChain;
                     small.ResultSig = mem.shortSig;
 
-                    OneTransform big = OneTransform.AddTransformWithNoSource(mem.Sig);
+                    TransformRecord big = TransformRecord.AddTransformWithNoSource(mem.Sig);
                     big.Result = mem.FromChain;
                     big.ResultSig = mem.Sig;
                 }
@@ -31,9 +31,9 @@ namespace AutoSymbol.Core
         }
     }
 
-    public class ReplaceRuleStore : Dictionary<string, ReplaceRule>
+    public class RuleStore : Dictionary<string, BaseRule>
     {
-        public new ReplaceRule this[string key]
+        public new BaseRule this[string key]
         {
             get
             {

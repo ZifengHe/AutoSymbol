@@ -11,8 +11,8 @@ namespace AutoSymbol
 {
     public class ManualScenario
     {
-        public OpChain StartChain;
-        public List<OneTransform> IdealTransforms;
+        public OpNode StartChain;
+        public List<TransformRecord> IdealTransforms;
     }
 
     public class TrainingSet
@@ -33,14 +33,14 @@ namespace AutoSymbol
 
     public class OpChainHelper
     {
-        public static OpChain For_ProveAPlusBCubic()
+        public static OpNode For_ProveAPlusBCubic()
         {
             N n = new N();
             Member x = new Member("X", n.ShortName, true);
             n.MemStore.Add(x);
             Member y = new Member("Y", n.ShortName, true);
             n.MemStore.Add(y);
-            OpChain target = N.NMul.CreateOpChain(N.NPlus.Operate(x, y),
+            OpNode target = N.NMul.CreateOpChain(N.NPlus.Operate(x, y),
                 N.NMul.Operate(N.NPlus.Operate(x, y), N.NPlus.Operate(x, y)));
             return target;
         }

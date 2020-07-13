@@ -75,7 +75,10 @@
     <Compile Include="Core\Store.cs" />
     <Compile Include="Draft\DraftAbelSummation.cs" />
     <Compile Include="Draft\DraftCategory.cs" />
+    <Compile Include="Draft\DraftRuleSeries.cs" />
     <Compile Include="ERGroup\BasicPlusMulRule.cs" />
+    <Compile Include="ERGroup\C.cs" />
+    <Compile Include="ERGroup\GroupRule.cs" />
     <Compile Include="ERGroup\NumberMergeRule.cs" />
     <Compile Include="UI\DebugLog.xaml.cs">
       <DependentUpon>DebugLog.xaml</DependentUpon>
@@ -86,7 +89,7 @@
     <Compile Include="Core\ReplaceRule.cs" />
     <Compile Include="Training\ManualScenario.cs" />
     <Compile Include="Category\N.cs" />
-    <Compile Include="Core\OpChain.cs" />
+    <Compile Include="Core\OpNode.cs" />
     <Compile Include="Training\Optimizer.cs" />
     <Compile Include="Core\Symbol.cs" />
     <Compile Include="Core\Transform.cs" />
@@ -139,6 +142,8 @@
   <ItemGroup>
     <Resource Include="Doc\ReadMe.txt" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Doc\BrainStorm.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

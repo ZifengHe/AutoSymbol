@@ -35,8 +35,8 @@ namespace AutoSymbol
 
         public static void StartNewCase()
         {
-            OneTransform.AllResult.Clear();
-            OneTransform.Keymaps.Clear();
+            TransformRecord.AllRecordBySig.Clear();
+            TransformRecord.Keymaps.Clear();
         }
         public void ProveComplementSetTheorem()
         { }
@@ -59,79 +59,79 @@ namespace AutoSymbol
         }
         public void ProveAPlusBCubic()
         {
-            OpChain target = OpChainHelper.For_ProveAPlusBCubic();
-            OneTransform.AddTransformWithNoSource(target.Sig);
-            StrToOp dict = ReplaceRule.BuildERChainsForLevel(
-                target, 
-                new N().RRStore.Values.ToList(),
-                10, 
-                150,
-                Optimizer.GetOptimizer(OptimizerType.DoPolynormialExpansion));
-            UIData.AllItems = OneTransform.AllResult.Keys.ToList();
+            //OpNode target = OpChainHelper.For_ProveAPlusBCubic();
+            //TransformRecord.AddTransformWithNoSource(target.Sig);
+            //OpByStr dict = ReplaceRule.BuildERChainsForLevel(
+            //    target, 
+            //    new N().RuleStore.Values.ToList(),
+            //    10, 
+            //    150,
+            //    Optimizer.GetOptimizer(OptimizerType.DoPolynormialExpansion));
+            //UIData.AllItems = TransformRecord.AllRecordBySig.Keys.ToList();
 
             //AssertKeyInDictionary("N[((X×X)+(((X×Y)×2)+(Y×Y)))]", dict);
         }
         public void ProveAPlusBSquare()
         {
-            N n = new N();
-            Member x = new Member("X", n.ShortName, true);
-            n.MemStore.Add(x);
-            Member y = new Member("Y", n.ShortName, true);
-            n.MemStore.Add(y);
-            OpChain target = N.NMul.CreateOpChain(N.NPlus.Operate(x, y), N.NPlus.Operate(x, y));
+            //N n = new N();
+            //Member x = new Member("X", n.ShortName, true);
+            //n.MemStore.Add(x);
+            //Member y = new Member("Y", n.ShortName, true);
+            //n.MemStore.Add(y);
+            //OpNode target = N.NMul.CreateOpChain(N.NPlus.Operate(x, y), N.NPlus.Operate(x, y));
 
-            OneTransform.AddTransformWithNoSource(target.Sig);
-            StrToOp dict = ReplaceRule.BuildERChainsForLevel(target, n.RRStore.Values.ToList(), 10, 100);
+            //TransformRecord.AddTransformWithNoSource(target.Sig);
+            //OpByStr dict = ReplaceRule.BuildERChainsForLevel(target, n.RuleStore.Values.ToList(), 10, 100);
 
-            UIData.AllItems = OneTransform.AllResult.Keys.ToList();
+            //UIData.AllItems = TransformRecord.AllRecordBySig.Keys.ToList();
 
-            AssertKeyInDictionary("N[((X×X)+(((X×Y)×2)+(Y×Y)))]", dict);
+            //AssertKeyInDictionary("N[((X×X)+(((X×Y)×2)+(Y×Y)))]", dict);
         }       
 
         public void ProveTwoPlusXPlusThree()
         {            
-            N n = new N();
-            Member x = new Member("X", n.ShortName, true);
-            n.MemStore.Add(x);
-            OpChain target = N.NPlus.CreateOpChain(n.MemStore["2"], N.NPlus.Operate(x, n.MemStore["3"]));
+            //N n = new N();
+            //Member x = new Member("X", n.ShortName, true);
+            //n.MemStore.Add(x);
+            //OpNode target = N.NPlus.CreateOpChain(n.MemStore["2"], N.NPlus.Operate(x, n.MemStore["3"]));
 
-            OneTransform.AddTransformWithNoSource(target.Sig);
-            StrToOp dict = ReplaceRule.BuildERChainsForLevel(target, n.RRStore.Values.ToList(), 7, 20);
+            //TransformRecord.AddTransformWithNoSource(target.Sig);
+            //OpByStr dict = ReplaceRule.BuildERChainsForLevel(target, n.RuleStore.Values.ToList(), 7, 20);
 
-            UIData.AllItems = OneTransform.AllResult.Keys.ToList();
+            //UIData.AllItems = TransformRecord.AllRecordBySig.Keys.ToList();
 
-            AssertKeyInDictionary("N[(5+X)]", dict);
+            //AssertKeyInDictionary("N[(5+X)]", dict);
         }
         public void ProveTwoPlusThree()
         {
-            N n = new N();
-            OpChain target = n.OpStore["+"].CreateOpChain(new Member[] {
-                n.MemStore["2"],
-                n.MemStore["3"]
-            });
+           // N n = new N();
+           // OpNode target = n.OpStore["+"].CreateOpChain(new Member[] {
+           //     n.MemStore["2"],
+           //     n.MemStore["3"]
+           // });
             
-            Member mem = target.CreateMember("Test", true);
-            Trace.WriteLine(mem.FromChain.PrintByDepth(0));
-            Trace.WriteLine(mem.FromChain.PrintByDepth(1));
-            Trace.WriteLine(mem.FromChain.PrintByDepth(2));
-            Assert(mem.FromChain.PrintByDepth(4), "+(+([1][1])+(+([1][1])[1]))");
-            Trace.WriteLine(n.RRStore["NPlusAssoc"].Left.Sig);
-            Trace.WriteLine(n.RRStore["NPlusAssoc"].Right.Sig);
+           // Member mem = target.CreateMember("Test", true);
+           // Trace.WriteLine(mem.FromChain.PrintByDepth(0));
+           // Trace.WriteLine(mem.FromChain.PrintByDepth(1));
+           // Trace.WriteLine(mem.FromChain.PrintByDepth(2));
+           // Assert(mem.FromChain.PrintByDepth(4), "+(+([1][1])+(+([1][1])[1]))");
+           // //Trace.WriteLine(n.RuleStore["NPlusAssoc"].Left.Sig);
+           // //Trace.WriteLine(n.RuleStore["NPlusAssoc"].Right.Sig);
 
-            OneTransform.AllResult.Clear(); // Only for this test case.
-            OneTransform.AddTransformWithNoSource(target.Sig);
-            StrToOp dict = n.RRStore["NPlusAssoc"].BuildCompleteERChains(target);
-           // UIData.ItemMap = dict;
-            UIData.AllItems = OneTransform.AllResult.Keys.ToList();
+           // TransformRecord.AllRecordBySig.Clear(); // Only for this test case.
+           // TransformRecord.AddTransformWithNoSource(target.Sig);
+           // OpByStr dict = n.RuleStore["NPlusAssoc"].BuildCompleteERChains(target);
+           //// UIData.ItemMap = dict;
+           // UIData.AllItems = TransformRecord.AllRecordBySig.Keys.ToList();
 
-            bool found = false;
-            foreach (var one in dict)
-                if (one.Key == n.MemStore["5"].Sig)
-                    found = true;
-            Assert(found, "Fail to find 5");
+           // bool found = false;
+           // foreach (var one in dict)
+           //     if (one.Key == n.MemStore["5"].Sig)
+           //         found = true;
+           // Assert(found, "Fail to find 5");
         }
 
-        public void AssertKeyInDictionary(string key, StrToOp dict)
+        public void AssertKeyInDictionary(string key, OpByStr dict)
         {
             bool found = false;
             foreach (var one in dict)

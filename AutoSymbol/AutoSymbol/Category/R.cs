@@ -17,8 +17,8 @@ namespace AutoSymbol.Category
 
         public void HydrateER()
         {
-            RuleSet<R>.Subscribe(new NumberMergeRule<R>(), this);
-            RuleSet<R>.Subscribe(new BasicPlusMulRule<R>(), this);
+            NumberMergeRule<R>.CreateAll(this);
+            BasicPlusMulRule<R>.CreateAll(this);
         }
     }
 }

@@ -11,9 +11,11 @@ namespace AutoSymbol.Core
         public Dictionary<string, Operator> OpStore = new Dictionary<string, Operator>();
         public MemberStore MemStore = new MemberStore();
         public Dictionary<string, Member> ShortMemStore = new Dictionary<string, Member>();
-        public ReplaceRuleStore RRStore = new ReplaceRuleStore();
+        public RuleStore RuleStore = new RuleStore();
         public Dictionary<string, string> SigToShortName = new Dictionary<string, string>();
         public static Dictionary<string, SetBase> AllSets = new Dictionary<string, SetBase>();
+
+        public SetBase Parent = null;
 
 
         static SetBase()
@@ -39,19 +41,19 @@ namespace AutoSymbol.Core
                 s.TargetSet = one.Value;
                 ret.Add(s);
 
-                foreach (var er in one.Value.RRStore)
+                foreach (var er in one.Value.RuleStore)
                 {
                     ManualTransform left = new ManualTransform();
                     left.MyType = TransformType.ERReplace;
                     left.TargetSet = one.Value;
-                    left.ER = er.Value;
+                    left.ER = (ReplaceRule)er.Value;
                     left.Direction = ReplaceRuleDirection.LeftSource;
                     ret.Add(left);
 
                     ManualTransform right = new ManualTransform();
                     right.MyType = TransformType.ERReplace;
                     right.TargetSet = one.Value;
-                    right.ER = er.Value;
+                    right.ER = (ReplaceRule)er.Value;
                     right.Direction = ReplaceRuleDirection.RightSource;
                     ret.Add(right);
                 }

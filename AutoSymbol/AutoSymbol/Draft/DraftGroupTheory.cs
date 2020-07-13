@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using AutoSymbol.Core;
+using AutoSymbol.ERGroup;
 
 namespace AutoSymbol.Draft.GroupTheory
 {
@@ -16,68 +17,26 @@ namespace AutoSymbol.Draft.GroupTheory
         public Operator GSelf;
         public G() : base("G")
         {
-            /// How to represent closure for multiplication?
-            /// If consider operator is the generator,
-            /// No ER needed to satisfy this condition
-            /// 
+            GroupRule<G>.CreateAll(this);
+        }       
+    }
 
-            /// How to represent existence like Id, Inverse?
-            /// Id & Inverse are operator by themselves
-            /// 
-            /// Proof of Id operation unique?
-            /// Id1(x)=Id2(x)
-            /// 
-            /// Proof of Inverse unique?
-            /// Inv1(x)=Inv2(x)
-            /// 
-            /// Prove power relation Pow(x,n)*Pow(x,m) = Pow(x, m+n)?
-            /// 
-            /// 
-
-            GMul = new Operator("×", this, false);
-            this.OpStore[GMul.ShortName] = GMul;
-            GId = new Operator("Id", this, true);
-            this.OpStore[GId.ShortName] = GId;
-            GInv = new Operator("Inv", this, true);
-            this.OpStore[GInv.ShortName] = GInv;
-            GSelf = new Operator("Self", this, true);
-            this.OpStore[GSelf.ShortName] = GSelf;
-        }
-
-        public void HydrateER()
+    public class AbG : SetBase  // Abelian Group
+    {
+        public AbG() : base("AbG")
         {
-            Member g = new Member("g", this.ShortName, true);
-            Member h = new Member("h", this.ShortName, true);
-            Member k = new Member("k", this.ShortName, true);
+            GroupRule<AbG>.CreateAll(this);
+            GroupRule<AbG>.CreateForAbelian(this);
+        }
+    }
 
-            ReplaceRule er = new ReplaceRule();
-            er.Left = GMul.CreateOpChain(g, GMul.Operate(h, k));
-            er.Right = GMul.CreateOpChain(GMul.Operate(g, h), k);
-            this.RRStore["GMulAssoc"] = er;
-
-            er = new ReplaceRule();
-            er.Left = GMul.CreateOpChain(g, GInv.Operate(g));
-            er.Right = GMul.CreateOpChain(GInv.Operate(g), g);
-            this.RRStore["GInvOne"] = er;
-
-            er = new ReplaceRule();
-            er.Left = GMul.CreateOpChain(g, GInv.Operate(g));
-            er.Right = GId.CreateOpChain(h);
-            this.RRStore["GInvTwo"] = er;
-
-            er = new ReplaceRule();
-            er.Left = GMul.CreateOpChain(g, GId.Operate(h));
-            er.Right = GMul.CreateOpChain(g);
-            this.RRStore["GIdLeft"] = er;
-
-            er = new ReplaceRule();
-            er.Left = GMul.CreateOpChain(GId.Operate(h), g);
-            er.Right = GMul.CreateOpChain(g);
-            this.RRStore["GIdRight"] = er;
-
-            er = new ReplaceRule();
-            er.Left = GSelf.CreateOpChain(GSelf.Operate(g));
-            er.Right = GSelf.CreateOpChain(g);
+    public class NcG : SetBase // Normal Child Group
+    {
+        public NcG() : base("NcG")
+        {
+            G G = new G();
+            this.Parent = G;
+            GroupRule<NcG>.CreateForNormalChild(this);
         }
     }
 
@@ -96,7 +55,7 @@ namespace AutoSymbol.Draft.GroupTheory
 
     public class ERConstructor
     {
-        public void Construct(ReplaceRule er, OpChain seed)
+        public void Construct(ReplaceRule er, OpNode seed)
         {
             /// 1. Find variables in ER, one of them represent the seed
             /// 2. Others will need to pick from top branches of the seed (and corresponding supported operations)
@@ -120,9 +79,9 @@ namespace AutoSymbol.Draft.GroupTheory
             public Operator Operator;
         }
 
-        public static List<OpChain> ExpandOne(OpChain incoming, params OpPair[] opPairs)
+        public static List<OpNode> ExpandOne(OpNode incoming, params OpPair[] opPairs)
         {
-            List<OpChain> list = new List<OpChain>();
+            List<OpNode> list = new List<OpNode>();
 
             if (opPairs.Length == 2)
             {
@@ -136,9 +95,9 @@ namespace AutoSymbol.Draft.GroupTheory
             return list;
         }
 
-        public static List<OpChain> ExpandAll(OpChain incoming)
+        public static List<OpNode> ExpandAll(OpNode incoming)
         {
-            List<OpChain> final = new List<OpChain>();
+            List<OpNode> final = new List<OpNode>();
             SetBase target = SetBase.AllSets[incoming.Operator.ResultSetName];
             foreach(var op1 in target.OpStore.Values)
                 foreach(var op2 in target.OpStore.Values)

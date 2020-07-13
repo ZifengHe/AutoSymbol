@@ -20,7 +20,7 @@ using AutoSymbol.Core;
 
 namespace AutoSymbol
 {
-    using StrToOp = Dictionary<string, OpChain>;
+    using StrToOp = Dictionary<string, OpNode>;
     public static class UIData
     {
        // public static StrToOp ItemMap;
@@ -90,13 +90,13 @@ namespace AutoSymbol
                 TransList.Insert(0, sig);
                 string current = sig;
 
-                while (OneTransform.AllResult.ContainsKey(current))
+                while (TransformRecord.AllRecordBySig.ContainsKey(current))
                 {
-                    OneTransform one = OneTransform.AllResult[current];
+                    TransformRecord one = TransformRecord.AllRecordBySig[current];
                     if (one.Original != null)
                     {
                         string newSig = one.Original.Sig;
-                        if (OneTransform.AllResult.ContainsKey(newSig))
+                        if (TransformRecord.AllRecordBySig.ContainsKey(newSig))
                         {
                             TransList.Insert(0, newSig);
                         }
@@ -132,7 +132,7 @@ namespace AutoSymbol
         {
             GraphViewer graphViewer = new GraphViewer();
             Graph graph = PrepareLeftPanelGraph(graphViewer);
-            RenderOneTransform(OneTransform.AllResult[sig], graph);
+            RenderOneTransform(TransformRecord.AllRecordBySig[sig], graph);
             graphViewer.Graph = graph;
         }
 
@@ -194,12 +194,12 @@ namespace AutoSymbol
                 Clipboard.SetText(selected);
                 GraphViewer graphViewer = new GraphViewer();
                 Graph graph = PrepareRightPanelGraph(graphViewer);
-                RenderOneTransform(OneTransform.AllResult[selected], graph);
+                RenderOneTransform(TransformRecord.AllRecordBySig[selected], graph);
                 graphViewer.Graph = graph;
             }
         }        
 
-        private void RenderOneTransform(OneTransform one, Graph graph)
+        private void RenderOneTransform(TransformRecord one, Graph graph)
         {                
             RecursiveRender(one.Result, graph);
             RecursiveRender(one.TemplateSrc, graph);
@@ -230,16 +230,16 @@ namespace AutoSymbol
                 string selected = gv.ObjectUnderMouseCursor.ToString();
                 
                 StringBuilder sb = new StringBuilder();
-                if(OneTransform.AllResult.ContainsKey(selected))
+                if(TransformRecord.AllRecordBySig.ContainsKey(selected))
                 {
                     sb.AppendFormat("Gen={0} SeqNum={1} Reason={2}", 
-                        OneTransform.AllResult[selected].Gen, 
-                        OneTransform.AllResult[selected].SequenceNumber,
-                        OneTransform.AllResult[selected].Reason);
+                        TransformRecord.AllRecordBySig[selected].Gen, 
+                        TransformRecord.AllRecordBySig[selected].SequenceNumber,
+                        TransformRecord.AllRecordBySig[selected].Reason);
                 }
-                if (OneTransform.Keymaps.ContainsKey(selected))
+                if (TransformRecord.Keymaps.ContainsKey(selected))
                 {
-                    Dictionary<string, Member> dict = OneTransform.Keymaps[selected];
+                    Dictionary<string, Member> dict = TransformRecord.Keymaps[selected];
                     foreach (var one in dict)
                         sb.AppendFormat(" |{0}={1} ", one.Key, one.Value.Sig.ToString());
                 }
@@ -247,7 +247,7 @@ namespace AutoSymbol
             }
         }
 
-        private void RecursiveRender(OpChain branch, Graph g)
+        private void RecursiveRender(OpNode branch, Graph g)
         {
             if (branch == null)
                 return;
@@ -301,10 +301,10 @@ namespace AutoSymbol
         {
             foreach (var one in SetBase.AllSets)
             {
-                foreach (var er in one.Value.RRStore)
+                foreach (var er in one.Value.RuleStore)
                 {
                     if (er.Value.ToString() == (string)cbER.SelectedValue)
-                        d.TrackingER = er.Value;
+                        d.TrackingER = (ReplaceRule)er.Value;
                 }
             }
         }
@@ -318,7 +318,7 @@ namespace AutoSymbol
 
             string prev = null;
             string current = null;
-            foreach (var one in OneTransform.AllResult)
+            foreach (var one in TransformRecord.AllRecordBySig)
             {
                 if (one.Value.Gen == gen)
                 {
