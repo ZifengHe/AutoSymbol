@@ -27,10 +27,10 @@ namespace AutoSymbolTestConsole
                 r.OpStore["+"].Operate(x, y));
 
             RuleSeries rs = new RuleSeries();
-            rs.AddOneRule(r.RuleStore[C.MulDistrOne]);
-            rs.AddOneRule(r.RuleStore[C.MulDistrTwo]);
-            //rs.AddOneRule(r.RuleStore[C.MulDistrTwo]);
-            rs.AddOneRule(r.RuleStore[C.MulCommute]);
+            rs.AddOneRule(GlobalRules.RuleStore[C.MulDistrOne]);
+            rs.AddOneRule(GlobalRules.RuleStore[C.MulDistrTwo]);
+            //rs.AddOneRule(G.RuleStore[C.MulDistrTwo]);
+            rs.AddOneRule(GlobalRules.RuleStore[C.MulCommute]);
 
 
             List<OpNode> result = rs.ApplyRules(target);

@@ -301,7 +301,7 @@ namespace AutoSymbol
         {
             foreach (var one in SetBase.AllSets)
             {
-                foreach (var er in one.Value.RuleStore)
+                foreach (var er in GlobalRules.RuleStore)
                 {
                     if (er.Value.ToString() == (string)cbER.SelectedValue)
                         d.TrackingER = (ReplaceRule)er.Value;

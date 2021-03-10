@@ -1,8 +1,25 @@
-﻿7/4/2020
+﻿
+7/24/2020
+Quotient Group representation?
+
+7/17/2020
+Implement homomorphism architecture?
+1. The key is the rule representation.
+2. Rule triggers on Set attributes, set attributes are rules
+3. Time to introduce set of CrossProduct?
+4. How to resolve above circular issue?
+5. Conclusion : Rule belongs to TargetSet belongs to Operator
+
+7/13/2020
+It seems all rules should be global level and belong to operator not set?
+
+
+7/12/2020
+Homomorphism definition?
+
+
+7/4/2020
 1. Algorithm for filter a subset?
-
-
-
 
 7/2/2020
 1. Define a type AnyF (any from)

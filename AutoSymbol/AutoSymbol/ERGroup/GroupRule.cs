@@ -20,7 +20,7 @@ namespace AutoSymbol.ERGroup
             ReplaceRule er = new ReplaceRule();
             er.Left = GMul.CreateOpChain(g, GMul.Operate(h,GInv.Operate(g)));
             er.Right = new OpNode(h);
-            t.RuleStore["GNormalChildDef"] = er;
+            GlobalRules.RuleStore[C.GNormalChildDef] = er;
         }
 
         public static void CreateForAbelian(T t)
@@ -33,7 +33,7 @@ namespace AutoSymbol.ERGroup
             ReplaceRule er = new ReplaceRule();
             er.Left = GMul.CreateOpChain(h,k);
             er.Right = GMul.CreateOpChain(k,h);
-            t.RuleStore["GMulCommute"] = er;
+            GlobalRules.RuleStore[C.GMulCommute] = er;
         }
 
 
@@ -51,28 +51,29 @@ namespace AutoSymbol.ERGroup
             ReplaceRule er = new ReplaceRule();
             er.Left = GMul.CreateOpChain(g, GMul.Operate(h, k));
             er.Right = GMul.CreateOpChain(GMul.Operate(g, h), k);
-            t.RuleStore["GMulAssoc"] = er;
+            GlobalRules.RuleStore[C.GMulAssoc] = er;
 
             er = new ReplaceRule();
             er.Left = GMul.CreateOpChain(g, GInv.Operate(g));
             er.Right = GMul.CreateOpChain(GInv.Operate(g), g);
-            t.RuleStore["GInvOne"] = er;
+            GlobalRules.RuleStore[C.GInvOne] = er;
 
             er = new ReplaceRule();
             er.Left = GMul.CreateOpChain(g, GInv.Operate(g));
             er.Right = GId.CreateOpChain(h);
-            t.RuleStore["GInvTwo"] = er;
+            GlobalRules.RuleStore[C.GInvTwo] = er;
 
             er = new ReplaceRule();
             er.Left = GMul.CreateOpChain(g, GId.Operate(h));
             er.Right = GMul.CreateOpChain(g);
-            t.RuleStore["GIdLeft"] = er;
+            GlobalRules.RuleStore[C.GIdLeft] = er;
 
             er = new ReplaceRule();
             er.Left = GMul.CreateOpChain(GId.Operate(h), g);
             er.Right = GMul.CreateOpChain(g);
-            t.RuleStore["GIdRight"] = er;
+            GlobalRules.RuleStore[C.GIdRight] = er;
 
+            ////???? Below
             er = new ReplaceRule();
             er.Left = GSelf.CreateOpChain(GSelf.Operate(g));
             er.Right = GSelf.CreateOpChain(g);

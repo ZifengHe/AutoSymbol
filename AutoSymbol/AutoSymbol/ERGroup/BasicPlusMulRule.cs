@@ -24,48 +24,48 @@ namespace AutoSymbol.ERGroup
             ReplaceRule rr = new ReplaceRule();
             rr.Left = plus.CreateOpChain(a, plus.Operate(b, c));
             rr.Right = plus.CreateOpChain(plus.Operate(a, b), c);
-            t.RuleStore[C.PlusAssocOne] = rr;
+            GlobalRules.RuleStore[C.PlusAssocOne] = rr;
 
             rr = new ReplaceRule();
             rr.Right = plus.CreateOpChain(a, plus.Operate(b, c));
             rr.Left = plus.CreateOpChain(plus.Operate(a, b), c);
-            t.RuleStore[C.PlusAssocTwo] = rr;
+            GlobalRules.RuleStore[C.PlusAssocTwo] = rr;
 
             rr = new ReplaceRule();
             rr.Left = plus.CreateOpChain(a, b);
             rr.Right = plus.CreateOpChain(b, a);
-            t.RuleStore[C.PlusCommute] = rr;
+            GlobalRules.RuleStore[C.PlusCommute] = rr;
 
             rr = new ReplaceRule();
             rr.Left = mul.CreateOpChain(a, b);
             rr.Right = mul.CreateOpChain(b, a);
-            t.RuleStore[C.MulCommute] = rr;
+            GlobalRules.RuleStore[C.MulCommute] = rr;
 
             rr = new ReplaceRule();
             rr.Left = mul.CreateOpChain(plus.Operate(a, b), c);
             rr.Right = plus.CreateOpChain(mul.Operate(a, c), mul.Operate(b, c));
-            t.RuleStore[C.MulDistrOne] = rr;
+            GlobalRules.RuleStore[C.MulDistrOne] = rr;
 
             rr = new ReplaceRule();
             rr.Left = mul.CreateOpChain(a, plus.Operate(b, c));
             rr.Right = plus.CreateOpChain(mul.Operate(a, b), mul.Operate(a, c));
-            t.RuleStore[C.MulDistrTwo] = rr;
+            GlobalRules.RuleStore[C.MulDistrTwo] = rr;
 
             //rr = new ReplaceRule();
             //rr.Right = mul.CreateOpChain(plus.Operate(a, b), c);
             //rr.Left = plus.CreateOpChain(mul.Operate(a, c), mul.Operate(b, c));
-            //t.RuleStore[C.MulDistrTwo] = rr;
+            //G.RuleStore[C.MulDistrTwo] = rr;
 
 
             rr = new ReplaceRule();
             rr.Left = mul.CreateOpChain(a, mul.Operate(b, c));
             rr.Right = mul.CreateOpChain(mul.Operate(a, b), c);
-            t.RuleStore[C.MulAssocOne] = rr;
+            GlobalRules.RuleStore[C.MulAssocOne] = rr;
 
             rr = new ReplaceRule();
             rr.Right = mul.CreateOpChain(a, mul.Operate(b, c));
             rr.Left = mul.CreateOpChain(mul.Operate(a, b), c);
-            t.RuleStore[C.MulAssocTwo] = rr;
+            GlobalRules.RuleStore[C.MulAssocTwo] = rr;
         }
 
 

@@ -6,12 +6,16 @@ using System.Threading.Tasks;
 
 namespace AutoSymbol.Core
 {
+    public static class GlobalRules
+    {
+        public static RuleStore RuleStore = new RuleStore();
+    }
     public class SetBase : Symbol
     {
         public Dictionary<string, Operator> OpStore = new Dictionary<string, Operator>();
         public MemberStore MemStore = new MemberStore();
         public Dictionary<string, Member> ShortMemStore = new Dictionary<string, Member>();
-        public RuleStore RuleStore = new RuleStore();
+        //public RuleStore RuleStore = new RuleStore();
         public Dictionary<string, string> SigToShortName = new Dictionary<string, string>();
         public static Dictionary<string, SetBase> AllSets = new Dictionary<string, SetBase>();
 
@@ -41,7 +45,7 @@ namespace AutoSymbol.Core
                 s.TargetSet = one.Value;
                 ret.Add(s);
 
-                foreach (var er in one.Value.RuleStore)
+                foreach (var er in GlobalRules.RuleStore)
                 {
                     ManualTransform left = new ManualTransform();
                     left.MyType = TransformType.ERReplace;

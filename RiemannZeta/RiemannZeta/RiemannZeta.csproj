@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6B6989E5-63B1-4E01-B50F-90E22D04B520}</ProjectGuid>
+    <ProjectGuid>{16721028-CA66-488D-AE16-816A6DBE9410}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>AutoSymbol</RootNamespace>
-    <AssemblyName>AutoSymbol</AssemblyName>
+    <RootNamespace>RiemannZeta</RootNamespace>
+    <AssemblyName>RiemannZeta</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -34,20 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Msagl">
-      <HintPath>..\lib\Microsoft.Msagl.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Msagl.Drawing">
-      <HintPath>..\lib\Microsoft.Msagl.Drawing.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Msagl.GraphViewerGdi">
-      <HintPath>..\lib\Microsoft.Msagl.GraphViewerGdi.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Msagl.WpfGraphControl">
-      <HintPath>..\lib\Microsoft.Msagl.WpfGraphControl.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -62,59 +51,28 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="UI\App.xaml">
+    <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Benchmark\Benchmark.cs" />
-    <Compile Include="Category\R.cs" />
-    <Compile Include="Core\ConstOperator.cs" />
-    <Compile Include="Core\Member.cs" />
-    <Compile Include="Core\NumberSet.cs" />
-    <Compile Include="Core\SetBase.cs" />
-    <Compile Include="Core\Store.cs" />
-    <Compile Include="Draft\DraftAbelSummation.cs" />
-    <Compile Include="Draft\DraftCategory.cs" />
-    <Compile Include="Draft\DraftRuleSeries.cs" />
-    <Compile Include="ERGroup\BasicPlusMulRule.cs" />
-    <Compile Include="ERGroup\Const.cs" />
-    <Compile Include="ERGroup\CrossGroupRule.cs" />
-    <Compile Include="ERGroup\GroupRule.cs" />
-    <Compile Include="ERGroup\NumberMergeRule.cs" />
-    <Compile Include="UI\DebugLog.xaml.cs">
-      <DependentUpon>DebugLog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Draft\DraftGroupTheory.cs" />
-    <Compile Include="Draft\DraftManifold.cs" />
-    <Compile Include="Draft\DraftNArray.cs" />
-    <Compile Include="Core\ReplaceRule.cs" />
-    <Compile Include="Training\ManualScenario.cs" />
-    <Compile Include="Category\N.cs" />
-    <Compile Include="Core\OpNode.cs" />
-    <Compile Include="Training\Optimizer.cs" />
-    <Compile Include="Core\Symbol.cs" />
-    <Compile Include="Core\Transform.cs" />
-    <Compile Include="Util\Util.cs" />
-    <Compile Include="UI\WndManualBuild.cs" />
-    <Page Include="UI\DebugLog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\MainWindow.xaml">
+    <Compile Include="Operation.cs" />
+    <Compile Include="Polynomial.cs" />
+    <Compile Include="Zeta.cs" />
+    <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="UI\App.xaml.cs">
+    <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Util\ConsoleHelper.cs" />
-    <Compile Include="UI\MainWindow.xaml.cs">
+    <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Prime.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -139,12 +97,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Doc\ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Doc\BrainStorm.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

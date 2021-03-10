@@ -21,27 +21,27 @@ namespace AutoSymbol.ERGroup
             ReplaceRule rr = new ReplaceRule();
             rr.Left = plus.CreateOpChain(a, a);
             rr.Right = mul.CreateOpChain(a, plus.Operate(t.One, t.One));
-            t.RuleStore[C.OnePlusOne] = rr;            
+            GlobalRules.RuleStore[C.OnePlusOne] = rr;            
 
             rr = new ReplaceRule();
             rr.Left = plus.CreateOpChain(a, mul.Operate(n, a));
             rr.Right = mul.CreateOpChain(plus.Operate(n, t.One), a);
-            t.RuleStore[C.AnyConstPlusOne] = rr;
+            GlobalRules.RuleStore[C.AnyConstPlusOne] = rr;
 
             rr = new ReplaceRule();
             rr.Left = plus.CreateOpChain(a, mul.Operate(n, a));
             rr.Right = mul.CreateOpChain(plus.Operate(n, t.One), a);
-            t.RuleStore[C.AnyPlusOne] = rr;
+            GlobalRules.RuleStore[C.AnyPlusOne] = rr;
 
             MergeRule mr = new MergeRule();
             mr.NodeProc = t.ConstPlus; //NumberSet.ConstPlus;
             mr.Op = plus;
-            t.RuleStore[C.MergeConstPlus] = mr;
+            GlobalRules.RuleStore[C.MergeConstPlus] = mr;
 
             mr = new MergeRule();
             mr.NodeProc = t.ConstMultiply;
             mr.Op = mul;
-            t.RuleStore[C.MergeConstMultiply] = mr;
+            GlobalRules.RuleStore[C.MergeConstMultiply] = mr;
             /// How to pass the appropriate method here without the cost?
 
 

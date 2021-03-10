@@ -35,7 +35,7 @@ namespace AutoSymbol
             cbER.Items.Clear();
             foreach (var one in SetBase.AllSets)
             {
-                foreach (var er in one.Value.RuleStore)
+                foreach (var er in GlobalRules.RuleStore)
                 {
                     cbER.Items.Add(er.Value.ToString());
                 }

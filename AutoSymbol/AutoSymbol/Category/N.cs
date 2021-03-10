@@ -20,7 +20,7 @@ namespace AutoSymbol.Core
             this.MemStore.Add(One);
             NPlus = new Operator("+", this, false);
             this.OpStore[NPlus.ShortName] = NPlus;
-            NMul = new Operator("×", this, false);
+            NMul = new Operator("*", this, false);
             this.OpStore[NMul.ShortName] = NMul;
 
             HydrateER();
@@ -37,37 +37,37 @@ namespace AutoSymbol.Core
             ReplaceRule rr = new ReplaceRule();
             rr.Left = NPlus.CreateOpChain(a, NPlus.Operate(b, c));
             rr.Right = NPlus.CreateOpChain(NPlus.Operate(a, b), c);
-            this.RuleStore["NPlusAssoc"] = rr;
+            GlobalRules.RuleStore["NPlusAssoc"] = rr;
 
             rr = new ReplaceRule();
             rr.Left = NPlus.CreateOpChain(a, b);
             rr.Right = NPlus.CreateOpChain(b, a);
-            this.RuleStore["NPlusCommute"] = rr;
+            GlobalRules.RuleStore["NPlusCommute"] = rr;
 
             rr = new ReplaceRule();
             rr.Left = NMul.CreateOpChain(a, b);
             rr.Right = NMul.CreateOpChain(b, a);
-            this.RuleStore["NMulCommute"] = rr;
+            GlobalRules.RuleStore["NMulCommute"] = rr;
 
             rr = new ReplaceRule();
             rr.Left = NMul.CreateOpChain(NPlus.Operate(a, b), c);
             rr.Right = NPlus.CreateOpChain(NMul.Operate(a, c), NMul.Operate(b, c));
-            this.RuleStore["NMulDistr"] = rr;
+            GlobalRules.RuleStore["NMulDistr"] = rr;
 
             rr = new ReplaceRule();
             rr.Left = NMul.CreateOpChain(a, NMul.Operate(b, c));
             rr.Right = NMul.CreateOpChain(NMul.Operate(a, b), c);
-            this.RuleStore["NMulAssoc"] = rr;
+            GlobalRules.RuleStore["NMulAssoc"] = rr;
 
             rr = new ReplaceRule();
             rr.Left = NPlus.CreateOpChain(a, NMul.Operate(n, a));
             rr.Right = NMul.CreateOpChain(NPlus.Operate(n, One), a);
-            this.RuleStore["NAnyPlusOne"] = rr;
+            GlobalRules.RuleStore["NAnyPlusOne"] = rr;
 
             rr = new ReplaceRule();
             rr.Left = NPlus.CreateOpChain(a, a);
             rr.Right = NMul.CreateOpChain(a, NPlus.Operate(One, One));
-            this.RuleStore["NOnePlusOne"] = rr;
+            GlobalRules.RuleStore["NOnePlusOne"] = rr;
         }
 
         public void PopulateSeedMember()
@@ -83,7 +83,7 @@ namespace AutoSymbol.Core
                 shortOne.FromChain = null;
                 this.ShortMemStore.Add(shortOne.ShortName, shortOne);
 
-                ReplaceRule rr = (ReplaceRule)this.RuleStore["NPlusAssoc"];
+                ReplaceRule rr = (ReplaceRule)GlobalRules.RuleStore["NPlusAssoc"];
 
                 OpByStr dict = rr.BuildCompleteERChains(lastOne.FromChain);
                 foreach (var item in dict)

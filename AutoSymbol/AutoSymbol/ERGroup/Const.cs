@@ -24,5 +24,14 @@ namespace AutoSymbol.ERGroup
         public const string AnyPlusOne = "AnyPlusOne";
         public const string MergeConstPlus = "MergeConstPlus";
         public const string MergeConstMultiply = "MergeConstMultiply";
+
+        // Section GroupRule
+        public const string GNormalChildDef = "GNormalChildDef";
+        public const string GMulCommute = "GMulCommute";
+        public const string GMulAssoc = "GMulAssoc";
+        public const string GInvOne = "GInvOne";
+        public const string GInvTwo = "GInvTwo";
+        public const string GIdLeft = "GIdLeft";
+        public const string GIdRight = "GIdRight";
     }
 }

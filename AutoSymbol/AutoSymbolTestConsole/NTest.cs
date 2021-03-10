@@ -12,6 +12,19 @@ namespace AutoSymbolTestConsole
 {
     public class NTest
     {
+        public void ProveExistenceMinimumInPositiveSubset()
+        {
+            /// Exist n in A, n belongs to N => Exist x, Any y in A y>=x
+            /// Can above be proven without using And OR => logic operations?
+            /// 1. Definition of Minimum : 
+            /// 2. ExistAny(x,y) becomes a new operator
+            /// 3. AnyX ExistY : Y=X+1 (aeems an axiom) => ExitX AnyY 
+            /// 4. =>  Seems like ChildSet production operation, it cannot reverse because lost certain properties
+            /// 5. ER format  A=True,B=True ===== A=True,B=True,C=True
+            /// 6.  AND OR becomes one operator as well
+            /// 
+            /// 
+        }
         public void ProveTwoPlusXPlusThree()
         {
             N n = new N();
