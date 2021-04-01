@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.2043
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31105.61
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoSymbol", "AutoSymbol\AutoSymbol.csproj", "{6B6989E5-63B1-4E01-B50F-90E22D04B520}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoSymbolTestConsole", "AutoSymbolTestConsole\AutoSymbolTestConsole.csproj", "{8707B6DD-E6B2-4C09-842C-B7BDE99F1B77}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathGen", "MathGen\MathGen.csproj", "{7FE16323-C13C-4EDF-8B58-E9641EE7A18F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{8707B6DD-E6B2-4C09-842C-B7BDE99F1B77}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8707B6DD-E6B2-4C09-842C-B7BDE99F1B77}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8707B6DD-E6B2-4C09-842C-B7BDE99F1B77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FE16323-C13C-4EDF-8B58-E9641EE7A18F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FE16323-C13C-4EDF-8B58-E9641EE7A18F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FE16323-C13C-4EDF-8B58-E9641EE7A18F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FE16323-C13C-4EDF-8B58-E9641EE7A18F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

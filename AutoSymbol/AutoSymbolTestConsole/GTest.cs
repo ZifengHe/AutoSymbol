@@ -81,7 +81,7 @@ namespace AutoSymbolTestConsole
         //public SetBase Second;
     }
 
-    class Endomorphism
+    class Endomorphism { }
 
     class Morphism<T, U> where T : SetBase where U : SetBase
     {
