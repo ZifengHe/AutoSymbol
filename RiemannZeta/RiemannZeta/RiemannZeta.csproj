@@ -57,6 +57,7 @@
     </ApplicationDefinition>
     <Compile Include="Operation.cs" />
     <Compile Include="Polynomial.cs" />
+    <Compile Include="TaylerGuess.cs" />
     <Compile Include="Zeta.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

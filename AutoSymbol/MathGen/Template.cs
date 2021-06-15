@@ -3,41 +3,61 @@ using System.Collections.Generic;
 
 namespace MathGen
 {
-    public class Template
+
+    public class SetEx : ISet
+    {
+        List<ISet> Slots;
+    }
+    public class N : ISet
     {
     }
 
-    public class SelfMap : Template
+       
+
+    public class OpEx
     {
-        public MorphismSet Create(Set a, Set b)
-        {
-            return new MorphismSet(a, b);
-        }
+        public List<ISet> Sources;
+        public List<ISet> Target;
     }
-
-    public class MorphismSet : Set
-    {
-        public MorphismSet(Set a, Set b)
-        {
-        }
-    }
-
-    public class Operator
-    { }
-    public class Set :R
-    {
-
-    }
-
-    public class N { }
-    public class R : N { }
-
+    
     public class Actor
     {
-        public List<Set> SetDepot;
-        public List<Template> TemplateDepot;
+        public List<ISet> SetDepot;
 
-        public void Expand()
-        { }
+        public Actor()
+        {
+            SetDepot = new List<ISet>();
+            SetDepot.Add(new N());
+        }
+
+        public void CreateRationalNumber()
+        {
+            /// Goal: generate rational number
+            /// Step 1 Create tree templates
+            /// Step 2 Use tree to construct TargetSet
+            /// Step 3 Random set template input and generate TargetSet
+            /// Step 4 Use TargetSet to generate self-map operator
+            /// Step 5 Use sample number to generate sample result
+            /// Step 6 Sample result can be used to construct ER
+            /// Step 7 If different tree satisfies ER, that will be interest set and op
+            /// 
+        }
+
+        public void CreateSlotOperator()
+        {
+            /// Step 1 SlotOperator can be for any tree and any slot
+            /// Step 2 Meaningful operator forms short ER
+            /// Step 3
+        }
+    }
+
+   
+
+    public class OperatorTemplate
+    {
+        /// Sample generation logic
+        /// Observer criteria
+        /// Allowed Symmetry 
+        /// 
     }
 }
