@@ -10,6 +10,9 @@ namespace MathGen
         public static List<OpTree> AllTemplates;
         public static void CreateTemplates()
         {
+            /// Step 1. Define generations
+            /// Step 2. Each Generation, expand end node
+            /// Step 3. Each Generation, reduce duplicate
         }
 
         public static void CreateFirst()
@@ -19,6 +22,14 @@ namespace MathGen
             AllTemplates.Clear();
             AllTemplates.Add(ot);
         }
+
+        public string CreateHash()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("o");
+            Root.CalcHash(sb);
+            return sb.ToString();
+        }
     }
 
     public class OpNode
@@ -26,6 +37,20 @@ namespace MathGen
         public OpNode Left;
         public OpNode Right;
         public IOperator Operator;
+
+        public void CalcHash(StringBuilder sb)
+        {
+            if(this.Left!=null)
+            {
+                sb.Append("L");
+                this.Left.CalcHash(sb);
+            }
+            if(this.Right!=null)
+            {
+                sb.Append("R");
+                this.Right.CalcHash(sb);
+            }
+        }
 
         public OpNode Clone()
         {

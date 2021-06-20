@@ -47,7 +47,7 @@ namespace MathGen
         {
             /// Step 1 SlotOperator can be for any tree and any slot
             /// Step 2 Meaningful operator forms short ER
-            /// Step 3
+            /// Step 3 
         }
     }
 
