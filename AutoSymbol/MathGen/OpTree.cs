@@ -48,6 +48,12 @@ namespace MathGen
             AllTemplates.Add(ot);
         }
 
+        public void AssignVisualId()
+        {
+            OpNode.globalVisualId = 0;
+            OpNode.RecursiveAssignVisualId(this.Root);
+            this.Root.VisualId = 0;
+        }
         public List<OpTree> ExpandAllEndNodeByOne()
         {
             List<OpTree> list = new List<OpTree>();
@@ -96,7 +102,10 @@ namespace MathGen
         public OpNode Left;
         public OpNode Right;
         public IOperator Operator;
+        public int VisualId;
+        public  static int globalVisualId = 0;
 
+       
         public void CalcHash(StringBuilder sb)
         {
             if(this.Left!=null)
@@ -108,6 +117,23 @@ namespace MathGen
             {
                 sb.Append("R");
                 this.Right.CalcHash(sb);
+            }
+        }
+
+        public static void RecursiveAssignVisualId(OpNode node)
+        {
+            
+            if(node.Left != null)
+            {
+                globalVisualId++;
+                node.Left.VisualId = globalVisualId;
+                RecursiveAssignVisualId(node.Left);
+            }
+            if(node.Right != null)
+            {
+                globalVisualId++;
+                node.Right.VisualId = globalVisualId;
+                RecursiveAssignVisualId(node.Right);
             }
         }
 

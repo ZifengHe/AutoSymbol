@@ -9,7 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoSymbolTestConsole", "Au
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MathGen", "MathGen\MathGen.csproj", "{7FE16323-C13C-4EDF-8B58-E9641EE7A18F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathGenTest", "MathGenTest\MathGenTest.csproj", "{5F8D5AF2-8259-473D-8B06-8907B6858807}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MathGenTest", "MathGenTest\MathGenTest.csproj", "{5F8D5AF2-8259-473D-8B06-8907B6858807}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathGenUI", "MathGenUI\MathGenUI.csproj", "{D2DFD052-8693-485F-8992-4A673B361DAD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{5F8D5AF2-8259-473D-8B06-8907B6858807}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F8D5AF2-8259-473D-8B06-8907B6858807}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F8D5AF2-8259-473D-8B06-8907B6858807}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2DFD052-8693-485F-8992-4A673B361DAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2DFD052-8693-485F-8992-4A673B361DAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2DFD052-8693-485F-8992-4A673B361DAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2DFD052-8693-485F-8992-4A673B361DAD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

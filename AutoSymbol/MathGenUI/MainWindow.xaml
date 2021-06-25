@@ -1,0 +1,60 @@
+﻿<Window x:Class="MathGenUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MathGenUI"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <DockPanel LastChildFill="True">
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Header="_Open" />
+                <MenuItem Header="_Save" />
+                <Separator />
+                <MenuItem Header="_Exit" />
+            </MenuItem>
+            <MenuItem Header="Test">
+                <MenuItem Header="Display OpTree Templates" Click="DisplayOpTreeTemplates" />
+            </MenuItem>
+        </Menu>
+        <StackPanel Orientation="Vertical" DockPanel.Dock="Top" Margin="2">
+            <ToolBarTray HorizontalAlignment="Stretch" Margin="2">
+                <ToolBar HorizontalAlignment="Stretch" Margin="2">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="2">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="2">
+                            <Button Content="RunOne"   Margin="2"/>
+                            <Button Content="RunAll"  Margin="2"/>
+                            <ComboBox Width="50" Name="cbList"  Margin="2"></ComboBox>
+                            <ComboBox Width="50" Name="cbGen"  Margin="2"></ComboBox>
+                            <TextBlock Margin="2">Sig=</TextBlock>
+                            <TextBox Name="txtTrackingSig" Width="150"  Margin="2">N[((X+Y)×(((X+Y)×X)+((Y+X)×Y)))]</TextBox>
+                            <TextBlock Margin="2">ER=</TextBlock>
+                            <ComboBox Width="50" Name="cbER"  Margin="2"></ComboBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="2">
+                            <ComboBox Width="50" Name="cbScenario"  Margin="2"></ComboBox>
+                            <ComboBox Width="50" Name="cbFilterER"  Margin="2"></ComboBox>
+                            <Button Content="TryOneER"  Margin="2"/>
+                            <Button Content="Optimize"  Margin="2"/>
+                        </StackPanel>
+                    </StackPanel>
+                </ToolBar>
+            </ToolBarTray>
+        </StackPanel>
+        <StatusBar Name="statusbar" DockPanel.Dock="Bottom" >
+            <StatusBarItem>
+                <TextBlock x:Name="MessageTextBlock"></TextBlock>
+            </StatusBarItem>
+        </StatusBar>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="600"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <DockPanel x:Name="LeftPanel" ></DockPanel>
+            <GridSplitter Width="5" HorizontalAlignment="Right" VerticalAlignment="Stretch" ResizeBehavior="CurrentAndNext"/>
+            <DockPanel x:Name="RightPanel" Grid.Column="1" ></DockPanel>
+        </Grid>
+    </DockPanel>
+</Window>
