@@ -7,11 +7,11 @@ using System.Windows.Media;
 
 namespace FrameByFrame
 {
-    public static class ColorByCountry
+    public static class ColorByEntity
     {
         public static Dictionary<string, Color> All = new Dictionary<string, Color>();
 
-        static ColorByCountry()
+        static ColorByEntity()
         {
             All["CN"] = Color.FromRgb(255, 0, 0);
             All["AR"] = Color.FromRgb(173, 216, 230);

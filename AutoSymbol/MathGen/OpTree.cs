@@ -93,7 +93,6 @@ namespace MathGen
                 PopulateEndNode(node.Left);
                 PopulateEndNode(node.Right);
             }
-
         }
     }
 
@@ -102,6 +101,7 @@ namespace MathGen
         public OpNode Left;
         public OpNode Right;
         public IOperator Operator;
+        
         public int VisualId;
         public  static int globalVisualId = 0;
 

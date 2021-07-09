@@ -7,6 +7,11 @@ namespace MathGenTest
     public class UnitTest
     {
         [TestMethod]
+        public void Operator_CreateFirstOperator()
+        { 
+        }
+
+        [TestMethod]
         public void OpTree_CreateTemplate()
         {
             OpTree.CreateTemplates(5);

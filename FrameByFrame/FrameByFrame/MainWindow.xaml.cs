@@ -133,15 +133,19 @@ namespace FrameByFrame
         {
             Microsoft.Win32.OpenFileDialog dlg = OpenFile("*.csv", "CSV Files (*.csv)|*.csv");
 
-            LoadCsvToMyProj(dlg.FileName);
-            System.Windows.MessageBox.Show("CSV Loaded");
+            if (dlg != null)
+            {
+                LoadCsvToMyProj(dlg.FileName);
+                System.Windows.MessageBox.Show("CSV Loaded");
+            }
+            System.Windows.MessageBox.Show("FileName Empty");
         }
 
         private void LoadCsvToMyProj(string fileName)
         {
             MyProj = new ProjData();
             MyProj.CSVContent = File.ReadAllText(fileName);
-            MyProj.ProcessCSVFile();
+            MyProj.ProcessHorizontalFormatCSVFile();
 
             if (loadEveryRowInCombobox)
             {
@@ -182,10 +186,10 @@ namespace FrameByFrame
             {
                 string shortCode = CountryDict[row.CountryCode].ShortCode;
 
-                if (ColorByCountry.All.ContainsKey(shortCode))
+                if (ColorByEntity.All.ContainsKey(shortCode))
                 {
-                    row.TextColor = ColorByCountry.All[shortCode];
-                    row.LineColor = ColorByCountry.All[shortCode];
+                    row.TextColor = ColorByEntity.All[shortCode];
+                    row.LineColor = ColorByEntity.All[shortCode];
                 }
             }
             RefreshView();
@@ -339,7 +343,7 @@ namespace FrameByFrame
         private void LoadProjFile(string fileName)
         {
             MyProj = ObjectManager.FromXml<ProjData>(fileName);
-            MyProj.ProcessCSVFile();
+            MyProj.ProcessHorizontalFormatCSVFile();
 
             DisplaySetting();
             cbConfig.Items.Clear();
@@ -437,7 +441,7 @@ namespace FrameByFrame
             RawData = new ProjData();
             string wdiFile = Path.Combine(RootFolder, @"FrameByFrame\csv\download\wdi.csv");
             RawData.CSVContent = File.ReadAllText(wdiFile);
-            RawData.ProcessCSVFile();
+            RawData.ProcessHorizontalFormatCSVFile();
 
             cbCountry.Items.Clear();
             cbCountryGroup.Items.Clear();

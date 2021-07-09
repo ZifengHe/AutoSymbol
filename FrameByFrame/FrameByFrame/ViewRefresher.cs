@@ -177,19 +177,24 @@ namespace FrameByFrame
 
         private void DrawRowFlag(int rowHeight, OneRow row, int rowTop, double rawData)
         {
-            //if (rawData > 0.1)
-            string imgPath = FlagRoot + CountryDict[row.CountryCode].ShortCode + ".png";
+            string imgPath = FlagRoot + row.CountryCode + ".png";
+            string countryShortCode = row.CountryCode;
+            if (CountryDict.ContainsKey(row.CountryCode))
+            {
+                countryShortCode = CountryDict[row.CountryCode].ShortCode;
+                imgPath = FlagRoot + countryShortCode + ".png";
+            }
             string key = row.RowNumber.ToString() + imgPath;
 
             if (ImgDict.ContainsKey(key) == false)
             {
-                ImgDict[key] = new Image
+                ImgDict.Add(key, new Image
                 {
                     Height = rowHeight / 3 * 2,
                     Width = 550 * Height / 367,
-                    Name = CountryDict[row.CountryCode].ShortCode,
+                    Name = countryShortCode,
                     Source = new BitmapImage(new Uri(imgPath)),
-                };
+                });
             }
 
             Canvas.SetLeft(ImgDict[key], MyProj.CanvasWidth - MyProj.AxRight - 320);

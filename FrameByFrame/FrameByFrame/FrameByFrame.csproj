@@ -154,15 +154,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ColorByCountry.cs" />
+    <Compile Include="ColorByEntity.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="ObjectManager.cs" />
     <Compile Include="RowGroup.cs" />
     <Compile Include="RTBHost.xaml.cs">
       <DependentUpon>RTBHost.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="RubicWindow.xaml.cs">
-      <DependentUpon>RubicWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="TimeEvent.cs" />
     <Compile Include="ViewRefresher.cs" />
@@ -180,10 +177,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="RTBHost.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="RubicWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

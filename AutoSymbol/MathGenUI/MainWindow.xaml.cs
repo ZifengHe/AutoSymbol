@@ -32,11 +32,17 @@ namespace MathGenUI
 
         private void DisplayOpTreeTemplates(object sender, RoutedEventArgs e)
         {
-            OpTree.CreateTemplates(5);
+            OpTree.CreateTemplates(4);
             GraphViewer graphViewer = new GraphViewer();
             Graph graph = PrepareLeftPanelGraph(graphViewer);
-            OpTree.AllTemplates[15].AssignVisualId();
-            RecursiveRenderByIdCounter(OpTree.AllTemplates[15].Root, graph);
+            
+            for (int i = 0; i< OpTree.AllTemplates.Count; i++)
+            {
+                string suffix = string.Format("[{0}]", i);
+                OpTree.AllTemplates[i].AssignVisualId();
+                RecursiveRenderByIdCounter(OpTree.AllTemplates[i].Root, graph, suffix );
+            }
+            graphViewer.Graph = graph;
         }
         private Graph PrepareLeftPanelGraph(GraphViewer graphViewer)
         {
@@ -49,22 +55,22 @@ namespace MathGenUI
             return graph;
         }
 
-        private void RecursiveRenderByIdCounter(OpNode node, Graph g)
+        private void RecursiveRenderByIdCounter(OpNode node, Graph g, string suffix)
         {
             if (node == null)
                 return;
 
-            g.AddNode(node.VisualId.ToString());
+            g.AddNode(node.VisualId.ToString()+suffix);
 
             if(node.Left != null)
             {
-                RecursiveRenderByIdCounter(node.Left, g);
-                AddEdge(g, node.VisualId.ToString(), node.Left.VisualId.ToString());
+                RecursiveRenderByIdCounter(node.Left, g, suffix);
+                AddEdge(g, node.VisualId.ToString() +suffix, node.Left.VisualId.ToString()+ suffix);
             }
           if(node.Right != null)
             {
-                RecursiveRenderByIdCounter(node.Right, g);
-                AddEdge(g, node.VisualId.ToString(), node.Right.VisualId.ToString());
+                RecursiveRenderByIdCounter(node.Right, g, suffix);
+                AddEdge(g, node.VisualId.ToString()+suffix, node.Right.VisualId.ToString()+suffix);
             }
         }
 

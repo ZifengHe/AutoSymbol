@@ -73,7 +73,11 @@ namespace FrameByFrame
             return ret;
         }
 
-        public void ProcessCSVFile()
+        public void ProcessVerticalFormatCSVFile()
+        {
+
+        }
+        public void ProcessHorizontalFormatCSVFile()
         {
             int currentRowNum = 0;
             File.WriteAllText(TempFile, CSVContent);
@@ -95,7 +99,7 @@ namespace FrameByFrame
                         continue;
                     }
 
-                    if (fields.Length == Header.Length && fields[0].Length > 3 && fields[1].Length > 5)
+                    if (fields.Length == Header.Length && fields[0].Length > 3 && fields[1].Length > 1)
                     {
                         OneRow one = new OneRow();
                         one.SeriesName = fields[0];
