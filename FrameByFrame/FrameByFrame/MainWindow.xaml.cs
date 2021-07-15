@@ -138,7 +138,8 @@ namespace FrameByFrame
                 LoadCsvToMyProj(dlg.FileName);
                 System.Windows.MessageBox.Show("CSV Loaded");
             }
-            System.Windows.MessageBox.Show("FileName Empty");
+            else
+                System.Windows.MessageBox.Show("FileName Empty");
         }
 
         private void LoadCsvToMyProj(string fileName)

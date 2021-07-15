@@ -121,7 +121,7 @@ namespace FrameByFrame
 
                         for (int i = 4; i < Header.Length; i++)
                         {
-                            one.Data[Header[i]] = fields[i];
+                            one.Data[Header[i]] = (float.Parse(fields[i])).ToString("0.00");
                         }
 
                         if(bFoundExisting == false)

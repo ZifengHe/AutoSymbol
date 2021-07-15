@@ -108,7 +108,7 @@ namespace FrameByFrame
 
                         /// Horizontal bar section                     
                        // Line line;
-                        double interpolatedData = one.Key;
+                        double interpolatedData = double.Parse(one.Value.Data[MyProj.Header[CurrentHeaderIndex]]); //one.Key;
                         double maxRowDataInGroup = sortedInterpolated.Last().Key;
                         DrawRowLineAndNumber(maxRowDataInGroup, rowHeight, row, currentRowTop, interpolatedData);//, out line);
 

@@ -132,6 +132,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -156,6 +157,11 @@
     </ApplicationDefinition>
     <Compile Include="ColorByEntity.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="JaLaIaBa.xaml.cs">
+      <DependentUpon>JaLaIaBa.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="JaLaIaBaRender.cs" />
+    <Compile Include="JaLaIaBaData.cs" />
     <Compile Include="ObjectManager.cs" />
     <Compile Include="RowGroup.cs" />
     <Compile Include="RTBHost.xaml.cs">
@@ -163,6 +169,10 @@
     </Compile>
     <Compile Include="TimeEvent.cs" />
     <Compile Include="ViewRefresher.cs" />
+    <Page Include="JaLaIaBa.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
